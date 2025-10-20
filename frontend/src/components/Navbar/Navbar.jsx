@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "./Navbar.css";
 
 export default function Navbar() {
@@ -7,9 +8,9 @@ export default function Navbar() {
             <div className="logo-navbar">Clínica Nexus</div>
 
             <ul className="navbar-links">
-                <li><a href="#" id="">Recpção</a></li>
-                <li><a href="#" id="">Ala Médica</a></li>
-                <li><a href="#" id="">Administração</a></li>
+                <li><Link to="/recepcao">Recepção</Link></li>
+                <li><Link to="/ala-medica">Ala Médica</Link></li>
+                <li><Link to="/administracao">Administração</Link></li>
             </ul>
         </nav>
     );
