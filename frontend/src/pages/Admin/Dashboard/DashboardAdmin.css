@@ -1,0 +1,106 @@
+.dashboard {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 10px; /* espaço pro navbar fixo */
+}
+
+.dashboard-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.text-section {
+  flex: 1;
+}
+
+.text-section h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #212529;
+}
+
+.text-section p {
+  font-size: 1.2rem;
+  font-weight: normal;
+  color: #212529;
+  margin-top: 10px;
+}
+
+/* Container dos Cards */
+.cards {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+
+.card {
+  background: #A0D2EB;
+  border-radius: 12px;
+  padding: 1.4rem;
+  box-shadow: 0 6px 18px rgba(2, 46, 54, 0.06);
+  flex: 1 1 260px;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.8rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 26px rgba(2, 46, 54, 0.12);
+}
+
+.card h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #00363a;
+  width: 100%;
+}
+
+.card p {
+  margin: 0;
+  color: #355555;
+  font-size: 0.95rem;
+}
+
+.card-btn {
+  margin-top: auto; 
+  align-self: center;
+  background: #1A3B6C;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.25s ease, transform 0.15s ease;
+}
+
+.card-btn:hover {
+  background: #A0D2EB;
+  transform: translateY(-2px);
+}
+
+.card-icon {
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: #A0D2EB;
+  color: #1A3B6C;
+  margin-bottom: 0.5rem;
+}

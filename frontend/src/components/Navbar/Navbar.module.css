@@ -10,7 +10,9 @@
 
 .logoNavbar {
   font-weight: 600;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
+  color: #1A3B6C;
+  font-weight: bold;
 }
 
 .navbarLinks {
@@ -20,6 +22,7 @@
   margin: 0;
   padding: 0;
   list-style: none;
+  font-size: 1.2rem;
 }
 
 .link {

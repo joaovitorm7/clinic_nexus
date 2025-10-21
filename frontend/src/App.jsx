@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar/Navbar";
-import Dashboard from "./pages/Admin/Dashboard/Dashboard";
+import Dashboard from "./pages/Admin/Dashboard/DashboardAdmin";
 
 function App() {
   return (
