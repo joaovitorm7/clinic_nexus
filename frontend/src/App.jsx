@@ -8,7 +8,6 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<h1 style={{padding: '60px', textAlign: "center" }}> Página Inicial</h1>} />
-      
         <Route path="/administracao" element={<Dashboard />} />
       </Routes>
     </>

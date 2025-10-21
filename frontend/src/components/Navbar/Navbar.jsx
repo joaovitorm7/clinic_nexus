@@ -1,16 +1,16 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "./Navbar.css";
+import styles from "./Navbar.module.css";
 
 export default function Navbar() {
     return (
-        <nav className="navbar">
-            <div className="logo-navbar">Clínica Nexus</div>
+        <nav className={styles.navbar}>
+            <div className={styles.logoNavbar}>Clínica Nexus</div>
 
-            <ul className="navbar-links">
-                <li><Link to="/recepcao">Recepção</Link></li>
-                <li><Link to="/ala-medica">Ala Médica</Link></li>
-                <li><Link to="/administracao">Administração</Link></li>
+            <ul className={styles.navbarLinks}>
+                <li><Link to="/recepcao" className={styles.link}>Recepção</Link></li>
+                <li><Link to="/ala-medica" className={styles.link}>Ala Médica</Link></li>
+                <li><Link to="/administracao" className={styles.link}>Administração</Link></li>
             </ul>
         </nav>
     );
