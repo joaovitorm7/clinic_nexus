@@ -104,3 +104,7 @@
   color: #1A3B6C;
   margin-bottom: 0.5rem;
 }
+
+.card-link {
+  text-decoration: none;
+}
