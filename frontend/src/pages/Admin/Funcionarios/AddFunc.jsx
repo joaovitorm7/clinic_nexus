@@ -5,7 +5,7 @@ import EmployeeAddFunc from '../../../components/EmployeeAdd/EmployeeAddFunc';
 export default function AddFunc() {
   return (
     <div>
-      <h2>Adicionar Funcionário</h2>
+      <h2>Dados Completos</h2>
       <EmployeeAddFunc />
     </div>
   );

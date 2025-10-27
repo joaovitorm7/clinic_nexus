@@ -1,16 +1,24 @@
 .page {
+  position: relative;
   padding: 20px;
   max-width: 500px;
-  margin: auto;
+  margin: 40px auto;
 }
 
 .back {
-  margin-bottom: 20px;
-  background: none;
+  position: fixed;
+  top: 90px;      
+  left: 30px;
+  background: transparent;
   border: none;
-  font-size: 18px;
+  font-size: 25px;
+  color: #1A3B6C;
   cursor: pointer;
+  padding: 8px;
+  z-index: 1100;   
+  transition: transform 0.12s;
 }
+.back:hover { transform: translateX(-3px); }
 
 h2 {
   text-align: center;
@@ -21,6 +29,11 @@ h2 {
   display: flex;
   flex-direction: column;
   gap: 15px;
+  background: #A0D2EB;         
+  padding: 20px;               
+  border-radius: 12px;          
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06); 
+  border: 1px solid rgba(0,0,0,0.04);
 }
 
 label {
@@ -34,12 +47,93 @@ input, select {
   font-size: 16px;
 }
 
-button[type="submit"] {
-  padding: 10px;
-  font-size: 16px;
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: normal;
+}
+
+.formActions {
+  display: flex;
+  justify-content: space-between; 
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.cancelBtn {
+  background: #1A3B6C;
+  border: 1px solid #ccc;
+  color: #F5F5F5;
+  padding: 8px 14px;
+  border-radius: 6px;
   cursor: pointer;
-  background-color: #4CAF50;
-  color: white;
+  width: 50%;
+  height: 50px;
+}
+
+.saveBtn {
+  background: #1A3B6C; 
+  color: #F5F5F5;
   border: none;
-  border-radius: 4px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  width: 50%;
+  height: 50px;
+  cursor: pointer;
+}
+
+.saveBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+input[type="date"], input[type="text"], input[type="email"], select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.inlineField {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.labelText {
+  min-width: 120px; 
+  font-weight: 600;
+  color: #212529;
+}
+
+.inlineField input,
+.inlineField select,
+.inlineField input[type="date"] {
+  flex: 1;                
+  border: none;
+  border-bottom: 1px solid #212529;
+  background: transparent;
+  padding: 6px 8px;
+  font-size: 16px;
+  border-radius: 0;
+  outline: none;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.inlineField input:focus,
+.inlineField select:focus,
+.inlineField input[type="date"]:focus {
+  border-bottom-color: #1A3B6C;
+  box-shadow: 0 2px 0 0 rgba(26,59,108,0.06);
+}
+
+.inlineField input::placeholder {
+  color: #212529;
+  opacity: 0.5;
+}
+
+.inlineField input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+  transform: scale(1.0);
 }
