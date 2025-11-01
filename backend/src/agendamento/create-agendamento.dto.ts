@@ -1,32 +1,31 @@
-import { IsNotEmpty, IsString, IsEmail } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsInt, IsString, IsDateString } from 'class-validator';
 
 export class CreateAgendamentoDto {
-    @IsNotEmpty()
+    @IsOptional() 
+    @IsInt()
+    id_paciente?: number;
+
+    @IsOptional() 
+    @IsInt()
+    id_medico?: number;
+
+    @IsOptional()
     @IsString()
-    nomePaciente: string;
+    especialidade?: string;
 
     @IsNotEmpty()
-    dataNascimento: string;
+    @IsDateString()
+    data: string; 
 
-    @IsNotEmpty()
-    telefone: string;
+    @IsOptional()
+    @IsString()
+    status?: string;
 
-    @IsNotEmpty()
-    cpf: string;
+    @IsOptional()
+    @IsString()
+    prontuario_path?: string;
 
-    @IsNotEmpty()
-    @IsEmail()
-    email: string;
-
-    @IsNotEmpty()
-    numeroCarteirinha: string;
-
-    @IsNotEmpty()
-    especialidade: string;
-
-    @IsNotEmpty()
-    dataConsulta: Date;
-
-    @IsNotEmpty()
-    horaConsulta: string;
+    @IsOptional()
+    @IsString()
+    motivo_consulta?: string;
 }

@@ -1,34 +1,28 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-@Entity('agendamentos')
+@Entity('Consulta')
 export class Agendamento {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ nullable: false })
-    nomePaciente: string;
+    @Column({ type: 'int', nullable: true })
+    id_paciente: number;
 
-    @Column({ nullable: false })
-    dataNascimento: string;
+    @Column({ type: 'int', nullable: true })
+    id_medico: number;
 
-    @Column({ nullable: false })
-    telefone: string;
-
-    @Column({ nullable: false, unique: true })
-    cpf: string;
-
-    @Column({ nullable: false })
-    email: string;
-
-    @Column({ nullable: false })
-    numeroCarteirinha: string;
-
-    @Column({ nullable: false })
+    @Column({ type: 'varchar', length: 100, nullable: true })
     especialidade: string;
 
-    @Column({ type: 'datetime', nullable: false })
-    dataConsulta: Date;
+    @Column({ type: 'timestamp', nullable: false })
+    data: Date;
 
-    @Column({ nullable: false })
-    horaConsulta: string;
+    @Column({ type: 'varchar', length: 20, default: 'agendada' })
+    status: string;
+
+    @Column({ type: 'varchar', length: 255, nullable: true })
+    prontuario_path: string;
+
+    @Column({ type: 'varchar', length: 500, nullable: true })
+    motivo_consulta: string;
 }
