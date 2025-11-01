@@ -67,6 +67,7 @@ CREATE TABLE `Consulta` (
   `id_medico` int(11) DEFAULT NULL,
   `especialidade` varchar(100) DEFAULT NULL,
   `data` timestamp NOT NULL,
+  `motivo_consulta` VARCHAR(500) DEFAULT NULL,
   `status` varchar(20) DEFAULT 'agendada',
   `prontuario_path` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
