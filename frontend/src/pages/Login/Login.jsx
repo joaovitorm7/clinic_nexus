@@ -1,5 +1,6 @@
 import "./Login.css";
 
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
@@ -14,7 +15,7 @@ function Login() {
     const [mensagem, setMensagem] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const { login, user } = useAuth();
-
+    const navigate = useNavigate();
     if (user) {
         return <Navigate to="/" replace />;
     }
@@ -57,7 +58,7 @@ function Login() {
 
             <div className="left-content">
                 <p>Bem-Vindo(a) ao <br /> Sistema da Clínica Nexus.</p>
-                <p>Onde a saúde encontra a tecnologia.<br />Otimizamos o dia a dia dos nossos profissionais <br /> com serviços automatizados e inteligentes..</p>
+                <p>Onde a saúde encontra a tecnologia.<br />Otimizamos o dia a dia dos nossos profissionais <br /> com serviços automatizados e inteligentes.</p>
             </div>
 
             <div className="left-footer">
@@ -79,8 +80,15 @@ function Login() {
                 <button type="submit">Entrar</button>
                 </form>
                 <div className="login-links">
-                <a href="#">Registrar-se</a> | <a href="#">Recuperar senha</a>
+                  <button type="button" className="register-btn" onClick={() => navigate("/register")}>
+                    Registrar-se
+                  </button>
+                  {" | "}
+                  <button type="button" className="register-btn" onClick={() => navigate("#")}>
+                    Recuperar senha
+                  </button>
                 </div>
+
             </div>
             </div>
         </div>
