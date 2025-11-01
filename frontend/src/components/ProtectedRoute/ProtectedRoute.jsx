@@ -1,21 +1,23 @@
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import Navbar from '../Navbar/Navbar';
 
-function ProtectedRoute(){
-    const {user, loading} = useAuth();
-    if (loading){
-        return <div style={{textAlign: 'center', padding: '100px', fontSize: '1.2em'}}>Verificando autenticação...</div>;
-    }
-    if (!user){
-        return <Navigate to="/login" replace />;
-    }
-    return(
-        <>
-            <Navbar />
-            <Outlet />
-        </>
-    );
+function ProtectedRoute({ allowedRoles }) {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <div style={{ textAlign: 'center', padding: '100px' }}>Verificando autenticação...</div>;
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (allowedRoles && !allowedRoles.includes(user.tipo?.toLowerCase())) {
+    return <Navigate to="/" replace />;
+  }
+
+  return <Outlet />;
 }
+
 export default ProtectedRoute;
