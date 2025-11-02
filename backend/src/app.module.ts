@@ -6,7 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PacienteModule } from './paciente/paciente.module';
-
+import { AgendamentoModule } from './agendamento/agendamento.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -37,10 +37,10 @@ import { PacienteModule } from './paciente/paciente.module';
         synchronize: configService.get<string>('DB_SYNC') === 'true',
       }),
     }),
-
     PacienteModule,
     UsuarioModule,
     AuthModule,
+    AgendamentoModule,
   ],
   controllers: [AppController],
   providers: [AppService],
