@@ -1,3 +1,4 @@
+-- Active: 1757775061752@@127.0.0.1@3306@Clinic_nexus
 DROP DATABASE IF EXISTS `Clinic_nexus`;
 CREATE DATABASE Clinic_nexus;
 USE Clinic_nexus;
@@ -67,6 +68,7 @@ CREATE TABLE `Consulta` (
   `id_medico` int(11) DEFAULT NULL,
   `especialidade` varchar(100) DEFAULT NULL,
   `data` timestamp NOT NULL,
+  `motivo_consulta` VARCHAR(500) DEFAULT NULL,
   `status` varchar(20) DEFAULT 'agendada',
   `prontuario_path` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -75,3 +77,8 @@ CREATE TABLE `Consulta` (
   CONSTRAINT `Consulta_ibfk_1` FOREIGN KEY (`id_paciente`) REFERENCES `Paciente` (`id`) ON DELETE SET NULL,
   CONSTRAINT `Consulta_ibfk_2` FOREIGN KEY (`id_medico`) REFERENCES `Medico` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+-- Seed administrador
+INSERT INTO Clinic_nexus.Usuario (nome, email, senha, tipo)
+VALUES 
+('Admin', 'admin@gmail.com', '123456', 'administrador');
