@@ -145,22 +145,3 @@ body, html {
     font-size: 1rem;
     transition: background-color 0.3s ease;
 }
-
-.login-links {
-    margin-top: 20px;
-    text-align: center;
-}
-
-.login-links a {
-    color: #1A3B6C;
-    font-size: 0.9rem;
-    margin: 0 8px;
-}
-
-.register-btn {
-    border: none;
-    color: #14305A;
-    cursor: pointer;
-    font-size: inherit;
-    outline: none;
-}

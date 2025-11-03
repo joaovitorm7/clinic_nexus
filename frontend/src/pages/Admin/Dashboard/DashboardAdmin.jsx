@@ -17,7 +17,7 @@ export default function Dashboard() {
             <div className="card-icon" aria-hidden="true"><FaUserAlt size={90} /></div>
             <h3>Médicos</h3>
             <p>Gerencie os médicos cadastrados na clínica.</p>
-            <Link to="/medicos" className="card-btn card-link">Ver médicos</Link>
+            <Link to="/admin/medicos" className="card-btn card-link">Ver médicos</Link>
           </div>
 
           <div className="card">

@@ -106,23 +106,7 @@ if (user) {
             </button>
           </form>
           {mensagem && <p className="mensagem">{mensagem}</p>}
-          <div className="login-links">
-            <button
-              type="button"
-              className="register-btn"
-              onClick={() => navigate("/register")}
-            >
-              Registrar-se
-            </button>
-            {" | "}
-            <button
-              type="button"
-              className="register-btn"
-              onClick={() => navigate("#")}
-            >
-              Recuperar senha
-            </button>
-          </div>
+          
         </div>
       </div>
     </div>

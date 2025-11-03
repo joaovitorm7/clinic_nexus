@@ -7,6 +7,7 @@ import AgendarConsulta from './pages/recepcao/AgendarConsulta/AgendarConsulta';
 import Login from "./pages/Login/Login";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import Register from "./pages/Register/Register";
+import DashboardMed from "./pages/Admin/Medicos/DashboardMed";
 
 function App() {
 
@@ -27,6 +28,7 @@ function App() {
         <Route path="/administracao" element={<Dashboard />} />
         <Route path="/funcionarios" element={<Funcionarios />} />   
         <Route path="/admin/funcionarios/addFunc" element={<AddFunc />} />
+        <Route path="/admin/medicos" element={<DashboardMed />} />
       </Route>
 
       <Route element={<ProtectedRoute allowedRoles={['recepcao']}/>}>

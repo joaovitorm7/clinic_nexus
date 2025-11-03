@@ -1,0 +1,22 @@
+.card {
+background-color: #b3e5ef;
+padding: 20px;
+border-radius: 10px;
+width: 250px;
+box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+text-align: center;
+}
+
+.name {
+font-size: 1.3rem;
+font-weight: 700;
+color: #1a3b6c;
+margin-bottom: 10px;
+}
+
+.crm,
+.specialty {
+font-size: 1rem;
+color: #212529;
+margin: 5px 0;
+}
