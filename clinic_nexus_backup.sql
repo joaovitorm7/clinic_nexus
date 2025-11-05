@@ -13,7 +13,9 @@ CREATE TABLE `Usuario` (
   `tipo` varchar(20) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) 
+
+DESCRIBE Paciente;
 
 DROP TABLE IF EXISTS `Paciente`;
 CREATE TABLE `Paciente` (
@@ -24,8 +26,7 @@ CREATE TABLE `Paciente` (
   `contato` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `cpf` (`cpf`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
-
+) 
 DROP TABLE IF EXISTS `Funcionario`;
 CREATE TABLE `Funcionario` (
   `id` int(11) NOT NULL,
@@ -36,14 +37,13 @@ CREATE TABLE `Funcionario` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `cpf` (`cpf`),
   CONSTRAINT `Funcionario_ibfk_1` FOREIGN KEY (`id`) REFERENCES `Usuario` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
-
+) 
 DROP TABLE IF EXISTS `Administrador`;
 CREATE TABLE `Administrador` (
   `id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `Administrador_ibfk_1` FOREIGN KEY (`id`) REFERENCES `Usuario` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+) 
 
 DROP TABLE IF EXISTS `Medico`;
 CREATE TABLE `Medico` (
@@ -82,3 +82,7 @@ CREATE TABLE `Consulta` (
 INSERT INTO Clinic_nexus.Usuario (nome, email, senha, tipo)
 VALUES 
 ('Admin', 'admin@gmail.com', '123456', 'administrador');
+
+INSERT INTO Clinic_nexus.Usuario (nome, email, senha, tipo)
+VALUES 
+('Admin', 'recep@gmail.com', '123456', 'recepcionista');

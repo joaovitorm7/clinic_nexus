@@ -4,7 +4,7 @@ import styles from './DashboardFunc.module.css';
 import EmployeeCard from '../../../components/EmployeeCard/EmployeeCard';
 import FloatingButton from '../../../components/FloatingButton/FloatingButton';
 import EmployeeModal from '../../../components/EmployeeModal/EmployeeModal';
-import { getEmployees, getRoles } from '../../../services/employees.services';
+import { employeeService } from '../../../services/employees.services';
 import { FaPlus } from 'react-icons/fa';
 
 export default function DashboardFunc() {
@@ -27,26 +27,23 @@ export default function DashboardFunc() {
   const [modalEmployee, setModalEmployee] = useState(null);
   const [modalMode, setModalMode] = useState('view');
 
-  async function loadRoles() {
-    try {
-      const res = await getRoles();
-      setRoles(res.data || []);
-    } catch (err) { console.error(err); }
+async function loadRoles() {
+  try {
+    const res = await employeeService.getRoles();
+    setRoles(res.data || []);
+  } catch (err) {
+    console.error(err);
   }
+}
 
-  async function loadEmployees() {
+ async function loadEmployees() {
     setLoading(true);
     try {
-      const params = {
-        sortBy,
-        order,
-        roleId: roleFilter || undefined,
-        q: search || undefined,
-      };
-      const res = await getEmployees(params);
-      setEmployees(res.data || []);
+      const data = await employeeService.getEmployees(); // já retorna array
+      setEmployees(data || []);
     } catch (err) {
       console.error(err);
+      setError('Erro ao carregar funcionários.');
     } finally {
       setLoading(false);
     }
@@ -146,7 +143,7 @@ export default function DashboardFunc() {
 
             
           <button
-          // Botãp de adicionar funcionário
+          // Botão de adicionar funcionário
               onClick={() => navigate('/admin/funcionarios/AddFunc')}
               className={styles.floatingButton}
               aria-label="Adicionar funcionário"

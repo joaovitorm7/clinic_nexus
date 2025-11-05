@@ -13,18 +13,7 @@ function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [lembrar, setLembrar] = useState(false);
   
-if (user) {
-  switch (user.tipo?.toLowerCase()) {
-    case "administrador":
-      return <Navigate to="/administracao" replace />;
-    case "medico":
-      return <Navigate to="/medico" replace />;
-    case "recepcionista":
-      return <Navigate to="/recepcionista" replace />;
-    default:
-      return <Navigate to="/" replace />;
-  }
-}
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,7 +37,7 @@ if (user) {
           navigate("/medico");
           break;
         case "recepcionista":
-          navigate("/recepcionista");
+          navigate("/recepcao");
           break;
         default:
           navigate("/");

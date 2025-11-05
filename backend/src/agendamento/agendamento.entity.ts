@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Paciente } from '../paciente/paciente.entity'; 
 
 @Entity('Consulta')
 export class Agendamento {
@@ -6,10 +7,11 @@ export class Agendamento {
     id: number;
 
     @Column({ type: 'int', nullable: true })
-    id_paciente: number;
-
-    @Column({ type: 'int', nullable: true })
     id_medico: number;
+
+    @ManyToOne(() => Paciente)
+    @JoinColumn({ name: 'id_paciente' })
+    paciente: Paciente;
 
     @Column({ type: 'varchar', length: 100, nullable: true })
     especialidade: string;

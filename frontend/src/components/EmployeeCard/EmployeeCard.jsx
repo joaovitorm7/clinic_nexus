@@ -10,14 +10,17 @@ export default function EmployeeCard({ employee, onView, onEdit, selectMode, sel
           {selected && <span className={styles.innerCircle}></span>}
         </div>
       )}
+
       <div className={styles.cardContent} onClick={() => !selectMode && onView(employee)}>
-        <h3>{employee.full_name}</h3>
-        <p>{employee.role}</p>
+        <h3>{employee.nome}</h3>
+        <p>{employee.tipo}</p>
       </div>
+
       {!selectMode && (
-        <button onClick={() => onEdit(employee)} className={styles.editBtn}>Editar</button>
+        <button onClick={() => onEdit(employee)} className={styles.editBtn}>
+          Editar
+        </button>
       )}
     </div>
   );
 }
-

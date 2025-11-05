@@ -1,12 +1,29 @@
-import api from './api'; // instância axios (baseURL = VITE_API_URL)
+import api from "./api";
 
-export const getEmployees = (params) => {
-  // params: { page, perPage, sortBy, order, roleId, q }
-  return api.get('/users', { params });
+const ENDPOINT = "/usuarios";
+
+const ROLES = [
+  { id: "recepcionista", name: "Recepcionista" },
+  { id: "medico", name: "Médico" },
+  { id: "administrador", name: "Administrador" },
+];
+
+export const employeeService = {
+  getRoles,
+  getEmployees,
+  createEmployee,
 };
 
-export const getEmployee = (id) => api.get(`/users/${id}`);
-export const createEmployee = (payload) => api.post('/users', payload);
-export const updateEmployee = (id, payload) => api.put(`/users/${id}`, payload);
-export const deleteEmployee = (id) => api.delete(`/users/${id}`);
-export const getRoles = () => api.get('/roles');
+async function getRoles() {
+  return ROLES;
+}
+
+async function getEmployees() {
+  const response = await api.get(ENDPOINT);
+  return response.data;
+}
+
+async function createEmployee(data) {
+  const response = await api.post(ENDPOINT, data);
+  return response.data;
+}

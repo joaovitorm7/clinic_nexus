@@ -1,0 +1,212 @@
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	modified:   ../.gitignore
+	deleted:    ../.prettierrc
+	modified:   ../backend/src/agendamento/agendamento.entity.ts
+	modified:   ../backend/src/agendamento/agendamento.service.ts
+	modified:   ../clinic_nexus_backup.sql
+	new file:   ../electron/main.js
+	deleted:    ../eslint.config.mjs
+	modified:   node_modules/.vite/deps/axios.js.map
+	deleted:    node_modules/.vite/deps/chunk-GUH6WOZT.js
+	deleted:    node_modules/.vite/deps/chunk-GUH6WOZT.js.map
+	deleted:    node_modules/.vite/deps/chunk-MED4DRGE.js
+	deleted:    node_modules/.vite/deps/chunk-MED4DRGE.js.map
+	modified:   node_modules/.vite/deps/react-dom.js
+	modified:   node_modules/.vite/deps/react-dom_client.js
+	modified:   node_modules/.vite/deps/react-dom_client.js.map
+	modified:   node_modules/.vite/deps/react-icons_fa.js
+	modified:   node_modules/.vite/deps/react-icons_fa.js.map
+	modified:   node_modules/.vite/deps/react-modal.js
+	modified:   node_modules/.vite/deps/react-modal.js.map
+	modified:   node_modules/.vite/deps/react-router-dom.js
+	modified:   node_modules/.vite/deps/react.js
+	modified:   node_modules/.vite/deps/react_jsx-dev-runtime.js
+	modified:   node_modules/.vite/deps/react_jsx-dev-runtime.js.map
+	modified:   node_modules/.vite/deps/react_jsx-runtime.js
+	modified:   node_modules/.vite/deps/react_jsx-runtime.js.map
+	modified:   src/App.jsx
+	modified:   src/pages/Login/Login.jsx
+	modified:   src/pages/Receptionist/AddPacient.jsx
+	modified:   src/pages/recepcao/AgendarConsulta/AgendarConsulta.jsx
+	modified:   src/pages/recepcao/DashboardRecepcao/DashboardRecepcao.css
+	modified:   src/pages/recepcao/DashboardRecepcao/DashboardRecepcao.jsx
+	new file:   src/pages/recepcao/Visualizar/Consulta.css
+	new file:   src/pages/recepcao/Visualizar/Consulta.jsx
+	new file:   src/services/agendamentoService.js
+	modified:   src/services/pacienteService.js
+	deleted:    ../nest-cli.json
+	modified:   ../package.json
+	deleted:    ../src/app.controller.spec.ts
+	deleted:    ../src/app.controller.ts
+	deleted:    ../src/app.module.ts
+	deleted:    ../src/app.service.ts
+	deleted:    ../src/main.ts
+	deleted:    ../ter
+	deleted:    ../test-db.js
+	deleted:    ../tsconfig.build.json
+
+Unmerged paths:
+  (use "git restore --staged <file>..." to unstage)
+  (use "git add/rm <file>..." as appropriate to mark resolution)
+	both modified:   ../backend/dist/tsconfig.build.tsbuildinfo
+	both modified:   node_modules/.vite/deps/_metadata.json
+	both modified:   ../package-lock.json
+	deleted by them: ../tsconfig.json
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   ../backend/node_modules/.bin/acorn
+	modified:   ../backend/node_modules/.bin/baseline-browser-mapping
+	modified:   ../backend/node_modules/.bin/browserslist
+	modified:   ../backend/node_modules/.bin/eslint
+	modified:   ../backend/node_modules/.bin/eslint-config-prettier
+	modified:   ../backend/node_modules/.bin/esparse
+	modified:   ../backend/node_modules/.bin/esvalidate
+	modified:   ../backend/node_modules/.bin/glob
+	modified:   ../backend/node_modules/.bin/handlebars
+	modified:   ../backend/node_modules/.bin/import-local-fixture
+	modified:   ../backend/node_modules/.bin/jest
+	modified:   ../backend/node_modules/.bin/js-yaml
+	modified:   ../backend/node_modules/.bin/jsesc
+	modified:   ../backend/node_modules/.bin/json5
+	modified:   ../backend/node_modules/.bin/mime
+	modified:   ../backend/node_modules/.bin/mkdirp
+	modified:   ../backend/node_modules/.bin/napi-postinstall
+	modified:   ../backend/node_modules/.bin/nest
+	modified:   ../backend/node_modules/.bin/node-which
+	modified:   ../backend/node_modules/.bin/opencollective
+	modified:   ../backend/node_modules/.bin/parser
+	modified:   ../backend/node_modules/.bin/prettier
+	modified:   ../backend/node_modules/.bin/schematics
+	modified:   ../backend/node_modules/.bin/semver
+	modified:   ../backend/node_modules/.bin/sha.js
+	modified:   ../backend/node_modules/.bin/terser
+	modified:   ../backend/node_modules/.bin/tree-kill
+	modified:   ../backend/node_modules/.bin/ts-jest
+	modified:   ../backend/node_modules/.bin/ts-node
+	modified:   ../backend/node_modules/.bin/ts-node-cwd
+	modified:   ../backend/node_modules/.bin/ts-node-esm
+	modified:   ../backend/node_modules/.bin/ts-node-script
+	modified:   ../backend/node_modules/.bin/ts-node-transpile-only
+	modified:   ../backend/node_modules/.bin/ts-script
+	modified:   ../backend/node_modules/.bin/tsc
+	modified:   ../backend/node_modules/.bin/tsserver
+	modified:   ../backend/node_modules/.bin/typeorm
+	modified:   ../backend/node_modules/.bin/typeorm-ts-node-commonjs
+	modified:   ../backend/node_modules/.bin/typeorm-ts-node-esm
+	modified:   ../backend/node_modules/.bin/uglifyjs
+	modified:   ../backend/node_modules/.bin/update-browserslist-db
+	modified:   ../backend/node_modules/.bin/uuid
+	modified:   ../backend/node_modules/.bin/webpack
+	modified:   ../backend/node_modules/.package-lock.json
+	modified:   ../backend/node_modules/@babel/core/node_modules/.bin/semver
+	modified:   ../backend/node_modules/@babel/helper-compilation-targets/node_modules/.bin/semver
+	modified:   ../backend/node_modules/@istanbuljs/load-nyc-config/node_modules/.bin/js-yaml
+	modified:   ../backend/node_modules/@jest/reporters/node_modules/.bin/glob
+	modified:   ../backend/node_modules/@nestjs/cli/actions/start.action.js
+	modified:   ../backend/node_modules/@nestjs/cli/node_modules/.bin/tsc
+	modified:   ../backend/node_modules/@nestjs/cli/node_modules/.bin/tsserver
+	modified:   ../backend/node_modules/@nestjs/cli/node_modules/.bin/webpack
+	modified:   ../backend/node_modules/@nestjs/cli/node_modules/webpack/lib/WebpackOptionsApply.js
+	modified:   ../backend/node_modules/@nestjs/cli/node_modules/webpack/lib/index.js
+	modified:   ../backend/node_modules/@nestjs/cli/node_modules/webpack/lib/webpack.js
+	modified:   ../backend/node_modules/jest-config/node_modules/.bin/glob
+	modified:   ../backend/node_modules/jest-runtime/node_modules/.bin/glob
+	modified:   ../backend/node_modules/jest/bin/jest.js
+	modified:   ../backend/node_modules/typeorm/node_modules/.bin/glob
+	modified:   ../backend/node_modules/webpack/lib/WebpackOptionsApply.js
+	modified:   ../backend/node_modules/webpack/lib/index.js
+	modified:   ../backend/node_modules/webpack/lib/webpack.js
+	modified:   ../backend/package-lock.json
+	deleted:    node_modules/.bin/acorn.cmd
+	deleted:    node_modules/.bin/acorn.ps1
+	deleted:    node_modules/.bin/baseline-browser-mapping.cmd
+	deleted:    node_modules/.bin/baseline-browser-mapping.ps1
+	deleted:    node_modules/.bin/browserslist.cmd
+	deleted:    node_modules/.bin/browserslist.ps1
+	deleted:    node_modules/.bin/conc.cmd
+	deleted:    node_modules/.bin/conc.ps1
+	deleted:    node_modules/.bin/concurrently.cmd
+	deleted:    node_modules/.bin/concurrently.ps1
+	deleted:    node_modules/.bin/cross-env-shell.cmd
+	deleted:    node_modules/.bin/cross-env-shell.ps1
+	deleted:    node_modules/.bin/cross-env.cmd
+	deleted:    node_modules/.bin/cross-env.ps1
+	deleted:    node_modules/.bin/electron.cmd
+	deleted:    node_modules/.bin/electron.ps1
+	deleted:    node_modules/.bin/esbuild.cmd
+	deleted:    node_modules/.bin/esbuild.ps1
+	deleted:    node_modules/.bin/eslint.cmd
+	deleted:    node_modules/.bin/eslint.ps1
+	deleted:    node_modules/.bin/extract-zip.cmd
+	deleted:    node_modules/.bin/extract-zip.ps1
+	deleted:    node_modules/.bin/js-yaml.cmd
+	deleted:    node_modules/.bin/js-yaml.ps1
+	deleted:    node_modules/.bin/jsesc.cmd
+	deleted:    node_modules/.bin/jsesc.ps1
+	deleted:    node_modules/.bin/json5.cmd
+	deleted:    node_modules/.bin/json5.ps1
+	deleted:    node_modules/.bin/loose-envify.cmd
+	deleted:    node_modules/.bin/loose-envify.ps1
+	deleted:    node_modules/.bin/nanoid.cmd
+	deleted:    node_modules/.bin/nanoid.ps1
+	deleted:    node_modules/.bin/node-which.cmd
+	deleted:    node_modules/.bin/node-which.ps1
+	deleted:    node_modules/.bin/parser.cmd
+	deleted:    node_modules/.bin/parser.ps1
+	deleted:    node_modules/.bin/rollup.cmd
+	deleted:    node_modules/.bin/rollup.ps1
+	deleted:    node_modules/.bin/semver.cmd
+	deleted:    node_modules/.bin/semver.ps1
+	deleted:    node_modules/.bin/tree-kill.cmd
+	deleted:    node_modules/.bin/tree-kill.ps1
+	deleted:    node_modules/.bin/update-browserslist-db.cmd
+	deleted:    node_modules/.bin/update-browserslist-db.ps1
+	deleted:    node_modules/.bin/vite.cmd
+	deleted:    node_modules/.bin/vite.ps1
+	modified:   node_modules/.package-lock.json
+	deleted:    node_modules/.vite/deps/axios.js
+	deleted:    node_modules/.vite/deps/axios.js.map
+	deleted:    node_modules/.vite/deps/chunk-V4OQ3NZ2.js
+	deleted:    node_modules/.vite/deps/chunk-V4OQ3NZ2.js.map
+	deleted:    node_modules/.vite/deps/package.json
+	deleted:    node_modules/.vite/deps/react-dom.js
+	deleted:    node_modules/.vite/deps/react-dom.js.map
+	deleted:    node_modules/.vite/deps/react-dom_client.js
+	deleted:    node_modules/.vite/deps/react-dom_client.js.map
+	deleted:    node_modules/.vite/deps/react-icons_fa.js
+	deleted:    node_modules/.vite/deps/react-icons_fa.js.map
+	deleted:    node_modules/.vite/deps/react-modal.js
+	deleted:    node_modules/.vite/deps/react-modal.js.map
+	deleted:    node_modules/.vite/deps/react-router-dom.js
+	deleted:    node_modules/.vite/deps/react-router-dom.js.map
+	deleted:    node_modules/.vite/deps/react.js
+	deleted:    node_modules/.vite/deps/react.js.map
+	deleted:    node_modules/.vite/deps/react_jsx-dev-runtime.js
+	deleted:    node_modules/.vite/deps/react_jsx-dev-runtime.js.map
+	deleted:    node_modules/.vite/deps/react_jsx-runtime.js
+	deleted:    node_modules/.vite/deps/react_jsx-runtime.js.map
+	deleted:    node_modules/@esbuild/win32-x64/README.md
+	deleted:    node_modules/@esbuild/win32-x64/esbuild.exe
+	deleted:    node_modules/@esbuild/win32-x64/package.json
+	deleted:    node_modules/@rollup/rollup-win32-x64-gnu/README.md
+	deleted:    node_modules/@rollup/rollup-win32-x64-gnu/package.json
+	deleted:    node_modules/@rollup/rollup-win32-x64-gnu/rollup.win32-x64-gnu.node
+	deleted:    node_modules/@rollup/rollup-win32-x64-msvc/README.md
+	deleted:    node_modules/@rollup/rollup-win32-x64-msvc/package.json
+	deleted:    node_modules/@rollup/rollup-win32-x64-msvc/rollup.win32-x64-msvc.node
+	deleted:    node_modules/global-agent/node_modules/.bin/semver.cmd
+	deleted:    node_modules/global-agent/node_modules/.bin/semver.ps1
+	modified:   node_modules/vite/bin/vite.js
+	modified:   src/App.jsx
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	../erro.txt
+	erro.txt
+

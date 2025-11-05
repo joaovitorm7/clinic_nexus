@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { AgendamentoService } from './agendamento.service';
 import { CreateAgendamentoDto } from './create-agendamento.dto';
 
@@ -7,8 +7,8 @@ export class AgendamentoController {
   constructor(private readonly agendamentoService: AgendamentoService) {}
 
   @Post()
-  create(@Body() createAgendamentoDto: CreateAgendamentoDto) {
-    return this.agendamentoService.create(createAgendamentoDto);
+  create(@Body() dto: CreateAgendamentoDto) {
+    return this.agendamentoService.create(dto);
   }
 
   @Get()
@@ -17,12 +17,12 @@ export class AgendamentoController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number) {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.agendamentoService.findOne(id);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number) {
+  remove(@Param('id', ParseIntPipe) id: number) {
     return this.agendamentoService.remove(id);
   }
 }

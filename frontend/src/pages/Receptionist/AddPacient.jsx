@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import api from "../../services/api"; 
+import { criarPaciente } from "../../services/pacienteService";
+
 
 const AddPacient = () => {
   const [nome, setNome] = useState("");
