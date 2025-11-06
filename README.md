@@ -25,19 +25,23 @@ import { funcaoDaAPI } from "../../services/nomeDoArquivo";
 
 ------------------------------------------------------------------------
 
-## 3. Rodando o Servidor Backend
+## 3. Rodando o no navegador
 
-Na pasta raiz do projeto **clinic_nexus**, abra um terminal e execute o
-servidor NestJS:
+Na pasta raiz do projeto **clinic_nexus**, abra um terminal e execute:
 
 ``` bash
-cd backend
-npm run start:dev
+npm run dev
 ```
 
 ------------------------------------------------------------------------
 
-## 4. Possíveis Erros no Backend
+### 4. Rodando no eletron
+Na pasta raiz do projeto **clinic_nexus**, abra um terminal e execute:
+``` bash
+npm run dev:electron
+```
+
+## 5. Possíveis Erros no Backend
 
 Se o servidor apresentar erros, verifique:
 
@@ -61,17 +65,6 @@ Instale as dependências:
 ``` bash
 cd backend
 npm install
-```
-
-------------------------------------------------------------------------
-
-## 5. Rodando o Servidor Frontend
-
-Abra outro terminal na pasta raiz do projeto e execute o servidor React:
-
-``` bash
-cd frontend
-npm run dev
 ```
 
 ------------------------------------------------------------------------
