@@ -19,4 +19,8 @@ export class PacienteService {
   async findAll(): Promise<Paciente[]> {
     return this.pacienteRepository.find();
   }
+
+  async findByCpf(cpf: string): Promise<Paciente[]> {
+    return this.pacienteRepository.find({ where: { cpf } });
+  }
 }

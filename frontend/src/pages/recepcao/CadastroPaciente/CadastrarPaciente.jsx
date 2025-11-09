@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { cadastrarPaciente } from '../../services/pacienteService';
-import 'CadastrarPaciente.css';
+import { criarPaciente } from '../../../services/pacienteService';
+import './CadastrarPaciente.css';
 
 export default function CadastrarPaciente() {
   const [form, setForm] = useState({
@@ -17,7 +17,7 @@ export default function CadastrarPaciente() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await cadastrarPaciente(form);
+      await criarPaciente(form);
       alert('Paciente cadastrado com sucesso!');
       setForm({ nome: '', cpf: '', dataNascimento: '', contato: '' });
     } catch (err) {
