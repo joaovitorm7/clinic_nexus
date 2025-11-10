@@ -33,8 +33,7 @@ const AgendarConsulta = () => {
   const [doctors, setDoctors] = useState([]);
   const [loadingSpecialties, setLoadingSpecialties] = useState(false);
   const [loadingDoctors, setLoadingDoctors] = useState(false);
-  // novos estados para buscar por CPF e debounce
-  const [cpfStatus, setCpfStatus] = useState('idle'); // 'idle' | 'loading' | 'found' | 'not_found'
+  const [cpfStatus, setCpfStatus] = useState('idle'); 
   const [loadingPatient, setLoadingPatient] = useState(false);
   const cpfDebounceRef = useRef(null);
 
@@ -49,7 +48,6 @@ const AgendarConsulta = () => {
     observations: '',
   });
 
-  // --- Funções para paciente ---
   const handlePatientTypeChange = (e) => {
     const type = e.target.value;
     setPatientType(type);
@@ -62,14 +60,14 @@ const handleCPFSearch = async (cpf) => {
   try {
     const response = await getPatientByCPF(cpf);
     if (response?.data && response.data.length > 0) {
-      const paciente = response.data[0]; // pegando o primeiro paciente
+      const paciente = response.data[0]; 
       setFormData({
         id: paciente.id,
         fullName: paciente.nome,
         birthDate: paciente.dataNascimento,
         cpf: paciente.cpf,
         phone: paciente.contato,
-        email: paciente.contato, // se quiser separar email
+        email: paciente.contato, 
       });
     }
   } catch (error) {
@@ -84,7 +82,6 @@ const handleCPFSearch = async (cpf) => {
     setCpfStatus('loading');
     try {
       const response = await getPatientByCPF(rawCpf);
-      // seu endpoint aparentemente retorna array, verifique aqui:
       if (response?.data && response.data.length > 0) {
         const paciente = response.data[0];
         setFormData({
@@ -151,13 +148,120 @@ const handleCPFSearch = async (cpf) => {
     };
     const closeCreateModal = () => setShowCreateModal(false);
 
-    const handleNewPatientChange = (e) => {
-      const { name, value } = e.target;
-      setNewPatientForm((prev) => ({ ...prev, [name]: value }));
+  const normalizeOnlyDigits = (s) => (s || '').replace(/\D/g, '');
+  const normalizePhone = (s) => (s || '').replace(/[^\d+]/g, '');
+
+  const isValidCPF = (cpf) => {
+    const raw = normalizeOnlyDigits(cpf);
+    return raw.length === 11;
+  };
+
+  const isValidPhone = (phone) => {
+    if (!phone) return false;
+    const p = normalizePhone(phone);
+    const regex = /^\+?\d{7,15}$/;
+    return regex.test(p);
+  };
+
+  const isValidEmail = (email) => {
+    if (!email) return false;
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(String(email).toLowerCase());
+  };
+
+  const isValidDateString = (s) => {
+    if (!s) return false;
+    const d = new Date(s);
+    if (Number.isNaN(d.getTime())) return false;
+    const today = new Date();
+    return d <= today;
+  };
+
+  const isValidFullName = (name) => !!name && name.trim().length >= 3;
+
+  const handleNewPatientChange = (e) => {
+    const { name, value: rawValue } = e.target;
+    let value = rawValue;
+
+    // normalizações por campo
+    if (name === 'cpf') {
+      // aceita apenas dígitos e limita 11
+      value = normalizeOnlyDigits(value).slice(0, 11);
+    }
+    if (name === 'phone') {
+      // permite + e dígitos, limitação total (excluindo +) até 15 dígitos
+      value = value.replace(/[^\d+]/g, '');
+      // opcional: limite de caracteres gerais
+      if (value.startsWith('+')) {
+        value = '+' + value.slice(1).slice(0, 15);
+      } else {
+        value = value.slice(0, 15);
+      }
+    }
+    if (name === 'email') {
+      value = value.trim();
+    }
+    if (name === 'fullName') {
+      value = value; // você pode aplicar .replace(/\s+/g,' ') se quiser normalizar espaços
+    }
+
+    setNewPatientForm(prev => ({ ...prev, [name]: value }));
+
+    // validação imediata (feedback rápido)
+    setNewPatientErrors(prev => {
+      const next = { ...prev };
+      switch (name) {
+        case 'cpf':
+          next.cpf = value ? (isValidCPF(value) ? '' : 'CPF deve ter 11 dígitos numéricos') : 'CPF obrigatório';
+          break;
+        case 'phone':
+          next.phone = value ? (isValidPhone(value) ? '' : 'Telefone inválido (ex: +5511999999999 ou 11999999999)') : '';
+          break;
+        case 'email':
+          next.email = value ? (isValidEmail(value) ? '' : 'E-mail inválido') : '';
+          break;
+        case 'birthDate':
+          next.birthDate = value ? (isValidDateString(value) ? '' : 'Data inválida') : 'Data de nascimento obrigatória';
+          break;
+        case 'fullName':
+          next.fullName = value ? (isValidFullName(value) ? '' : 'Nome muito curto') : 'Nome obrigatório';
+          break;
+        default:
+          next[name] = '';
+      }
+      return next;
+    });
+  };
+
+  const validateNewPatientForm = () => {
+    const errors = {
+      fullName: '',
+      cpf: '',
+      birthDate: '',
+      address: '',
+      phone: '',
+      email: ''
     };
 
+    if (!isValidFullName(newPatientForm.fullName)) errors.fullName = 'Nome obrigatório (min 3 caracteres)';
+    if (!isValidCPF(newPatientForm.cpf)) errors.cpf = 'CPF deve conter 11 dígitos';
+    if (!isValidDateString(newPatientForm.birthDate)) errors.birthDate = 'Data de nascimento inválida';
+    // contato obrigatório: phone ou email (já usamos isso antes), então validamos ao menos um:
+    const contato = newPatientForm.phone || newPatientForm.email || '';
+    if (!contato) {
+      errors.phone = 'Telefone ou e-mail é obrigatório';
+      errors.email = 'Telefone ou e-mail é obrigatório';
+    } else {
+      if (newPatientForm.phone && !isValidPhone(newPatientForm.phone)) errors.phone = 'Telefone inválido';
+      if (newPatientForm.email && !isValidEmail(newPatientForm.email)) errors.email = 'E-mail inválido';
+    }
+
+    setNewPatientErrors(errors);
+    // retorna verdadeiro se não houver mensagens
+    return Object.values(errors).every(v => !v);
+  };
+
     const handleCreatePatientSave = async () => {
-      // validações básicas
       if (!newPatientForm.fullName || !newPatientForm.cpf) {
         alert('Preencha nome e CPF para cadastrar o paciente.');
         return;
@@ -176,8 +280,8 @@ const handleCPFSearch = async (cpf) => {
         const contato = newPatientForm.phone || newPatientForm.email || '';
         const payload = {
           nome: newPatientForm.fullName,
-          cpf: newPatientForm.cpf.replace(/\D/g, ''), // opcional: normaliza CPF
-          dataNascimento: newPatientForm.birthDate,   // YYYY-MM-DD vindo do <input type="date">
+          cpf: newPatientForm.cpf.replace(/\D/g, ''), 
+          dataNascimento: newPatientForm.birthDate,  
           contato: contato
         };
 
@@ -317,7 +421,7 @@ const handleSubmit = async (e) => {
                       onChange={handleCPFInput}
                       placeholder="Digite o CPF (somente números)"
                     />
-
+                    
                     {loadingPatient && <span style={{ marginLeft: 8 }}>Buscando...</span>}
 
                     {cpfStatus === 'not_found' && (
