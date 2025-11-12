@@ -4,6 +4,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { Navigate } from "react-router-dom";
+import { validarCPF, formatarCPF } from "../../utils/cpfValidator";
 
 const API_BASE_URL = "http://localhost:3000";
 
@@ -32,6 +33,12 @@ function Register() {
         try {
             if (!nome || !cpf || !crm || !telefone || !dataNascimento || !cargo) {
             setMensagem("Por favor, preencha todos os campos.");
+            setIsLoading(false);
+            return;
+            }
+
+            if (!validarCPF(cpf)) {
+            setMensagem("CPF inválido. Verifique o número digitado.");
             setIsLoading(false);
             return;
             }
@@ -82,8 +89,9 @@ return (
                 type="text"
                 id="cpf"
                 value={cpf}
-                onChange={(e) => setCpf(e.target.value)}
+                onChange={(e) => setCpf(formatarCPF(e.target.value))}
                 placeholder="000.000.000-00"
+                maxLength="14"
             />
             </div>
 

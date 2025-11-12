@@ -77,3 +77,6 @@ report.*.json
 # =====================================================
 frontend/.gitignore
 backend/.gitignore
+package.json
+package-lock.json
+.gitignore
