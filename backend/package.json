@@ -8,7 +8,7 @@
 "scripts": {
   "db:create": "ts-node src/data-sources/create-database.ts",
   "db:sync": "npx typeorm-ts-node-commonjs schema:sync -d ./src/data-source.ts",
-  "migration:generate": "npx typeorm-ts-node-commonjs migration:generate",
+  "migration:generate": "npx typeorm-ts-node-commonjs migration:generate -d src/data-source.ts",
   "migration:run": "npx typeorm-ts-node-commonjs migration:run -d ./src/data-source.ts",
   "migration:revert": "npx typeorm-ts-node-commonjs migration:revert -d ./src/data-source.ts",
     "build": "nest build",
