@@ -22,5 +22,5 @@
     "rootDir": "src",
     "types": ["node", "jest"]
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "src/data-sources/create-database.ts", "src/data-source.ts"]
 }

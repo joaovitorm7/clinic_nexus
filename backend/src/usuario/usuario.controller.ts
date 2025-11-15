@@ -1,6 +1,6 @@
 import { Post, Body} from '@nestjs/common';
 import { UsuarioService } from './usuario.service';
-import { Usuario } from './usuario.entity';
+import { Usuario } from './entities/usuario.entity';
 import { Controller, Get, Param, NotFoundException } from '@nestjs/common';
 
 

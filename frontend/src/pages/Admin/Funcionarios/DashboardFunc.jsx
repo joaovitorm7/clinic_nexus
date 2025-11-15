@@ -2,19 +2,21 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './DashboardFunc.module.css';
 import EmployeeCard from '../../../components/EmployeeCard/EmployeeCard';
-import FloatingButton from '../../../components/FloatingButton/FloatingButton';
 import EmployeeModal from '../../../components/EmployeeModal/EmployeeModal';
 import { employeeService } from '../../../services/employees.services';
 import { FaPlus } from 'react-icons/fa';
 
 export default function DashboardFunc() {
   const navigate = useNavigate();
+
+  // estados principais
   const [employees, setEmployees] = useState([]);
   const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // controls
-  const [sortBy, setSortBy] = useState('full_name'); // ou 'created_at'
+  // controles
+  const [sortBy, setSortBy] = useState('full_name'); 
   const [order, setOrder] = useState('asc');
   const [roleFilter, setRoleFilter] = useState('');
   const [search, setSearch] = useState('');
@@ -27,176 +29,183 @@ export default function DashboardFunc() {
   const [modalEmployee, setModalEmployee] = useState(null);
   const [modalMode, setModalMode] = useState('view');
 
-async function loadRoles() {
-  try {
-    const res = await employeeService.getRoles();
-    setRoles(res.data || []);
-  } catch (err) {
-    console.error(err);
-  }
-}
-
- async function loadEmployees() {
-    setLoading(true);
+  // --- Funções de carregamento ---
+  async function loadRoles() {
     try {
-      const data = await employeeService.getEmployees(); // já retorna array
-      setEmployees(data || []);
+      const res = employeeService.getRoles(); // já retorna array
+      setRoles(Array.isArray(res) ? res : []);
     } catch (err) {
-      console.error(err);
+      console.error('Erro ao carregar cargos:', err);
+    }
+  }
+
+  async function loadEmployees() {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await employeeService.getEmployees();
+      setEmployees(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('Erro ao carregar funcionários:', err);
       setError('Erro ao carregar funcionários.');
+      setEmployees([]);
     } finally {
       setLoading(false);
     }
   }
 
-  useEffect(() => { loadRoles(); }, []);
-  useEffect(() => { loadEmployees(); }, [sortBy, order, roleFilter, search]);
+  useEffect(() => {
+    loadRoles();
+  }, []);
+
+  useEffect(() => {
+    loadEmployees();
+  }, [sortBy, order, roleFilter, search]);
 
   function handleView(emp) {
     setModalEmployee(emp);
     setModalMode('view');
     setModalOpen(true);
   }
+
   function handleEdit(emp) {
     setModalEmployee(emp);
     setModalMode('edit');
     setModalOpen(true);
   }
 
-    function toggleSelectMode() {
-        setSelectMode(!selectMode);
-        setSelectedEmployees([]); // limpa seleção quando entra/sai do modo
-    }
+  function toggleSelectMode() {
+    setSelectMode(prev => !prev);
+    setSelectedEmployees([]);
+  }
 
-    function handleSelectEmployee(empId) {
-        setSelectedEmployees(prev =>
-            prev.includes(empId)
-                ? prev.filter(id => id !== empId)
-                : [...prev, empId]
-        );
-    }
+  function handleSelectEmployee(empId) {
+    setSelectedEmployees(prev =>
+      prev.includes(empId)
+        ? prev.filter(id => id !== empId)
+        : [...prev, empId]
+    );
+  }
 
-    function handleDeactivateClick() {
-        if (selectedEmployees.length > 0) {
-            setConfirmOpen(true);
-        } else {
-            alert("Selecione ao menos um funcionário para desativar.");
-        }
+  function handleDeactivateClick() {
+    if (selectedEmployees.length > 0) {
+      setConfirmOpen(true);
+    } else {
+      alert('Selecione ao menos um funcionário para desativar.');
     }
+  }
 
-    function confirmDeactivation() {
-        // Local para a API de desativação
-        console.log("Funcionários desativados:", selectedEmployees);
-        setConfirmOpen(false);
-        setSelectMode(false);
-        setSelectedEmployees([]);
-    }
+  function confirmDeactivation() {
+    console.log('Funcionários desativados:', selectedEmployees);
+    setConfirmOpen(false);
+    setSelectMode(false);
+    setSelectedEmployees([]);
+  }
 
+  // --- Render ---
   return (
     <div className={styles.page}>
-          <div className={styles.controls}>
-              <div className={styles.left}>
-                  <button onClick={() => navigate(-1)} className={styles.back} aria-label="Voltar">←</button>
-              </div>
+      <div className={styles.controls}>
+        <div className={styles.left}>
+          <button onClick={() => navigate(-1)} className={styles.back} aria-label="Voltar">←</button>
+        </div>
 
-              <div className={styles.center}>
-                  <h2>Funcionários</h2>
-              </div>
+        <div className={styles.center}>
+          <h2>Funcionários</h2>
+        </div>
 
-              <div className={styles.right}>
-                  <div className={styles.filters}>
-                      <select value={roleFilter} onChange={e => setRoleFilter(e.target.value)}>
-                          <option value="">Todos cargos</option>
-                          {roles.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
-                      </select>
+        <div className={styles.right}>
+          <div className={styles.filters}>
+            <select value={roleFilter} onChange={e => setRoleFilter(e.target.value)}>
+              <option value="">Todos cargos</option>
+              {roles.map(r => (
+                <option key={r.id || r} value={r.id || r}>
+                  {r.name || r}
+                </option>
+              ))}
+            </select>
 
-                      <select value={sortBy} onChange={e => setSortBy(e.target.value)}>
-                          <option value="full_name">Nome</option>
-                          <option value="created_at">Data de criação</option>
-                      </select>
+            <select value={sortBy} onChange={e => setSortBy(e.target.value)}>
+              <option value="full_name">Nome</option>
+              <option value="created_at">Data de criação</option>
+            </select>
 
-                      <button onClick={() => setOrder(order === 'asc' ? 'desc' : 'asc')}>
-                          Ordem: {order === 'asc' ? 'A→Z' : 'Z→A'}
-                      </button>
+            <button onClick={() => setOrder(order === 'asc' ? 'desc' : 'asc')}>
+              Ordem: {order === 'asc' ? 'A→Z' : 'Z→A'}
+            </button>
 
-                      <input placeholder="Pesquisar..." value={search} onChange={e => setSearch(e.target.value)} />
-                  </div>
-              </div>
+            <input placeholder="Pesquisar..." value={search} onChange={e => setSearch(e.target.value)} />
           </div>
+        </div>
+      </div>
 
-          <div className={styles.grid}>
-              {loading ? <p>Carregando...</p> :
-                  employees.length === 0 ? <p>Nenhum funcionário encontrado.</p> :
-                      employees.map(emp => (
-                          <EmployeeCard
-                              key={emp.id}
-                              employee={emp}
-                              onView={handleView}
-                              onEdit={handleEdit}
-                              selectMode={selectMode}
-                              selected={selectedEmployees.includes(emp.id)}
-                              onSelect={() => handleSelectEmployee(emp.id)}
-                          />
-                      ))
-              }
-          </div>
+      <div className={styles.grid}>
+        {loading && <p>Carregando...</p>}
+        {!loading && error && <p>{error}</p>}
+        {!loading && !error && employees.length === 0 && <p>Nenhum funcionário encontrado.</p>}
+        {!loading && !error && employees.length > 0 && employees.map(emp => (
+          <EmployeeCard
+            key={emp.id}
+            employee={emp}
+            onView={() => handleView(emp)}
+            onEdit={() => handleEdit(emp)}
+            selectMode={selectMode}
+            selected={selectedEmployees.includes(emp.id)}
+            onSelect={() => handleSelectEmployee(emp.id)}
+          />
+        ))}
+      </div>
 
-            
+      <button
+        onClick={() => navigate('/admin/funcionarios/AddFunc')}
+        className={styles.floatingButton}
+        aria-label="Adicionar funcionário"
+      >
+        <FaPlus />
+      </button>
+
+      <div className={styles.bottomActions}>
+        {!selectMode ? (
           <button
-          // Botão de adicionar funcionário
-              onClick={() => navigate('/admin/funcionarios/AddFunc')}
-              className={styles.floatingButton}
-              aria-label="Adicionar funcionário"
+            className={styles.deactivateButton}
+            onClick={toggleSelectMode}
+            disabled={employees.length === 0}
           >
-              <FaPlus />
+            Desativar Funcionários
           </button>
+        ) : (
+          <>
+            <button className={styles.cancelButton} onClick={toggleSelectMode}>
+              Cancelar
+            </button>
+            <button
+              className={styles.confirmSelectButton}
+              onClick={handleDeactivateClick}
+              disabled={selectedEmployees.length === 0}
+            >
+              Confirmar Seleção ({selectedEmployees.length})
+            </button>
+          </>
+        )}
+      </div>
 
-          <div className={styles.bottomActions}>
-              {!selectMode ? (
-                  <button
-                      className={styles.deactivateButton}
-                      onClick={toggleSelectMode}
-                      disabled={employees.length === 0}
-                  >
-                      Desativar Funcionários
-                  </button>
-              ) : (
-                  <>
-                      <button
-                          className={styles.cancelButton}
-                          onClick={toggleSelectMode}
-                      >
-                          Cancelar
-                      </button>
-                      <button
-                          className={styles.confirmSelectButton}
-                          onClick={handleDeactivateClick}
-                          disabled={selectedEmployees.length === 0}
-                      >
-                          Confirmar Seleção ({selectedEmployees.length})
-                      </button>
-                  </>
-              )}
+      {confirmOpen && (
+        <div className={styles.confirmOverlay}>
+          <div className={styles.confirmBox}>
+            <p>Tem certeza que deseja desativar {selectedEmployees.length} funcionário(s)?</p>
+            <div className={styles.confirmButtons}>
+              <button onClick={confirmDeactivation} className={styles.confirmYes}>Sim</button>
+              <button onClick={() => setConfirmOpen(false)} className={styles.confirmNo}>Não</button>
+            </div>
           </div>
-
-          {confirmOpen && (
-              <div className={styles.confirmOverlay}>
-                  <div className={styles.confirmBox}>
-                      <p>Tem certeza que deseja desativar {selectedEmployees.length} funcionário(s)?</p>
-                      <div className={styles.confirmButtons}>
-                          <button onClick={confirmDeactivation} className={styles.confirmYes}>Sim</button>
-                          <button onClick={() => setConfirmOpen(false)} className={styles.confirmNo}>Não</button>
-                      </div>
-                  </div>
-              </div>
-          )}
+        </div>
+      )}
 
       <EmployeeModal
         isOpen={modalOpen}
         onRequestClose={() => setModalOpen(false)}
         mode={modalMode}
         employee={modalEmployee}
-        // onSave={...}
       />
     </div>
   );

@@ -23,12 +23,28 @@ let PacienteService = class PacienteService {
     }
     async create(createPacienteDto) {
         const paciente = this.pacienteRepository.create(createPacienteDto);
-        return this.pacienteRepository.save(paciente);
+        try {
+            return await this.pacienteRepository.save(paciente);
+        }
+        catch (error) {
+            if (error.code === 'ECONNREFUSED' ||
+                error.code === 'ETIMEDOUT' ||
+                error.code === 'ENOTFOUND' ||
+                error.code === '57P01' ||
+                error.code === '08006') {
+                throw new common_1.ServiceUnavailableException('Serviço temporariamente indisponível. Tente novamente em instantes.');
+            }
+            if (error.code === '23505') {
+                throw new common_1.ConflictException('Paciente com este CPF já existe.');
+            }
+            console.error('Erro ao criar paciente:', error);
+            throw new common_1.InternalServerErrorException('Erro ao criar paciente.');
+        }
     }
-    async findAll() {
+    findAll() {
         return this.pacienteRepository.find();
     }
-    async findByCpf(cpf) {
+    findByCpf(cpf) {
         return this.pacienteRepository.find({ where: { cpf } });
     }
 };

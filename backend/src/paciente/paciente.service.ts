@@ -1,7 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  ConflictException,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Paciente } from './paciente.entity';
+import { Paciente } from './entities/paciente.entity';
 import { CreatePacienteDto } from './create-paciente.dto';
 
 @Injectable()
@@ -13,14 +18,37 @@ export class PacienteService {
 
   async create(createPacienteDto: CreatePacienteDto): Promise<Paciente> {
     const paciente = this.pacienteRepository.create(createPacienteDto);
-    return this.pacienteRepository.save(paciente);
-  }
 
-  async findAll(): Promise<Paciente[]> {
+    try {
+      return await this.pacienteRepository.save(paciente);
+    } catch (error) {
+
+      if (
+        error.code === 'ECONNREFUSED' ||
+        error.code === 'ETIMEDOUT' ||
+        error.code === 'ENOTFOUND' ||
+        error.code === '57P01' ||
+        error.code === '08006'
+      ) {
+        throw new ServiceUnavailableException(
+          'Serviço temporariamente indisponível. Tente novamente em instantes.',
+        );
+      }
+
+      if (error.code === '23505') {
+        throw new ConflictException('Paciente com este CPF já existe.');
+      }
+
+      console.error('Erro ao criar paciente:', error);
+      throw new InternalServerErrorException('Erro ao criar paciente.');
+    }
+  }
+  findAll(): Promise<Paciente[]> {
     return this.pacienteRepository.find();
   }
 
-  async findByCpf(cpf: string): Promise<Paciente[]> {
+  findByCpf(cpf: string): Promise<Paciente[]> {
     return this.pacienteRepository.find({ where: { cpf } });
   }
 }
+  

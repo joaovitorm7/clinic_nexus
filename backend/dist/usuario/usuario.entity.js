@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Usuario = void 0;
 const typeorm_1 = require("typeorm");
+const funcionario_entity_1 = require("../funcionarios/entities/funcionario.entity");
 let Usuario = class Usuario {
 };
 exports.Usuario = Usuario;
@@ -18,6 +19,11 @@ __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
 ], Usuario.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.OneToOne)(() => funcionario_entity_1.Funcionario),
+    (0, typeorm_1.JoinColumn)({ name: 'id_cargo' }),
+    __metadata("design:type", funcionario_entity_1.Funcionario)
+], Usuario.prototype, "funcionario", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
@@ -34,10 +40,6 @@ __decorate([
     (0, typeorm_1.Column)({ default: 'ativo' }),
     __metadata("design:type", String)
 ], Usuario.prototype, "status", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Usuario.prototype, "tipo", void 0);
 exports.Usuario = Usuario = __decorate([
     (0, typeorm_1.Entity)('Usuario')
 ], Usuario);

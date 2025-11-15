@@ -19,8 +19,19 @@ export default function AddEmployee() {
 
   // Carregar cargos fixos
 useEffect(() => {
-setRoles(['administrador', 'recepcionista', 'medico']);
+  const fetchRoles = async () => {
+    try {
+      const rolesData = employeeService.getRoles(); // retorna ['Recepcionista','Administrador','Médico']
+      setRoles(Array.isArray(rolesData) ? rolesData : []);
+    } catch (err) {
+      console.error('Erro ao carregar cargos:', err);
+      setRoles([]);
+    }
+  };
+
+  fetchRoles();
 }, []);
+
 
   function handleChange(e) {
     const { name, value } = e.target;

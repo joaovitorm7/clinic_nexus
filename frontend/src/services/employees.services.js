@@ -1,29 +1,36 @@
-import api from "./api";
+import api from './api';
 
-const ENDPOINT = "/usuarios";
-
-const ROLES = [
-  { id: "recepcionista", name: "Recepcionista" },
-  { id: "medico", name: "Médico" },
-  { id: "administrador", name: "Administrador" },
-];
+const ENDPOINT = '/funcionarios';
+const ROLES = ['Recepcionista', 'Administrador', 'Médico'];
 
 export const employeeService = {
-  getRoles,
   getEmployees,
+  getEmployeeById,
   createEmployee,
+  updateEmployee,
+  getRoles,
 };
-
-async function getRoles() {
-  return ROLES;
-}
 
 async function getEmployees() {
   const response = await api.get(ENDPOINT);
   return response.data;
 }
 
-async function createEmployee(data) {
-  const response = await api.post(ENDPOINT, data);
+async function getEmployeeById(id) {
+  const response = await api.get(`${ENDPOINT}/${id}`);
   return response.data;
+}
+
+async function createEmployee(employeeData) {
+  const response = await api.post(ENDPOINT, employeeData);
+  return response.data;
+}
+
+async function updateEmployee(id, employeeData) {
+  const response = await api.put(`${ENDPOINT}/${id}`, employeeData);
+  return response.data;
+}
+
+function getRoles() {
+  return ROLES;
 }
