@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Agendamento } from './agendamento.entity';
+import { Agendamento } from './entities/agendamento.entity';
 import { CreateAgendamentoDto } from './create-agendamento.dto';
 
 @Injectable()
