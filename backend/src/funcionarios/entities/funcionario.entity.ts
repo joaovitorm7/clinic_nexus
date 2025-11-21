@@ -9,7 +9,10 @@ export class Funcionario {
   @Column({ type: 'varchar', length: 100, nullable: false })
   nome: string;
 
-  @Column({ type: 'varchar', length: 100, nullable: false, unique: true })
+  @Column({ type: 'varchar', unique: true, length: 14, nullable: false })
+  cpf: string; // Novo campo
+
+  @Column({ type: 'varchar', length: 100, nullable: false })
   email: string;
 
   @Column({ type: 'varchar', length: 15, nullable: true, unique: true })
@@ -18,8 +21,10 @@ export class Funcionario {
   @Column({ type: 'varchar', length: 100, nullable: false })
   cargo: string;
 
-  // Relação 1:1 com Usuario
-  @OneToOne(() => Usuario, { cascade: true }) 
-  @JoinColumn({ name: 'id_usuario' })        
+  @Column({ type: 'date', nullable: true })
+  data_desativacao: Date | null;
+
+  @OneToOne(() => Usuario, { cascade: true })
+  @JoinColumn({ name: 'id_usuario' })
   usuario: Usuario;
 }
