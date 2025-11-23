@@ -12,13 +12,14 @@ export class FuncionariosController {
     telefone: string;
     cargo: string;
     senha: string;
+    id_cargo:number
   }) {
     return this.funcionarioService.createFuncionario(data);
   }
 
   @Get()
   async findAll() {
-    return `Retornar todos os funcionários`;
+    return this.funcionarioService.findAll();
   }
 
   @Get(':id')

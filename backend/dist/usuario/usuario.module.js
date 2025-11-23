@@ -9,7 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsuarioModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
-const usuario_entity_1 = require("./usuario.entity");
+const usuario_entity_1 = require("./entities/usuario.entity");
 const usuario_service_1 = require("./usuario.service");
 const usuario_controller_1 = require("./usuario.controller");
 let UsuarioModule = class UsuarioModule {

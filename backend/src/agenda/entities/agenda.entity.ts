@@ -1,5 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { Medico } from 'src/medico/entities/medico.entity'; 
+import { Medico } from '../../medico/entities/medico.entity'; 
 
 @Entity('agenda')
 export class Agenda {

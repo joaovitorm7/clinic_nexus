@@ -18,6 +18,7 @@ const paciente_module_1 = require("./paciente/paciente.module");
 const agendamento_module_1 = require("./agendamento/agendamento.module");
 const especialidade_module_1 = require("./medico/especialidade.module");
 const medico_module_1 = require("./medico/medico.module");
+const agenda_module_1 = require("./agenda/agenda.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -57,6 +58,7 @@ exports.AppModule = AppModule = __decorate([
             agendamento_module_1.AgendamentoModule,
             especialidade_module_1.EspecialidadeModule,
             medico_module_1.MedicoModule,
+            agenda_module_1.AgendaModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

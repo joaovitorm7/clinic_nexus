@@ -17,10 +17,16 @@ export class MedicoController {
     return this.medicoService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.medicoService.findOne(+id);
-  }
+
+@Get(':id')
+findOne(@Param('id') id: string) {
+  return this.medicoService.findOne(+id);
+}
+
+@Get('/especialidade/:especialidade_id')
+findByEspecialidade(@Param('especialidade_id') especialidadeId: string) {
+  return this.medicoService.findByEspecialidadeId(+especialidadeId);
+}
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateMedicoDto: UpdateMedicoDto) {

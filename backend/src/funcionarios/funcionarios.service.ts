@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Funcionario } from './entities/funcionario.entity';
-import { Usuario } from '../usuario/entities/usuario.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Medico } from '../medico/entities/medico.entity';
 
 @Injectable()
 export class FuncionarioService {
@@ -10,34 +10,51 @@ export class FuncionarioService {
     @InjectRepository(Funcionario)
     private readonly funcionarioRepo: Repository<Funcionario>,
 
-    @InjectRepository(Usuario)
-    private readonly usuarioRepo: Repository<Usuario>,
+    @InjectRepository(Medico)
+    private readonly medicoRepo: Repository<Medico>,
   ) {}
 
   async createFuncionario(data: {
-  nome: string;
-  email: string;
-  telefone: string;
-  cargo: string;
-  senha: string;
-}) {
-  const usuario = this.usuarioRepo.create({
-    nome: data.nome,
-    email: data.email,
-    senha: data.senha,
-    status: 'ativo',
-  });
-  await this.usuarioRepo.save(usuario);
+    nome: string;
+    telefone?: string;
+    cargo: string;
+    email: string;
+    senha: string;
+    crm?: string;
+    especialidadeId?: number;
+  }): Promise<Funcionario> {
 
-  const funcionario = this.funcionarioRepo.create({
-    nome: data.nome,
-    email: data.email,
-    telefone: data.telefone,
-    cargo: data.cargo,
-    usuario, 
-  });
+    const funcionario = this.funcionarioRepo.create({
+      nome: data.nome,
+      telefone: data.telefone,
+      email: data.email,
+      cargo: data.cargo,
+      senha: data.senha, 
+    });
 
-  return this.funcionarioRepo.save(funcionario);
-}
+    await this.funcionarioRepo.save(funcionario);
 
+    if (data.cargo.toLowerCase() === 'médico' || data.cargo.toLowerCase() === 'medico') {
+      const medico = this.medicoRepo.create({
+        crm: data.crm ?? null,
+        especialidade: data.especialidadeId ? { id: data.especialidadeId } : null,
+        funcionario,
+      });
+
+      await this.medicoRepo.save(medico);
+    }
+
+    return funcionario;
+  }
+
+  async findAll(): Promise<Funcionario[]> {
+    return this.funcionarioRepo.find({ relations: ['medico'] });
+  }
+
+  async findById(id: number): Promise<Funcionario> {
+    return this.funcionarioRepo.findOne({ where: { id }, relations: ['medico'] });
+  }
+  async findByEmail(email:string): Promise<Funcionario>{
+    return this.funcionarioRepo.findOne({where:{email}})
+  }
 }

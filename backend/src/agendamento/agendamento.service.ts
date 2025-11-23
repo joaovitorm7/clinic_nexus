@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository,Between } from 'typeorm';
 import { Agendamento } from './entities/agendamento.entity';
 import { CreateAgendamentoDto } from './create-agendamento.dto';
 
@@ -33,7 +33,20 @@ async create(dto: CreateAgendamentoDto): Promise<Agendamento> {
         relations: ['paciente'], 
     });
 }
+async findByDate(date: Date): Promise<Agendamento[]> {
+  const startOfDay = new Date(date);
+  startOfDay.setHours(0, 0, 0, 0);
 
+  const endOfDay = new Date(date);
+  endOfDay.setHours(23, 59, 59, 999);
+
+  return this.agendamentoRepository.find({
+    where: {
+      data: Between(startOfDay, endOfDay),
+    },
+    relations: ['paciente'],
+  });
+}
 
     async remove(id: number): Promise<void> {
         await this.agendamentoRepository.delete(id);

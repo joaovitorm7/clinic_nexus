@@ -2,7 +2,7 @@ import api from './api';
 
 export const getDoctors = async () => {
   try {
-    const response = await api.get('/medicos');
+    const response = await api.get('/medico');
     return response.data;
   } catch (error) {
     console.error(error.response?.data || error.message || error);
@@ -11,13 +11,20 @@ export const getDoctors = async () => {
 }
 export const getDoctorById = async (id) => {
   try {
-    const response = await api.get(`/medicos/${id}`);
+    const response = await api.get(`/medico/${id}`);
     return response.data;
   } catch (error) {
     console.error(error.response?.data || error.message || error);
     throw error;
   }
 }
+export const getDoctorByEspecialidadeId = async (especialidade_id)=>{
+    const response = await api.get(`/medicos/especialidade/${especialidade_id}`)
+    return response.data;
+}
+
+
+
 export const createDoctor = async (doctorData) => {
   try {
     const response = await api.post('/medicos', doctorData);

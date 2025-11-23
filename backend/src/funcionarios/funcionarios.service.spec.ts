@@ -1,18 +1,47 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { FuncionarioService } from './funcionarios.service';
+import { Injectable } from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { Funcionario } from './entities/funcionario.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Medico } from '../medico/entities/medico.entity';
 
-describe('FuncionariosService', () => {
-  let service: FuncionarioService;
+@Injectable()
+export class FuncionarioService {
+  constructor(
+    @InjectRepository(Funcionario)
+    private readonly funcionarioRepo: Repository<Funcionario>,
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [FuncionarioService],
-    }).compile();
+    @InjectRepository(Medico)
+    private readonly medicoRepo: Repository<Medico>,
+  ) {}
 
-    service = module.get<FuncionarioService>(FuncionarioService);
-  });
+  async createFuncionario(data: {
+    nome: string;
+    telefone: string;
+    cargo: string; // agora apenas texto
+    crm?: string;
+    especialidadeId?: number;
+  }) {
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-});
+    // 1️⃣ Cria funcionário simples
+    const funcionario = this.funcionarioRepo.create({
+      nome: data.nome,
+      telefone: data.telefone,
+      cargo: data.cargo,
+    });
+
+    await this.funcionarioRepo.save(funcionario);
+
+    // 2️⃣ Se cargo for médico → cria registro na tabela Medico
+    if (data.cargo.toLowerCase() === 'médico' || data.cargo.toLowerCase() === 'medico') {
+      const medico = this.medicoRepo.create({
+        crm: data.crm ?? null,
+        especialidade: data.especialidadeId ? { id: data.especialidadeId } : null,
+        funcionario,
+      });
+
+      await this.medicoRepo.save(medico);
+    }
+
+    return funcionario;
+  }
+}

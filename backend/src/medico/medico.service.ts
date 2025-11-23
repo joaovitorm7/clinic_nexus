@@ -20,16 +20,16 @@ export class MedicoService {
     private readonly funcionarioRepository: Repository<Funcionario>,
   ) {}
 
-  async create(createMedicoDto: CreateMedicoDto) {
-    const funcionario = await this.funcionarioRepository.findOne({
-      where: { id: createMedicoDto.funcionarioId },
+  async create(createMedicoDto: CreateMedicoDto): Promise<Medico> {
+    const funcionario = await this.funcionarioRepository.findOne({ 
+      where: { id: createMedicoDto.funcionarioId } 
     });
     if (!funcionario) {
       throw new BadRequestException('Funcionário inválido ou não encontrado');
     }
 
-    const especialidade = await this.especialidadeRepository.findOne({
-      where: { id: createMedicoDto.especialidadeId },
+    const especialidade = await this.especialidadeRepository.findOne({ 
+      where: { id: createMedicoDto.especialidadeId } 
     });
     if (!especialidade) {
       throw new BadRequestException('Especialidade inválida');
@@ -44,16 +44,16 @@ export class MedicoService {
     return this.medicoRepository.save(medico);
   }
 
-  findAll() {
+  findAll(): Promise<Medico[]> {
     return this.medicoRepository.find({
-      relations: ['especialidade', 'funcionario', 'funcionario.usuario'],
+      relations: ['especialidade', 'funcionario'],
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<Medico> {
     const medico = await this.medicoRepository.findOne({
       where: { id },
-      relations: ['especialidade', 'funcionario', 'funcionario.usuario'],
+      relations: ['especialidade', 'funcionario'],
     });
 
     if (!medico) {
@@ -63,7 +63,14 @@ export class MedicoService {
     return medico;
   }
 
-  async update(id: number, updateMedicoDto: UpdateMedicoDto) {
+  async findByEspecialidadeId(especialidadeId: number): Promise<Medico[]> {
+    return this.medicoRepository.find({
+      where: { especialidade: { id: especialidadeId } },
+      relations: ['especialidade', 'funcionario'],
+    });
+  }
+
+  async update(id: number, updateMedicoDto: UpdateMedicoDto): Promise<Medico> {
     const medico = await this.findOne(id);
 
     if (updateMedicoDto.especialidadeId) {
@@ -81,7 +88,7 @@ export class MedicoService {
     return this.medicoRepository.save(medico);
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<Medico> {
     const medico = await this.findOne(id);
     return this.medicoRepository.remove(medico);
   }

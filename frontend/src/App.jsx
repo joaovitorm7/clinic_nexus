@@ -12,11 +12,14 @@ import Recepcao from "./pages/recepcao/DashboardRecepcao/DashboardRecepcao"
 import Consultas from "./pages/recepcao/Visualizar/Consulta";
 import DashboardFunc from "./pages/Admin/Funcionarios/DashboardFunc";
 import EmployeePage from "./EmployeePage";
+import CalendarPage from "./pages/recepcao/AgendaMedico/AgendaMedico";
 function App() {
 
   //teste para deslogar pelo console
   const { logout } = useAuth();
   window.logout = logout; 
+
+  //todo: css para calendario
 
   return (
     <Routes>
@@ -34,6 +37,9 @@ function App() {
         <Route path="/recepcao/agendar" element={<AgendarConsulta />} />
         <Route path="/recepcao" element={<Recepcao/>} />
         <Route path="/consultas" element={<Consultas/>} />
+        
+
+        <Route path="/calendario" element={<CalendarPage />} />
     </Routes>
   );
 }

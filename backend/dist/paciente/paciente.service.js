@@ -16,7 +16,7 @@ exports.PacienteService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
-const paciente_entity_1 = require("./paciente.entity");
+const paciente_entity_1 = require("./entities/paciente.entity");
 let PacienteService = class PacienteService {
     constructor(pacienteRepository) {
         this.pacienteRepository = pacienteRepository;
