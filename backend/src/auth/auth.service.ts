@@ -1,17 +1,16 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Usuario } from '../usuario/entities/usuario.entity';
-
+import { Funcionario } from '../funcionarios/entities/funcionario.entity';
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(Usuario)
-    private readonly usuarioRepository: Repository<Usuario>,
+    @InjectRepository(Funcionario)
+    private readonly funcionarioRepository: Repository<Funcionario>,
   ) {}
 
-  async validarUsuario(email: string, senha: string): Promise<Omit<Usuario, 'senha'> | null> {
-    const usuario = await this.usuarioRepository.findOne({ where: { email } });
+  async validarUsuario(email: string, senha: string): Promise<Omit<Funcionario, 'senha'> | null> {
+    const usuario = await this.funcionarioRepository.findOne({ where: { email } });
 
     if (!usuario) {
       return null;

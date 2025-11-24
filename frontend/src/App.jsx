@@ -12,6 +12,8 @@ import Recepcao from "./pages/recepcao/DashboardRecepcao/DashboardRecepcao"
 import Consultas from "./pages/recepcao/Visualizar/Consulta";
 import DashboardFunc from "./pages/Admin/Funcionarios/DashboardFunc";
 import EmployeePage from "./EmployeePage";
+import DashboardAlaMedica from './pages/AlaMedica/Dashboard/DashboardAlaMedica';
+
 function App() {
 
   //teste para deslogar pelo console
@@ -30,6 +32,7 @@ function App() {
         <Route path="/admin/funcionarios/addFunc" element={<AddFunc />} />
         <Route path="/admin/medicos" element={<DashboardMed />} />
         <Route path ="/test" element ={<EmployeePage/>} />
+        <Route path="/alamedica" element={<DashboardAlaMedica />} />
 
         <Route path="/recepcao/agendar" element={<AgendarConsulta />} />
         <Route path="/recepcao" element={<Recepcao/>} />

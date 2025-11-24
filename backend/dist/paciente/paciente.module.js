@@ -11,7 +11,7 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const paciente_service_1 = require("./paciente.service");
 const paciente_controller_1 = require("./paciente.controller");
-const paciente_entity_1 = require("./paciente.entity");
+const paciente_entity_1 = require("./entities/paciente.entity");
 let PacienteModule = class PacienteModule {
 };
 exports.PacienteModule = PacienteModule;

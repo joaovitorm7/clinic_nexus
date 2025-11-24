@@ -1,10 +1,10 @@
 import { Repository } from 'typeorm';
-import { Usuario } from '../usuario/usuario.entity';
+import { Funcionario } from '../funcionarios/entities/funcionario.entity';
 export declare class AuthService {
-    private readonly usuarioRepository;
-    constructor(usuarioRepository: Repository<Usuario>);
-    validarUsuario(email: string, senha: string): Promise<Omit<Usuario, 'senha'> | null>;
+    private readonly funcionarioRepository;
+    constructor(funcionarioRepository: Repository<Funcionario>);
+    validarUsuario(email: string, senha: string): Promise<Omit<Funcionario, 'senha'> | null>;
     login(email: string, senha: string): Promise<{
-        usuario: Omit<Usuario, "senha">;
+        usuario: Omit<Funcionario, "senha">;
     }>;
 }

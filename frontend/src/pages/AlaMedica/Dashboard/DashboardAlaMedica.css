@@ -1,0 +1,36 @@
+/* Layout do dashboard medico */
+.med-dashboard { padding: 20px 32px; font-family: Inter, system-ui, sans-serif; }
+
+.hero {
+  display:flex;
+  align-items:center;
+  gap: 32px;
+  margin: 20px 0 28px;
+  background: linear-gradient(90deg, rgba(0,123,255,0.12), rgba(0,180,216,0.06));
+  padding: 22px;
+  border-radius: 12px;
+}
+
+/* Texto da esquerda */
+.hero-left h1 { margin: 0; font-size: 1.8rem; color:#073b6b; }
+.hero-left p { margin: 6px 0 0; color:#234; }
+
+/* Imagem do lado direito (estática) */
+.hero-image {
+  margin-left: auto;
+  width: 220px;
+  height: 120px;
+  background-image: url('/src/assets/medico-illustration.png');
+  background-size: cover;
+  background-position:center;
+  border-radius: 8px;
+}
+
+/* Grid de cards */
+.cards-grid {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
+  margin-top: 16px;
+}
+

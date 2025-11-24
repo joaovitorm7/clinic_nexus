@@ -1,5 +1,5 @@
 import { Repository } from 'typeorm';
-import { Agendamento } from './agendamento.entity';
+import { Agendamento } from './entities/agendamento.entity';
 import { CreateAgendamentoDto } from './create-agendamento.dto';
 export declare class AgendamentoService {
     private readonly agendamentoRepository;

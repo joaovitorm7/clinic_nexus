@@ -15,6 +15,9 @@ export class Funcionario {
   @Column({ type: 'varchar', length: 15, nullable: true, unique: true })
   telefone: string;
 
+  @Column({type: 'varchar', length:15, nullable: false, unique: true})
+  senha: string;
+
   @Column({ type: 'varchar', length: 100, nullable: false })
   cargo: string;
 

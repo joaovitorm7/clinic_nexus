@@ -16,7 +16,7 @@ exports.AgendamentoService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
-const agendamento_entity_1 = require("./agendamento.entity");
+const agendamento_entity_1 = require("./entities/agendamento.entity");
 let AgendamentoService = class AgendamentoService {
     constructor(agendamentoRepository) {
         this.agendamentoRepository = agendamentoRepository;
