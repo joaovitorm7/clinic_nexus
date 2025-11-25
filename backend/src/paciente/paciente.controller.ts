@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Param } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Put } from '@nestjs/common';
 import { PacienteService } from './paciente.service';
 import { CreatePacienteDto } from './create-paciente.dto';
 import { Paciente } from './entities/paciente.entity';
@@ -20,5 +20,18 @@ export class PacienteController {
   @Get(':cpf')
   async findByCpf(@Param('cpf') cpf: string): Promise<Paciente[]> {
     return this.pacienteService.findByCpf(cpf);
+  }
+
+  @Get(':id')
+  async findById(@Param('id') id: string): Promise<Paciente> {
+    return this.pacienteService.findById(Number(id));
+  }
+
+  @Put(':id')
+  async update(
+    @Param('id') id: string,
+    @Body() updatePacienteDto: CreatePacienteDto
+  ): Promise<Paciente> {
+    return this.pacienteService.update(Number(id), updatePacienteDto);
   }
 }

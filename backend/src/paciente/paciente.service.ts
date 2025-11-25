@@ -50,5 +50,16 @@ export class PacienteService {
   findByCpf(cpf: string): Promise<Paciente[]> {
     return this.pacienteRepository.find({ where: { cpf } });
   }
+
+  async findById(id: number): Promise<Paciente> {
+    return this.pacienteRepository.findOne({
+      where: { id }
+    });
+  }
+
+  async update(id: number, updatePacienteDto: CreatePacienteDto): Promise<Paciente> {
+    await this.pacienteRepository.update(id, updatePacienteDto);
+    return this.pacienteRepository.findOne({ where: { id } });
+  }
 }
   
