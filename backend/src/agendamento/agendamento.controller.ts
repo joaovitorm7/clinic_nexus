@@ -16,6 +16,12 @@ export class AgendamentoController {
     return this.agendamentoService.findAll();
   }
 
+  @Get('data/:data')
+  findByDate(@Param('data') data: string) {
+    const date = new Date(data);
+    return this.agendamentoService.findByDate(date);
+  }
+  
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.agendamentoService.findOne(id);

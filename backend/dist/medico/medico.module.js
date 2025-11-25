@@ -10,6 +10,7 @@ exports.MedicoModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const medico_service_1 = require("./medico.service");
+const medico_controller_1 = require("./medico.controller");
 const medico_entity_1 = require("./entities/medico.entity");
 const especialidade_entity_1 = require("./entities/especialidade.entity");
 const funcionarios_module_1 = require("../funcionarios/funcionarios.module");
@@ -23,6 +24,7 @@ exports.MedicoModule = MedicoModule = __decorate([
             typeorm_1.TypeOrmModule.forFeature([medico_entity_1.Medico, especialidade_entity_1.Especialidade, funcionario_entity_1.Funcionario]),
             funcionarios_module_1.FuncionariosModule,
         ],
+        controllers: [medico_controller_1.MedicoController],
         providers: [medico_service_1.MedicoService],
         exports: [medico_service_1.MedicoService],
     })

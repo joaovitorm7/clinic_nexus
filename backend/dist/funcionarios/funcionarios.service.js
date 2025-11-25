@@ -16,36 +16,47 @@ exports.FuncionarioService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("typeorm");
 const funcionario_entity_1 = require("./entities/funcionario.entity");
-const usuario_entity_1 = require("../usuario/entities/usuario.entity");
 const typeorm_2 = require("@nestjs/typeorm");
+const medico_entity_1 = require("../medico/entities/medico.entity");
 let FuncionarioService = class FuncionarioService {
-    constructor(funcionarioRepo, usuarioRepo) {
+    constructor(funcionarioRepo, medicoRepo) {
         this.funcionarioRepo = funcionarioRepo;
-        this.usuarioRepo = usuarioRepo;
+        this.medicoRepo = medicoRepo;
     }
     async createFuncionario(data) {
-        const usuario = this.usuarioRepo.create({
-            nome: data.nome,
-            email: data.email,
-            senha: data.senha,
-            status: 'ativo',
-        });
-        await this.usuarioRepo.save(usuario);
         const funcionario = this.funcionarioRepo.create({
             nome: data.nome,
-            email: data.email,
             telefone: data.telefone,
+            email: data.email,
             cargo: data.cargo,
-            usuario,
+            senha: data.senha,
         });
-        return this.funcionarioRepo.save(funcionario);
+        await this.funcionarioRepo.save(funcionario);
+        if (data.cargo.toLowerCase() === 'médico' || data.cargo.toLowerCase() === 'medico') {
+            const medico = this.medicoRepo.create({
+                crm: data.crm ?? null,
+                especialidade: data.especialidadeId ? { id: data.especialidadeId } : null,
+                funcionario,
+            });
+            await this.medicoRepo.save(medico);
+        }
+        return funcionario;
+    }
+    async findAll() {
+        return this.funcionarioRepo.find({ relations: ['medico'] });
+    }
+    async findById(id) {
+        return this.funcionarioRepo.findOne({ where: { id }, relations: ['medico'] });
+    }
+    async findByEmail(email) {
+        return this.funcionarioRepo.findOne({ where: { email } });
     }
 };
 exports.FuncionarioService = FuncionarioService;
 exports.FuncionarioService = FuncionarioService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_2.InjectRepository)(funcionario_entity_1.Funcionario)),
-    __param(1, (0, typeorm_2.InjectRepository)(usuario_entity_1.Usuario)),
+    __param(1, (0, typeorm_2.InjectRepository)(medico_entity_1.Medico)),
     __metadata("design:paramtypes", [typeorm_1.Repository,
         typeorm_1.Repository])
 ], FuncionarioService);

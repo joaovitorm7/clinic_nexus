@@ -30,6 +30,9 @@ let MedicoController = class MedicoController {
     findOne(id) {
         return this.medicoService.findOne(+id);
     }
+    findByEspecialidade(especialidadeId) {
+        return this.medicoService.findByEspecialidadeId(+especialidadeId);
+    }
     update(id, updateMedicoDto) {
         return this.medicoService.update(+id, updateMedicoDto);
     }
@@ -58,6 +61,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], MedicoController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Get)('/especialidade/:especialidade_id'),
+    __param(0, (0, common_1.Param)('especialidade_id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], MedicoController.prototype, "findByEspecialidade", null);
 __decorate([
     (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),

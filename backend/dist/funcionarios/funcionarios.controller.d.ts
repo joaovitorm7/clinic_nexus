@@ -8,8 +8,9 @@ export declare class FuncionariosController {
         telefone: string;
         cargo: string;
         senha: string;
+        id_cargo: number;
     }): Promise<import("./entities/funcionario.entity").Funcionario>;
-    findAll(): Promise<string>;
+    findAll(): Promise<import("./entities/funcionario.entity").Funcionario[]>;
     findOne(id: string): Promise<string>;
     update(id: string, updateData: any): Promise<string>;
     remove(id: string): Promise<string>;

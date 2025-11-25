@@ -7,6 +7,7 @@ export declare class MedicoController {
     create(createMedicoDto: CreateMedicoDto): Promise<import("./entities/medico.entity").Medico>;
     findAll(): Promise<import("./entities/medico.entity").Medico[]>;
     findOne(id: string): Promise<import("./entities/medico.entity").Medico>;
+    findByEspecialidade(especialidadeId: string): Promise<import("./entities/medico.entity").Medico[]>;
     update(id: string, updateMedicoDto: UpdateMedicoDto): Promise<import("./entities/medico.entity").Medico>;
     remove(id: string): Promise<import("./entities/medico.entity").Medico>;
 }

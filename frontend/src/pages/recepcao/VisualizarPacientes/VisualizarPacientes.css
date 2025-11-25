@@ -1,0 +1,120 @@
+.page-pacientes {
+    padding: 20px 32px;
+    font-family: Inter, system-ui, sans-serif;
+    min-height: calc(100vh - 60px);
+    background: linear-gradient(80deg, rgba(0,123,255,0.12), rgba(0,180,216,0.06));
+}
+
+.page-header {
+  max-width: 1200px;
+  margin: 0 auto 30px;
+}
+
+.page-header h1 {
+  font-size: 2rem;
+  color: #073b6b;
+  margin: 20px 0 0 0;
+}
+
+.patients-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.patient-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  position: relative;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.patient-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.edit-icon-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #1a3b6c;
+  color: white;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  transition: background-color 0.2s, transform 0.2s;
+  padding: 0;
+}
+
+.edit-icon-btn:hover {
+  background: #073b6b;
+  transform: scale(1.1);
+}
+
+.patient-info {
+  margin-top: 8px;
+}
+
+.patient-info h3 {
+  margin: 0 0 12px 0;
+  font-size: 1.3rem;
+  color: #00363a;
+  word-break: break-word;
+}
+
+.patient-info p {
+  margin: 8px 0;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.patient-info strong {
+  color: #073b6b;
+  font-weight: 600;
+}
+
+.deactivate-btn {
+  margin-top: auto;
+  padding: 10px 16px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background-color 0.2s;
+  align-self: flex-start;
+}
+
+.deactivate-btn:hover {
+  background-color: #c82333;
+}
+
+.no-patients {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #999;
+  font-size: 1.1rem;
+  padding: 40px 20px;
+}
+
+.loading {
+  padding: 20px 32px;
+  text-align: center;
+  color: #666;
+  font-size: 1.1rem;
+}

@@ -56,7 +56,7 @@ exports.AppModule = AppModule = __decorate([
             auth_module_1.AuthModule,
             agendamento_module_1.AgendamentoModule,
             especialidade_module_1.EspecialidadeModule,
-            medico_module_1.MedicoModule,
+            medico_module_1.MedicoModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

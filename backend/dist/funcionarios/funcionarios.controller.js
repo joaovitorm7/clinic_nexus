@@ -23,7 +23,7 @@ let FuncionariosController = class FuncionariosController {
         return this.funcionarioService.createFuncionario(data);
     }
     async findAll() {
-        return `Retornar todos os funcionários`;
+        return this.funcionarioService.findAll();
     }
     async findOne(id) {
         return `Retornar funcionário com id ${id}`;

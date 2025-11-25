@@ -13,13 +13,14 @@ const funcionarios_service_1 = require("./funcionarios.service");
 const funcionarios_controller_1 = require("./funcionarios.controller");
 const funcionario_entity_1 = require("./entities/funcionario.entity");
 const usuario_entity_1 = require("../usuario/entities/usuario.entity");
+const medico_entity_1 = require("../medico/entities/medico.entity");
 let FuncionariosModule = class FuncionariosModule {
 };
 exports.FuncionariosModule = FuncionariosModule;
 exports.FuncionariosModule = FuncionariosModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([funcionario_entity_1.Funcionario, usuario_entity_1.Usuario]),
+            typeorm_1.TypeOrmModule.forFeature([funcionario_entity_1.Funcionario, usuario_entity_1.Usuario, medico_entity_1.Medico]),
         ],
         controllers: [funcionarios_controller_1.FuncionariosController],
         providers: [funcionarios_service_1.FuncionarioService],

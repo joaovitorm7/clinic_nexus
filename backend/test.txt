@@ -1,0 +1,18 @@
+
+> backend@0.0.1 migration:run
+> npx typeorm-ts-node-commonjs migration:run -d ./src/data-source.ts
+
+[90m[4mquery:[24m[39m [94mSELECT[0m [95mversion[0m[37m([0m[37m)[0m
+[90m[4mquery:[24m[39m [94mSELECT[0m [37m*[0m [94mFROM[0m [37m`INFORMATION_SCHEMA`[0m[37m.[0m[37m`COLUMNS`[0m [94mWHERE[0m [37m`TABLE_SCHEMA`[0m [37m=[0m [37m'Clinic_nexus_test'[0m [94mAND[0m [37m`TABLE_NAME`[0m [37m=[0m [37m'migrations'[0m
+[90m[4mquery:[24m[39m [94mSELECT[0m [37m*[0m [94mFROM[0m [37m`Clinic_nexus_test`[0m[37m.[0m[37m`migrations`[0m [37m`migrations`[0m [94mORDER BY[0m [37m`id`[0m [94mDESC[0m
+[4m2 migrations are already loaded in the database.[24m
+[4m4 migrations were found in the source code.[24m
+[4mSeedEspecialidades1763236277844 is the last executed migration. It was executed on Sat Nov 15 2025 16:51:17 GMT-0300 (Horário Padrão de Brasília).[24m
+[4m2 migrations are new migrations must be executed.[24m
+[90m[4mquery:[24m[39m [37mSTART[0m [37mTRANSACTION[0m
+[90m[4mquery:[24m[39m [94mALTER TABLE[0m [37m`Funcionario`[0m [94mDROP[0m [94mFOREIGN KEY[0m [37m`FK_860c51c966d2e4ef145a1a16e16`[0m
+[4m[31mquery failed:[39m[24m [94mALTER TABLE[0m [37m`Funcionario`[0m [94mDROP[0m [94mFOREIGN KEY[0m [37m`FK_860c51c966d2e4ef145a1a16e16`[0m
+[4m[31merror:[39m[24m Error: ER_CANT_DROP_FIELD_OR_KEY: Can't DROP FOREIGN KEY `FK_860c51c966d2e4ef145a1a16e16`; check that it exists
+[4mMigration "SeedTables1763915587608" failed, error: ER_CANT_DROP_FIELD_OR_KEY: Can't DROP FOREIGN KEY `FK_860c51c966d2e4ef145a1a16e16`; check that it exists[24m
+[90m[4mquery:[24m[39m [37mROLLBACK[0m
+[30m[41mError during migration run:[49m[39m

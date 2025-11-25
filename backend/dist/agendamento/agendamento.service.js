@@ -39,6 +39,18 @@ let AgendamentoService = class AgendamentoService {
             relations: ['paciente'],
         });
     }
+    async findByDate(date) {
+        const startOfDay = new Date(date);
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date(date);
+        endOfDay.setHours(23, 59, 59, 999);
+        return this.agendamentoRepository.find({
+            where: {
+                data: (0, typeorm_2.Between)(startOfDay, endOfDay),
+            },
+            relations: ['paciente'],
+        });
+    }
     async remove(id) {
         await this.agendamentoRepository.delete(id);
     }

@@ -633,6 +633,8 @@ const handleSubmit = async (e) => {
               <button type="submit">Agendar Consulta</button>
             </div>
 
+            <button onClick={() => navigate(`/consultas/${c.id}/editar`)}>Editar</button>
+
           </form>
         </div>
       </div>

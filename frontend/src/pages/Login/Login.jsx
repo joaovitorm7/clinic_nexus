@@ -29,7 +29,7 @@ function Login() {
     try {
       const usuario = await login(email, senha, lembrar);
 
-      switch (usuario.tipo?.toLowerCase()) {
+      switch (usuario.cargo?.toLowerCase()) {
         case "administrador":
           navigate("/administracao");
           break;

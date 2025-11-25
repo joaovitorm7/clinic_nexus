@@ -27,13 +27,13 @@ let MedicoService = class MedicoService {
     }
     async create(createMedicoDto) {
         const funcionario = await this.funcionarioRepository.findOne({
-            where: { id: createMedicoDto.funcionarioId },
+            where: { id: createMedicoDto.funcionarioId }
         });
         if (!funcionario) {
             throw new common_1.BadRequestException('Funcionário inválido ou não encontrado');
         }
         const especialidade = await this.especialidadeRepository.findOne({
-            where: { id: createMedicoDto.especialidadeId },
+            where: { id: createMedicoDto.especialidadeId }
         });
         if (!especialidade) {
             throw new common_1.BadRequestException('Especialidade inválida');
@@ -47,18 +47,24 @@ let MedicoService = class MedicoService {
     }
     findAll() {
         return this.medicoRepository.find({
-            relations: ['especialidade', 'funcionario', 'funcionario.usuario'],
+            relations: ['especialidade', 'funcionario'],
         });
     }
     async findOne(id) {
         const medico = await this.medicoRepository.findOne({
             where: { id },
-            relations: ['especialidade', 'funcionario', 'funcionario.usuario'],
+            relations: ['especialidade', 'funcionario'],
         });
         if (!medico) {
             throw new common_1.NotFoundException(`Médico com id ${id} não encontrado`);
         }
         return medico;
+    }
+    async findByEspecialidadeId(especialidadeId) {
+        return this.medicoRepository.find({
+            where: { especialidade: { id: especialidadeId } },
+            relations: ['especialidade', 'funcionario'],
+        });
     }
     async update(id, updateMedicoDto) {
         const medico = await this.findOne(id);

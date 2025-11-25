@@ -1,10 +1,12 @@
-import { Usuario } from '../../usuario/entities/usuario.entity';
+import { Medico } from '../../medico/entities/medico.entity';
 export declare class Funcionario {
     id: number;
     nome: string;
-    email: string;
+    cpf: string;
     telefone: string;
-    senha: string;
+    email: string;
     cargo: string;
-    usuario: Usuario;
+    data_desativacao: Date | null;
+    senha: string;
+    medico?: Medico;
 }

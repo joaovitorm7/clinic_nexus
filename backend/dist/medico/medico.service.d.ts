@@ -12,6 +12,7 @@ export declare class MedicoService {
     create(createMedicoDto: CreateMedicoDto): Promise<Medico>;
     findAll(): Promise<Medico[]>;
     findOne(id: number): Promise<Medico>;
+    findByEspecialidadeId(especialidadeId: number): Promise<Medico[]>;
     update(id: number, updateMedicoDto: UpdateMedicoDto): Promise<Medico>;
     remove(id: number): Promise<Medico>;
 }

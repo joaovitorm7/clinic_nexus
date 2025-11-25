@@ -1,15 +1,20 @@
 import { Repository } from 'typeorm';
 import { Funcionario } from './entities/funcionario.entity';
-import { Usuario } from '../usuario/entities/usuario.entity';
+import { Medico } from '../medico/entities/medico.entity';
 export declare class FuncionarioService {
     private readonly funcionarioRepo;
-    private readonly usuarioRepo;
-    constructor(funcionarioRepo: Repository<Funcionario>, usuarioRepo: Repository<Usuario>);
+    private readonly medicoRepo;
+    constructor(funcionarioRepo: Repository<Funcionario>, medicoRepo: Repository<Medico>);
     createFuncionario(data: {
         nome: string;
-        email: string;
-        telefone: string;
+        telefone?: string;
         cargo: string;
+        email: string;
         senha: string;
+        crm?: string;
+        especialidadeId?: number;
     }): Promise<Funcionario>;
+    findAll(): Promise<Funcionario[]>;
+    findById(id: number): Promise<Funcionario>;
+    findByEmail(email: string): Promise<Funcionario>;
 }
