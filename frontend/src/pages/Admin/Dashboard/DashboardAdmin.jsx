@@ -2,6 +2,7 @@ import React from "react";
 import "./DashboardAdmin.css";
 import { Link } from "react-router-dom";
 import { FaUserAlt, FaUserMd, FaCalendarCheck } from "react-icons/fa";
+import "../../../components/Navbar/Navbar.jsx"
 
 export default function Dashboard() {
   return (

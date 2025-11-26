@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getAgendamentos } from '../../../services/agendamentoService';
 import { getPatientById } from '../../../services/pacienteService';
 import './Consulta.css';
-import { FaTrash, FaPencilAlt } from 'react-icons/fa';
+import { FaTrash, FaPencilAlt, FaArrowLeft } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../services/api';
 
@@ -40,6 +40,10 @@ const Consultas = () => {
   const handleEditarConsulta = (consultaId) => {
     navigate(`/consultas/${consultaId}/editar`);
   };
+
+  const handleVoltar = () => {
+    navigate(-1);
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -81,6 +85,15 @@ const Consultas = () => {
 
   return (
     <div className="page-consultas">
+
+      <button
+        className="btn-voltar"
+        onClick={handleVoltar}
+        title="Voltar ao dashboard"
+      >
+        <FaArrowLeft size={20} />
+      </button>
+
       <h1>Consultas Agendadas</h1>
       {consultas.length === 0 ? (
         <p>Nenhuma consulta encontrada.</p>
