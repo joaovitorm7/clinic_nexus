@@ -7,4 +7,6 @@ export declare class PacienteService {
     create(createPacienteDto: CreatePacienteDto): Promise<Paciente>;
     findAll(): Promise<Paciente[]>;
     findByCpf(cpf: string): Promise<Paciente[]>;
+    findById(id: number): Promise<Paciente>;
+    update(id: number, updatePacienteDto: CreatePacienteDto): Promise<Paciente>;
 }

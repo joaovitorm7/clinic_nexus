@@ -47,6 +47,15 @@ let PacienteService = class PacienteService {
     findByCpf(cpf) {
         return this.pacienteRepository.find({ where: { cpf } });
     }
+    async findById(id) {
+        return this.pacienteRepository.findOne({
+            where: { id }
+        });
+    }
+    async update(id, updatePacienteDto) {
+        await this.pacienteRepository.update(id, updatePacienteDto);
+        return this.pacienteRepository.findOne({ where: { id } });
+    }
 };
 exports.PacienteService = PacienteService;
 exports.PacienteService = PacienteService = __decorate([

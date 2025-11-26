@@ -22,3 +22,54 @@ h1 {
 .consultas-table th {
   background-color: #f2f2f2;
 }
+
+/* Coluna de ações */
+.consultas-table td:last-child {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Botão editar (lápis) */
+.btn-editar {
+  background-color: #1a3b6c;
+  color: white;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, transform 0.2s;
+  padding: 0;
+}
+
+.btn-editar:hover {
+  background-color: #073b6b;
+  transform: scale(1.1);
+}
+
+/* Botão cancelar (lixeira) */
+.btn-cancelar {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, transform 0.2s;
+  padding: 0;
+}
+
+.btn-cancelar:hover {
+  background-color: #c82333;
+  transform: scale(1.1);
+}
+

@@ -2,20 +2,52 @@ import React, { useState, useEffect } from 'react';
 import { getAgendamentos } from '../../../services/agendamentoService';
 import { getPatientById } from '../../../services/pacienteService';
 import './Consulta.css';
+import { FaTrash, FaPencilAlt } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import api from '../../../services/api';
 
 const Consultas = () => {
   const [consultas, setConsultas] = useState([]);
   const [pacientes, setPacientes] = useState({});
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  // Função para cancelar consulta
+  const handleCancelarConsulta = async (consultaId) => {
+    const confirmacao = window.confirm(
+      'Tem certeza que deseja cancelar esta consulta? Esta ação não pode ser desfeita.'
+    );
+
+    if (!confirmacao) {
+      return;
+    }
+
+    try {
+      // Fazer DELETE na API
+      await api.delete(`/agendamentos/${consultaId}`);
+
+      // Remover da lista local (atualizar UI)
+      setConsultas(prev => prev.filter(c => c.id !== consultaId));
+
+      alert('Consulta cancelada com sucesso!');
+    } catch (err) {
+      console.error('Erro ao cancelar consulta:', err);
+      alert('Erro ao cancelar consulta. Tente novamente.');
+    }
+  };
+
+  // Função para editar consulta
+  const handleEditarConsulta = (consultaId) => {
+    navigate(`/consultas/${consultaId}/editar`);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 1️⃣ Buscar todas as consultas
         const consultasData = await getAgendamentos();
         setConsultas(consultasData);
 
-        // 2️⃣ Criar mapa de pacientes
+        // Criar mapa de pacientes
         const pacientesMap = {};
         const uniqueIds = [...new Set(
           consultasData
@@ -23,7 +55,7 @@ const Consultas = () => {
             .filter(Boolean) // remove null ou undefined
         )];
 
-        // 3️⃣ Buscar cada paciente pelo ID
+        // Buscar cada paciente pelo ID
         await Promise.all(uniqueIds.map(async (id) => {
           try {
             const res = await getPatientById(id);
@@ -63,6 +95,7 @@ const Consultas = () => {
               <th>Data / Hora</th>
               <th>Status</th>
               <th>Observações</th>
+              <th>Ações</th>
             </tr>
           </thead>
         <tbody>
@@ -75,6 +108,22 @@ const Consultas = () => {
       <td>{new Date(c.data).toLocaleString()}</td>
       <td>{c.status}</td>
       <td>{c.motivo_consulta ?? '-'}</td>
+      <td>
+          <button
+            className="btn-editar"
+            onClick={() => handleEditarConsulta(c.id)}
+            title="Editar consulta"
+          >
+            <FaPencilAlt size={16} />
+          </button>
+          <button
+            className="btn-cancelar"
+            onClick={() => handleCancelarConsulta(c.id)}
+            title="Cancelar consulta"
+          >
+            <FaTrash size={16} />
+          </button>
+      </td>
     </tr>
   ))}
     </tbody>

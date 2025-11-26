@@ -29,6 +29,12 @@ let PacienteController = class PacienteController {
     async findByCpf(cpf) {
         return this.pacienteService.findByCpf(cpf);
     }
+    async findById(id) {
+        return this.pacienteService.findById(Number(id));
+    }
+    async update(id, updatePacienteDto) {
+        return this.pacienteService.update(Number(id), updatePacienteDto);
+    }
 };
 exports.PacienteController = PacienteController;
 __decorate([
@@ -51,6 +57,21 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], PacienteController.prototype, "findByCpf", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PacienteController.prototype, "findById", null);
+__decorate([
+    (0, common_1.Put)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, create_paciente_dto_1.CreatePacienteDto]),
+    __metadata("design:returntype", Promise)
+], PacienteController.prototype, "update", null);
 exports.PacienteController = PacienteController = __decorate([
     (0, common_1.Controller)('pacientes'),
     __metadata("design:paramtypes", [paciente_service_1.PacienteService])
