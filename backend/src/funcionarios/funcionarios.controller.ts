@@ -16,14 +16,20 @@ export class FuncionariosController {
   }) {
     return this.funcionarioService.createFuncionario(data);
   }
+ 
 
   @Get()
   async findAll() {
     return this.funcionarioService.findAll();
   }
+  @Get(':cpf')
+  async findOneByCpf(@Param('cpf') cpf:string){
+    return cpf
+
+  }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: number) {
     return `Retornar funcionário com id ${id}`;
   }
 

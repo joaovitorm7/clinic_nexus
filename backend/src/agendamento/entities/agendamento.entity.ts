@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Paciente } from '../../paciente/entities/paciente.entity'; 
-
+import {Medico} from '../../medico/entities/medico.entity'
+import { Especialidade } from 'src/medico/entities/especialidade.entity';
 @Entity('Consulta')
 export class Agendamento {
     @PrimaryGeneratedColumn()
