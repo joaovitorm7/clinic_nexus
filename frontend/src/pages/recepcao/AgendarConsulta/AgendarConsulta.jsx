@@ -64,10 +64,11 @@ const handleCPFSearch = async (cpf) => {
       setFormData({
         id: paciente.id,
         fullName: paciente.nome,
-        birthDate: paciente.dataNascimento,
+        birthDate: paciente.data_nascimento,
         cpf: paciente.cpf,
         phone: paciente.contato,
         email: paciente.contato, 
+        endereco: paciente.endereco
       });
     }
   } catch (error) {
@@ -87,7 +88,7 @@ const handleCPFSearch = async (cpf) => {
         setFormData({
           id: paciente.id,
           fullName: paciente.nome,
-          birthDate: paciente.dataNascimento,
+          birthDate: paciente.data_nascimento,
           cpf: paciente.cpf,
           phone: paciente.contato,
           email: paciente.email || paciente.contato || ''
@@ -277,13 +278,16 @@ const handleCPFSearch = async (cpf) => {
       }
 
       try {
-        const contato = newPatientForm.phone || newPatientForm.email || '';
-        const payload = {
-          nome: newPatientForm.fullName,
-          cpf: newPatientForm.cpf.replace(/\D/g, ''), 
-          dataNascimento: newPatientForm.birthDate,  
-          contato: contato
-        };
+    const contato = newPatientForm.phone || newPatientForm.email;
+
+    const payload = {
+    nome: newPatientForm.fullName,
+    cpf: newPatientForm.cpf.replace(/\D/g, ''),
+    data_nascimento: newPatientForm.birthDate,
+    contato: contato,
+    endereco: newPatientForm.address || ""
+    };
+
 
         const criado = await criarPaciente(payload);
 
@@ -291,10 +295,11 @@ const handleCPFSearch = async (cpf) => {
         setFormData({
           id: criado.id,
           fullName: criado.nome,
-          birthDate: criado.dataNascimento,
+          birthDate: criado.data_nascimento,
           cpf: criado.cpf,
           phone: criado.contato,
-          email: criado.email || ''
+          email: criado.email,
+          endereco: criado.endereco || ''
         });
         setCpfStatus('found');
         setPatientType('existing');
@@ -370,8 +375,9 @@ const handleSubmit = async (e) => {
       const novoPaciente = await criarPaciente({
         nome: formData.fullName,
         cpf: formData.cpf,
-        dataNascimento: formData.birthDate, 
+        data_nascimento: formData.birthDate, 
         contato: formData.phone,
+        endereco: formData.endereco
       });
       pacienteId = novoPaciente.id;
     }
