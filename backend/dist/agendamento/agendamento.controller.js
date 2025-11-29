@@ -26,12 +26,12 @@ let AgendamentoController = class AgendamentoController {
     findAll() {
         return this.agendamentoService.findAll();
     }
-    findOne(id) {
-        return this.agendamentoService.findOne(id);
-    }
     findByDate(data) {
         const date = new Date(data);
         return this.agendamentoService.findByDate(date);
+    }
+    findOne(id) {
+        return this.agendamentoService.findOne(id);
     }
     remove(id) {
         return this.agendamentoService.remove(id);
@@ -52,19 +52,19 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], AgendamentoController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", void 0)
-], AgendamentoController.prototype, "findOne", null);
-__decorate([
     (0, common_1.Get)('data/:data'),
     __param(0, (0, common_1.Param)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], AgendamentoController.prototype, "findByDate", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], AgendamentoController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),

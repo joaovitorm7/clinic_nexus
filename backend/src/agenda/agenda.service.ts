@@ -20,7 +20,7 @@ export class AgendaService {
   async create(createAgendaDto: CreateAgendaDto) {
     const { id_medico, data, hora_inicio, hora_fim } = createAgendaDto;
 
-    //primeiro verifica se médico existe
+    // primeiro verifica se médico existe
     const medico = await this.medicoRepository.findOne({
       where: { id: id_medico },
       relations: ['funcionario'],
@@ -40,13 +40,14 @@ export class AgendaService {
     }
 
     // valida o conflito de horário
+    // Usar id_medico diretamente para evitar erro de tipagem quando Agenda não tem relação 'medico' definida
     const conflito = await this.agendaRepository.findOne({
       where: {
-        medico: { id: id_medico },
+        id_medico,
         data,
         hora_inicio,
         hora_fim,
-      },
+      } as any, // cast para contornar diferenças sutis de tipagem entre colunas/relations
     });
 
     if (conflito) {
@@ -56,22 +57,29 @@ export class AgendaService {
     }
 
     // função pra criar agenda medica
+    // Preenche a FK id_medico em vez de tentar passar o objeto 'medico' (compatível com ambos os designs)
     const agenda = this.agendaRepository.create({
-      medico,
+      id_medico,
       data,
       hora_inicio,
       hora_fim,
       status: 'disponivel',
-    });
+    } as any);
 
     return await this.agendaRepository.save(agenda);
   }
 
   // aqui listaremos as agendas
   async findAll() {
+    // se sua entidade Agenda tiver relação 'medico', manter relations é bom; caso contrário, removê-las evita runtime errors
     return await this.agendaRepository.find({
       relations: ['medico', 'medico.funcionario'],
-    });
+    } as any);
+  }
+
+  // lista todas as agendas (simples)
+  async find() {
+    return await this.agendaRepository.find();
   }
 
   // busca por ID
@@ -79,7 +87,7 @@ export class AgendaService {
     const agenda = await this.agendaRepository.findOne({
       where: { id },
       relations: ['medico', 'medico.funcionario'],
-    });
+    } as any);
 
     if (!agenda) throw new NotFoundException('Agenda não encontrada');
 

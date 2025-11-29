@@ -23,9 +23,6 @@ export class Agendamento {
     @Column({ type: 'varchar', length: 20, default: 'agendada' })
     status: string;
 
-    @Column({ type: 'varchar', length: 255, nullable: true })
-    prontuario_path: string;
-
     @Column({ type: 'varchar', length: 500, nullable: true })
     motivo_consulta: string;
 }

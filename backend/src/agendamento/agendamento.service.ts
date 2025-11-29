@@ -18,7 +18,23 @@ async create(dto: CreateAgendamentoDto): Promise<Agendamento> {
   });
   return await this.agendamentoRepository.save(agendamento);
 }
-
+findById(id:number):Promise<Agendamento>{
+    return this.agendamentoRepository.findOne({where:{id},relations:['paciente']});
+}
+ async update(id: number, dto: Partial<CreateAgendamentoDto>): Promise<Agendamento> {
+    const agendamento = await this.agendamentoRepository.findOne({ where: { id } });
+    if (!agendamento) {
+        throw new Error('Agendamento não encontrado');
+    }
+    Object.assign(agendamento, dto);
+    return this.agendamentoRepository.save(agendamento);
+}
+async findAgendamentosByPacienteId(pacienteId: number): Promise<Agendamento[]> {
+    return this.agendamentoRepository.find({
+        where: { paciente: { id: pacienteId } },
+        relations: ['paciente'], 
+    });
+}
 
 
  async findAll(): Promise<Agendamento[]> {

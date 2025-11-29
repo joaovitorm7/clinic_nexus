@@ -28,6 +28,23 @@ let AgendamentoService = class AgendamentoService {
         });
         return await this.agendamentoRepository.save(agendamento);
     }
+    findById(id) {
+        return this.agendamentoRepository.findOne({ where: { id }, relations: ['paciente'] });
+    }
+    async update(id, dto) {
+        const agendamento = await this.agendamentoRepository.findOne({ where: { id } });
+        if (!agendamento) {
+            throw new Error('Agendamento não encontrado');
+        }
+        Object.assign(agendamento, dto);
+        return this.agendamentoRepository.save(agendamento);
+    }
+    async findAgendamentosByPacienteId(pacienteId) {
+        return this.agendamentoRepository.find({
+            where: { paciente: { id: pacienteId } },
+            relations: ['paciente'],
+        });
+    }
     async findAll() {
         return this.agendamentoRepository.find({
             relations: ['paciente'],

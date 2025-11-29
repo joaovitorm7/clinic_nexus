@@ -5,7 +5,7 @@ export declare class AgendamentoController {
     constructor(agendamentoService: AgendamentoService);
     create(dto: CreateAgendamentoDto): Promise<import("./entities/agendamento.entity").Agendamento>;
     findAll(): Promise<import("./entities/agendamento.entity").Agendamento[]>;
-    findOne(id: number): Promise<import("./entities/agendamento.entity").Agendamento>;
     findByDate(data: string): Promise<import("./entities/agendamento.entity").Agendamento[]>;
+    findOne(id: number): Promise<import("./entities/agendamento.entity").Agendamento>;
     remove(id: number): Promise<void>;
 }

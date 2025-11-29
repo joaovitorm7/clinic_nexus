@@ -1,4 +1,5 @@
 // src/services/pacienteService.js
+import { EventImpl } from '@fullcalendar/core/internal.js';
 import api from './api';
 
 // Buscar paciente por CPF
@@ -17,9 +18,25 @@ export const criarPaciente = async (pacienteData) => {
     throw error;
   }
 };
+//Editar Paciente
+export const editarPaciente = async (cpf,pacienteData) => {
+  const paciente = await getPatientByCPF(cpf)
+  if(!paciente){
+    throw new Error("Nenhum paciente informado")
+  }
+  try{
+    const response = await api.patch(`/pacientes/${paciente.id}`, pacienteData);
+    return response.data;
+
+  }catch (error){
+    console.error("Error ao editar paciente",error);
+    throw error;
+  }
+};
 
 export default {
   getPatientByCPF,
   getPatientById,
-  criarPaciente
+  criarPaciente,
+  editarPaciente
 };
