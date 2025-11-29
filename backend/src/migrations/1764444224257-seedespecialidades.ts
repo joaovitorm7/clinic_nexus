@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class Especialidades1764429023754 implements MigrationInterface {
-  public async up(queryRunner: QueryRunner): Promise<void> {
+export class Seedespecialidades1764444224257 implements MigrationInterface {
+    public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
       INSERT INTO Especialidade (nome) VALUES
       ('Cardiologia'),

@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class SeedFuncionarios1764369487353 implements MigrationInterface {
+export class SeedUsuarios1764444421022 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
@@ -12,7 +12,8 @@ export class SeedFuncionarios1764369487353 implements MigrationInterface {
                 cargo,
                 data_desativacao,
                 senha
-            ) VALUES (
+            ) VALUES
+            (
                 'Maria da Silva',
                 '123.456.789-00',
                 '11999999999',
@@ -20,6 +21,15 @@ export class SeedFuncionarios1764369487353 implements MigrationInterface {
                 'Recepcionista',
                 NULL,
                 'recep123'
+            ),
+            (
+                'Administrador do Sistema',
+                '000.000.000-00',
+                '11988888888',
+                'admin@clinic.com',
+                'Administrador',
+                NULL,
+                'admin123'
             );
         `);
     }
@@ -27,7 +37,7 @@ export class SeedFuncionarios1764369487353 implements MigrationInterface {
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
             DELETE FROM \`Funcionario\`
-            WHERE cpf = '123.456.789-00';
+            WHERE cpf IN ('123.456.789-00', '000.000.000-00');
         `);
     }
 }
