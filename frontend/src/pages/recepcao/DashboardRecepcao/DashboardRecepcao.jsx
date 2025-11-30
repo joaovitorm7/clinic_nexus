@@ -15,7 +15,12 @@ const Recepcao = () => {
           <Link to="/recepcao/agendar" className="link-card">
             Agendar Consulta
           </Link>
-
+          <Link to="#" className="link-card">
+            Visualizar agenda
+          </Link>
+          <Link to="/recepcao/EditarAgenda" className="link-card">
+            Editar agenda mensal
+          </Link>
         </div>
       </div>
     </div>

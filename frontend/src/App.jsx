@@ -12,6 +12,8 @@ import Recepcao from "./pages/recepcao/DashboardRecepcao/DashboardRecepcao"
 import Consultas from "./pages/recepcao/Visualizar/Consulta";
 import DashboardFunc from "./pages/Admin/Funcionarios/DashboardFunc";
 import EmployeePage from "./EmployeePage";
+import EditarAgenda from "./pages/recepcao/EditarAgenda/EditarAgenda";
+
 function App() {
 
   //teste para deslogar pelo console
@@ -23,10 +25,8 @@ function App() {
       <Route path="/" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-
-
         <Route path="/administracao" element={<Dashboard />} />
-        <Route path="/funcionarios" element={<DashboardFunc />} />   
+        <Route path="/funcionarios" element={<DashboardFunc />} />
         <Route path="/admin/funcionarios/addFunc" element={<AddFunc />} />
         <Route path="/admin/medicos" element={<DashboardMed />} />
         <Route path ="/test" element ={<EmployeePage/>} />
@@ -34,6 +34,9 @@ function App() {
         <Route path="/recepcao/agendar" element={<AgendarConsulta />} />
         <Route path="/recepcao" element={<Recepcao/>} />
         <Route path="/consultas" element={<Consultas/>} />
+
+        <Route path="/recepcao/EditarAgenda" element={<EditarAgenda />} />
+
     </Routes>
   );
 }
