@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Usuario } from './usuario.entity';
+import { Usuario } from './entities/usuario.entity';
 import { Controller, Get, Param, NotFoundException } from '@nestjs/common';
 
 @Injectable()

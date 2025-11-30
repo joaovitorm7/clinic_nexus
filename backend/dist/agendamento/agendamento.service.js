@@ -16,7 +16,7 @@ exports.AgendamentoService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
-const agendamento_entity_1 = require("./agendamento.entity");
+const agendamento_entity_1 = require("./entities/agendamento.entity");
 let AgendamentoService = class AgendamentoService {
     constructor(agendamentoRepository) {
         this.agendamentoRepository = agendamentoRepository;
@@ -28,6 +28,23 @@ let AgendamentoService = class AgendamentoService {
         });
         return await this.agendamentoRepository.save(agendamento);
     }
+    findById(id) {
+        return this.agendamentoRepository.findOne({ where: { id }, relations: ['paciente'] });
+    }
+    async update(id, dto) {
+        const agendamento = await this.agendamentoRepository.findOne({ where: { id } });
+        if (!agendamento) {
+            throw new Error('Agendamento não encontrado');
+        }
+        Object.assign(agendamento, dto);
+        return this.agendamentoRepository.save(agendamento);
+    }
+    async findAgendamentosByPacienteId(pacienteId) {
+        return this.agendamentoRepository.find({
+            where: { paciente: { id: pacienteId } },
+            relations: ['paciente'],
+        });
+    }
     async findAll() {
         return this.agendamentoRepository.find({
             relations: ['paciente'],
@@ -36,6 +53,18 @@ let AgendamentoService = class AgendamentoService {
     async findOne(id) {
         return this.agendamentoRepository.findOne({
             where: { id },
+            relations: ['paciente'],
+        });
+    }
+    async findByDate(date) {
+        const startOfDay = new Date(date);
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date(date);
+        endOfDay.setHours(23, 59, 59, 999);
+        return this.agendamentoRepository.find({
+            where: {
+                data: (0, typeorm_2.Between)(startOfDay, endOfDay),
+            },
             relations: ['paciente'],
         });
     }

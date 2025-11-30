@@ -20,7 +20,6 @@ __decorate([
     __metadata("design:type", Number)
 ], CreateAgendamentoDto.prototype, "id_medico", void 0);
 __decorate([
-    (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsInt)(),
     __metadata("design:type", Number)
 ], CreateAgendamentoDto.prototype, "id_paciente", void 0);
@@ -30,7 +29,6 @@ __decorate([
     __metadata("design:type", String)
 ], CreateAgendamentoDto.prototype, "especialidade", void 0);
 __decorate([
-    (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.IsDateString)(),
     __metadata("design:type", String)
 ], CreateAgendamentoDto.prototype, "data", void 0);
@@ -49,9 +47,4 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateAgendamentoDto.prototype, "motivo_consulta", void 0);
-__decorate([
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsDateString)(),
-    __metadata("design:type", String)
-], CreateAgendamentoDto.prototype, "data_nascimento", void 0);
 //# sourceMappingURL=create-agendamento.dto.js.map

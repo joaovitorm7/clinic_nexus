@@ -6,6 +6,6 @@ export declare class AuthController {
         email: string;
         senha: string;
     }): Promise<{
-        usuario: Omit<import("../usuario/usuario.entity").Usuario, "senha">;
+        usuario: Omit<import("../funcionarios/entities/funcionario.entity").Funcionario, "senha">;
     }>;
 }

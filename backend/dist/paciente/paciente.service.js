@@ -16,17 +16,44 @@ exports.PacienteService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
-const paciente_entity_1 = require("./paciente.entity");
+const paciente_entity_1 = require("./entities/paciente.entity");
 let PacienteService = class PacienteService {
     constructor(pacienteRepository) {
         this.pacienteRepository = pacienteRepository;
     }
     async create(createPacienteDto) {
         const paciente = this.pacienteRepository.create(createPacienteDto);
+        try {
+            return await this.pacienteRepository.save(paciente);
+        }
+        catch (error) {
+            if (error.code === 'ECONNREFUSED' ||
+                error.code === 'ETIMEDOUT' ||
+                error.code === 'ENOTFOUND' ||
+                error.code === '57P01' ||
+                error.code === '08006') {
+                throw new common_1.ServiceUnavailableException('Serviço temporariamente indisponível. Tente novamente em instantes.');
+            }
+            if (error.code === '23505') {
+                throw new common_1.ConflictException('Paciente com este CPF já existe.');
+            }
+            console.error('Erro ao criar paciente:', error);
+            throw new common_1.InternalServerErrorException('Erro ao criar paciente.');
+        }
+    }
+    async update(id, dto) {
+        const paciente = await this.pacienteRepository.findOne({ where: { id } });
+        if (!paciente) {
+            throw new common_1.NotFoundException('Paciente não encontrado');
+        }
+        Object.assign(paciente, dto);
         return this.pacienteRepository.save(paciente);
     }
-    async findAll() {
+    findAll() {
         return this.pacienteRepository.find();
+    }
+    findByCpf(cpf) {
+        return this.pacienteRepository.find({ where: { cpf } });
     }
 };
 exports.PacienteService = PacienteService;

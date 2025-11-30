@@ -8,8 +8,11 @@ export class CreatePacienteDto {
   cpf: string;
 
   @IsDateString()
-  dataNascimento: string;
+  data_nascimento: string;
 
   @IsString()
   contato: string;
+
+  @IsString()
+  endereco:string;
 }

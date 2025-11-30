@@ -15,7 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PacienteController = void 0;
 const common_1 = require("@nestjs/common");
 const paciente_service_1 = require("./paciente.service");
-const create_paciente_dto_1 = require("./create-paciente.dto");
+const create_paciente_dto_1 = require("./dto/create-paciente.dto");
+const update_paciente_dto_1 = require("./dto/update-paciente.dto");
 let PacienteController = class PacienteController {
     constructor(pacienteService) {
         this.pacienteService = pacienteService;
@@ -25,6 +26,12 @@ let PacienteController = class PacienteController {
     }
     async findAll() {
         return this.pacienteService.findAll();
+    }
+    async findByCpf(cpf) {
+        return this.pacienteService.findByCpf(cpf);
+    }
+    update(id, updatePacienteDto) {
+        return this.pacienteService.update(id, updatePacienteDto);
     }
 };
 exports.PacienteController = PacienteController;
@@ -41,6 +48,21 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], PacienteController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)(':cpf'),
+    __param(0, (0, common_1.Param)('cpf')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PacienteController.prototype, "findByCpf", null);
+__decorate([
+    (0, common_1.Patch)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, update_paciente_dto_1.UpdatePacienteDto]),
+    __metadata("design:returntype", void 0)
+], PacienteController.prototype, "update", null);
 exports.PacienteController = PacienteController = __decorate([
     (0, common_1.Controller)('pacientes'),
     __metadata("design:paramtypes", [paciente_service_1.PacienteService])

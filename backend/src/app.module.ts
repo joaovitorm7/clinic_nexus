@@ -7,6 +7,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PacienteModule } from './paciente/paciente.module';
 import { AgendamentoModule } from './agendamento/agendamento.module';
+import { Especialidade } from './medico/entities/especialidade.entity';
+import { MedicoModule } from './medico/medico.module';
+import { AgendaModule } from './agenda/agenda.module';
+import { Prontuario } from './agendamento/entities/prontuario.entity';
+import { ProntuarioModule } from './agendamento/prontuario.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -41,6 +46,9 @@ import { AgendamentoModule } from './agendamento/agendamento.module';
     UsuarioModule,
     AuthModule,
     AgendamentoModule,
+    MedicoModule,
+    //AgendaModule, !descomentar quando implementar :)
+    ProntuarioModule,
   ],
   controllers: [AppController],
   providers: [AppService],

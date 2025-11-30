@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Agendamento } from './agendamento.entity';
+import { Repository,Between } from 'typeorm';
+import { Agendamento } from './entities/agendamento.entity';
 import { CreateAgendamentoDto } from './create-agendamento.dto';
 
 @Injectable()
@@ -18,7 +18,23 @@ async create(dto: CreateAgendamentoDto): Promise<Agendamento> {
   });
   return await this.agendamentoRepository.save(agendamento);
 }
-
+findById(id:number):Promise<Agendamento>{
+    return this.agendamentoRepository.findOne({where:{id},relations:['paciente']});
+}
+ async update(id: number, dto: Partial<CreateAgendamentoDto>): Promise<Agendamento> {
+    const agendamento = await this.agendamentoRepository.findOne({ where: { id } });
+    if (!agendamento) {
+        throw new Error('Agendamento não encontrado');
+    }
+    Object.assign(agendamento, dto);
+    return this.agendamentoRepository.save(agendamento);
+}
+async findAgendamentosByPacienteId(pacienteId: number): Promise<Agendamento[]> {
+    return this.agendamentoRepository.find({
+        where: { paciente: { id: pacienteId } },
+        relations: ['paciente'], 
+    });
+}
 
 
  async findAll(): Promise<Agendamento[]> {
@@ -33,7 +49,20 @@ async create(dto: CreateAgendamentoDto): Promise<Agendamento> {
         relations: ['paciente'], 
     });
 }
+async findByDate(date: Date): Promise<Agendamento[]> {
+  const startOfDay = new Date(date);
+  startOfDay.setHours(0, 0, 0, 0);
 
+  const endOfDay = new Date(date);
+  endOfDay.setHours(23, 59, 59, 999);
+
+  return this.agendamentoRepository.find({
+    where: {
+      data: Between(startOfDay, endOfDay),
+    },
+    relations: ['paciente'],
+  });
+}
 
     async remove(id: number): Promise<void> {
         await this.agendamentoRepository.delete(id);

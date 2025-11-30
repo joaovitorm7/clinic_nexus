@@ -14,11 +14,14 @@ import DashboardFunc from "./pages/Admin/Funcionarios/DashboardFunc";
 import EmployeePage from "./EmployeePage";
 import EditarAgenda from "./pages/recepcao/EditarAgenda/EditarAgenda";
 
+import CalendarPage from "./pages/recepcao/AgendaMedico/AgendaMedico";
 function App() {
 
   //teste para deslogar pelo console
   const { logout } = useAuth();
-  window.logout = logout; 
+  window.logout = logout;
+
+  //todo: css para calendario
 
   return (
     <Routes>
@@ -37,6 +40,9 @@ function App() {
 
         <Route path="/recepcao/EditarAgenda" element={<EditarAgenda />} />
 
+        
+
+        /* <Route path="/calendario" element={<CalendarPage />} /> */
     </Routes>
   );
 }

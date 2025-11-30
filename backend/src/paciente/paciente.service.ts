@@ -1,11 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  ConflictException,
+  ServiceUnavailableException, NotFoundException
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Paciente } from './paciente.entity';
-import { CreatePacienteDto } from './create-paciente.dto';
+import { Paciente } from './entities/paciente.entity';
+import { CreatePacienteDto } from './dto/create-paciente.dto';
+import { UpdatePacienteDto } from './dto/update-paciente.dto';
 
 @Injectable()
 export class PacienteService {
+  pacienteRepo: any;
   constructor(
     @InjectRepository(Paciente)
     private readonly pacienteRepository: Repository<Paciente>,
@@ -13,10 +20,53 @@ export class PacienteService {
 
   async create(createPacienteDto: CreatePacienteDto): Promise<Paciente> {
     const paciente = this.pacienteRepository.create(createPacienteDto);
-    return this.pacienteRepository.save(paciente);
+
+    try {
+      return await this.pacienteRepository.save(paciente);
+    } catch (error) {
+
+      if (
+        error.code === 'ECONNREFUSED' ||
+        error.code === 'ETIMEDOUT' ||
+        error.code === 'ENOTFOUND' ||
+        error.code === '57P01' ||
+        error.code === '08006'
+      ) {
+        throw new ServiceUnavailableException(
+          'Serviço temporariamente indisponível. Tente novamente em instantes.',
+        );
+      }
+
+      if (error.code === '23505') {
+        throw new ConflictException('Paciente com este CPF já existe.');
+      }
+
+      console.error('Erro ao criar paciente:', error);
+      throw new InternalServerErrorException('Erro ao criar paciente.');
+    }
   }
 
-  async findAll(): Promise<Paciente[]> {
+async update(id: number, dto: UpdatePacienteDto) {
+  const paciente = await this.pacienteRepository.findOne({ where: { id } });
+
+  if (!paciente) {
+    throw new NotFoundException('Paciente não encontrado');
+  }
+
+  Object.assign(paciente, dto);
+  return this.pacienteRepository.save(paciente);
+}
+
+
+
+
+
+  findAll(): Promise<Paciente[]> {
     return this.pacienteRepository.find();
   }
+
+  findByCpf(cpf: string): Promise<Paciente[]> {
+    return this.pacienteRepository.find({ where: { cpf } });
+  }
 }
+  

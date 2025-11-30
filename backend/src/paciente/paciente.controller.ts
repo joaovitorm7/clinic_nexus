@@ -1,8 +1,8 @@
-import { Controller, Post, Body, Get } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param,Patch } from '@nestjs/common';
 import { PacienteService } from './paciente.service';
-import { CreatePacienteDto } from './create-paciente.dto';
-import { Paciente } from './paciente.entity';
-
+import { CreatePacienteDto } from './dto/create-paciente.dto';
+import { Paciente } from './entities/paciente.entity';
+import { UpdatePacienteDto } from './dto/update-paciente.dto';
 @Controller('pacientes')
 export class PacienteController {
   constructor(private readonly pacienteService: PacienteService) {}
@@ -16,4 +16,17 @@ export class PacienteController {
   async findAll(): Promise<Paciente[]> {
     return this.pacienteService.findAll();
   }
+
+  @Get(':cpf')
+  async findByCpf(@Param('cpf') cpf: string): Promise<Paciente[]> {
+    return this.pacienteService.findByCpf(cpf);
+  }
+@Patch(':id')
+update(
+  @Param('id') id: number,
+  @Body() updatePacienteDto: UpdatePacienteDto
+) {
+  return this.pacienteService.update(id, updatePacienteDto);
+}
+
 }

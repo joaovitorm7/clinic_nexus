@@ -11,6 +11,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Usuario = void 0;
 const typeorm_1 = require("typeorm");
+<<<<<<< HEAD
+=======
+const funcionario_entity_1 = require("../funcionarios/entities/funcionario.entity");
+>>>>>>> 68a46dd7c897385985924768cc2d42663ae4500e
 let Usuario = class Usuario {
 };
 exports.Usuario = Usuario;
@@ -19,6 +23,14 @@ __decorate([
     __metadata("design:type", Number)
 ], Usuario.prototype, "id", void 0);
 __decorate([
+<<<<<<< HEAD
+=======
+    (0, typeorm_1.OneToOne)(() => funcionario_entity_1.Funcionario),
+    (0, typeorm_1.JoinColumn)({ name: 'id_cargo' }),
+    __metadata("design:type", funcionario_entity_1.Funcionario)
+], Usuario.prototype, "funcionario", void 0);
+__decorate([
+>>>>>>> 68a46dd7c897385985924768cc2d42663ae4500e
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Usuario.prototype, "nome", void 0);
@@ -34,10 +46,13 @@ __decorate([
     (0, typeorm_1.Column)({ default: 'ativo' }),
     __metadata("design:type", String)
 ], Usuario.prototype, "status", void 0);
+<<<<<<< HEAD
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Usuario.prototype, "tipo", void 0);
+=======
+>>>>>>> 68a46dd7c897385985924768cc2d42663ae4500e
 exports.Usuario = Usuario = __decorate([
     (0, typeorm_1.Entity)('Usuario')
 ], Usuario);
