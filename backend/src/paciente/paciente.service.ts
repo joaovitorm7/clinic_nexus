@@ -46,20 +46,6 @@ export class PacienteService {
     }
   }
 
-async update(id: number, dto: UpdatePacienteDto) {
-  const paciente = await this.pacienteRepository.findOne({ where: { id } });
-
-  if (!paciente) {
-    throw new NotFoundException('Paciente não encontrado');
-  }
-
-  Object.assign(paciente, dto);
-  return this.pacienteRepository.save(paciente);
-}
-
-
-
-
 
   findAll(): Promise<Paciente[]> {
     return this.pacienteRepository.find();
@@ -68,5 +54,21 @@ async update(id: number, dto: UpdatePacienteDto) {
   findByCpf(cpf: string): Promise<Paciente[]> {
     return this.pacienteRepository.find({ where: { cpf } });
   }
+  findPacienteById(id: number): Promise<Paciente | null> {
+    return this.pacienteRepository.findOne({ where: { id } });
+  }
+
+  async update(id, dto: UpdatePacienteDto) {
+  const paciente = await this.findPacienteById(id);
+
+  if (!paciente) {
+    throw new NotFoundException('Paciente não encontrado');
+  }
+
+  Object.assign(paciente, dto);
+
+  return this.pacienteRepository.save(paciente);
+}
+
 }
   

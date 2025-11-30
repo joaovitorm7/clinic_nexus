@@ -23,6 +23,11 @@ export class ProntuarioService {
       throw new NotFoundException('Agendamento não encontrado');
     }
 
+    await this.agendamentoRepository.update(
+    { id: agendamento.id },
+    { status: 'realizada' }
+  );
+
     const prontuario = this.prontuarioRepository.create({
       agendamento,
       evolucao_clinica: createProntuarioDto.evolucao_clinica,
@@ -48,6 +53,14 @@ export class ProntuarioService {
       where: { agendamento: { id: agendamentoId } },
       relations: ['agendamento'],
     });
+  }
+  async findByPacienteId(pacienteId: number): Promise<Prontuario[]> {
+    return this.prontuarioRepository
+      .createQueryBuilder('prontuario')
+      .leftJoinAndSelect('prontuario.agendamento', 'agendamento')
+      .leftJoinAndSelect('agendamento.paciente', 'paciente')
+      .where('paciente.id = :pacienteId', { pacienteId })
+      .getMany();
   }
 
   async findAll(): Promise<Prontuario[]> {

@@ -47,6 +47,10 @@ export class ProntuarioController {
   ): Promise<Prontuario | null> {
     return this.prontuarioService.findByAgendamentoId(agendamentoId);
   }
+  @Get('paciente/:id')
+  async findByPaciente(@Param('id', ParseIntPipe) id: number): Promise<Prontuario[]> {
+    return this.prontuarioService.findByPacienteId(id);
+  }
 
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
