@@ -1,6 +1,8 @@
-import { Controller, Get, Post, Body, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, ParseIntPipe,Patch, HttpCode,UsePipes,ValidationPipe,HttpStatus } from '@nestjs/common';
 import { AgendamentoService } from './agendamento.service';
-import { CreateAgendamentoDto } from './create-agendamento.dto';
+import { CreateAgendamentoDto } from './dto/create-agendamento.dto';
+import { UpdateAgendamentoDto } from './dto/update-agendamento.dto';
+import { Agendamento } from './entities/agendamento.entity';
 
 @Controller('agendamentos')
 export class AgendamentoController {
@@ -24,7 +26,17 @@ export class AgendamentoController {
   
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.agendamentoService.findOne(id);
+    return this.agendamentoService.findById(id);
+  }
+
+  @Patch(':id')
+  @HttpCode(HttpStatus.OK)
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
+  async patch(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateAgendamentoDto,
+  ): Promise<Agendamento> {
+    return await this.agendamentoService.update(id, dto);
   }
 
   @Delete(':id')

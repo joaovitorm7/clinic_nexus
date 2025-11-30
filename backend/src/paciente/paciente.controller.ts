@@ -21,6 +21,10 @@ export class PacienteController {
   async findByCpf(@Param('cpf') cpf: string): Promise<Paciente[]> {
     return this.pacienteService.findByCpf(cpf);
   }
+  @Get('id/:id')
+  async findPacienteById(@Param('id') id: number): Promise<Paciente | null> {
+    return this.pacienteService.findPacienteById(id);
+  }
 @Patch(':id')
 update(
   @Param('id') id: number,

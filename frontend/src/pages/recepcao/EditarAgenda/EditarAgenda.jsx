@@ -17,7 +17,6 @@ export default function AgendaMensalMedicos() {
 
     const [editingIndex, setEditingIndex] = useState(null);
 
-    //localStorage
     useEffect(() => {
         try {
         const raw = localStorage.getItem("agendaMedicos_v1");
@@ -79,7 +78,6 @@ export default function AgendaMensalMedicos() {
         const mm = String(cur.getMinutes()).padStart(2, "0");
         slots.push(`${hh}:${mm}`);
         cur = new Date(cur.getTime() + 30 * 60 * 1000);
-        // prevent infinite
         if (slots.length > 1000) break;
         }
         return slots;

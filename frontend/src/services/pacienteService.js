@@ -19,20 +19,17 @@ export const criarPaciente = async (pacienteData) => {
   }
 };
 //Editar Paciente
-export const editarPaciente = async (cpf,pacienteData) => {
-  const paciente = await getPatientByCPF(cpf)
-  if(!paciente){
-    throw new Error("Nenhum paciente informado")
-  }
-  try{
-    const response = await api.patch(`/pacientes/${paciente.id}`, pacienteData);
+export const editarPaciente = async (id, pacienteData) => {
+  try {
+    const response = await api.patch(`/pacientes/${id}`, pacienteData);
     return response.data;
-
-  }catch (error){
-    console.error("Error ao editar paciente",error);
+  } catch (error) {
+    console.error("Erro ao editar paciente", error);
     throw error;
   }
 };
+
+
 
 export default {
   getPatientByCPF,
