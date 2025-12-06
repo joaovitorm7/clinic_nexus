@@ -20,12 +20,14 @@ const agendamento_entity_1 = require("./entities/agendamento.entity");
 const paciente_entity_1 = require("../paciente/entities/paciente.entity");
 const medico_entity_1 = require("../medico/entities/medico.entity");
 const funcionario_entity_1 = require("../funcionarios/entities/funcionario.entity");
+const agenda_entity_ts_1 = require("../agenda/entities/agenda.entity.ts");
 let AgendamentoService = class AgendamentoService {
-    constructor(agendamentoRepository, pacienteRepository, medicoRepository, funcionarioRepository) {
+    constructor(agendamentoRepository, pacienteRepository, medicoRepository, funcionarioRepository, agendaRepository) {
         this.agendamentoRepository = agendamentoRepository;
         this.pacienteRepository = pacienteRepository;
         this.medicoRepository = medicoRepository;
         this.funcionarioRepository = funcionarioRepository;
+        this.agendaRepository = agendaRepository;
     }
     async create(dto) {
         const agendamento = this.agendamentoRepository.create({
@@ -33,17 +35,19 @@ let AgendamentoService = class AgendamentoService {
             paciente: dto.id_paciente ? { id: dto.id_paciente } : null,
             medico: dto.id_medico ? { id: dto.id_medico } : null,
         });
+        const agenda = this.agendamentoRepository.update({
+            ...dto,
+            medico: dto.id_medico ? { id: dto.id_medico }
+                :
+            ,
+            medico, : .agenda.id_agenda()
+        });
         return await this.agendamentoRepository.save(agendamento);
     }
     findById(id) {
         return this.agendamentoRepository.findOne({
             where: { id },
-            relations: [
-                'paciente',
-                'medico',
-                'medico.especialidade',
-                'medico.funcionario',
-            ],
+            relations: ['paciente', 'medico', 'medico.especialidade', 'medico.funcionario'],
         });
     }
     async update(id, dto) {
@@ -85,9 +89,7 @@ let AgendamentoService = class AgendamentoService {
         return await this.agendamentoRepository.save(agendamento);
     }
     async updateStatus(id, status) {
-        const agendamento = await this.agendamentoRepository.findOne({
-            where: { id },
-        });
+        const agendamento = await this.agendamentoRepository.findOne({ where: { id } });
         if (!agendamento) {
             throw new common_1.NotFoundException('Agendamento não encontrado');
         }
@@ -119,12 +121,7 @@ let AgendamentoService = class AgendamentoService {
     }
     async findAll() {
         return this.agendamentoRepository.find({
-            relations: [
-                'paciente',
-                'medico',
-                'medico.especialidade',
-                'medico.funcionario',
-            ],
+            relations: ['paciente', 'medico', 'medico.especialidade', 'medico.funcionario'],
         });
     }
     async findOne(id) {
@@ -156,7 +153,9 @@ exports.AgendamentoService = AgendamentoService = __decorate([
     __param(1, (0, typeorm_1.InjectRepository)(paciente_entity_1.Paciente)),
     __param(2, (0, typeorm_1.InjectRepository)(medico_entity_1.Medico)),
     __param(3, (0, typeorm_1.InjectRepository)(funcionario_entity_1.Funcionario)),
+    __param(4, (0, typeorm_1.InjectRepository)(agenda_entity_ts_1.Agenda)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository])
