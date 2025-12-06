@@ -30,6 +30,9 @@ let PacienteController = class PacienteController {
     async findByCpf(cpf) {
         return this.pacienteService.findByCpf(cpf);
     }
+    async findPacienteById(id) {
+        return this.pacienteService.findPacienteById(id);
+    }
     update(id, updatePacienteDto) {
         return this.pacienteService.update(id, updatePacienteDto);
     }
@@ -55,6 +58,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], PacienteController.prototype, "findByCpf", null);
+__decorate([
+    (0, common_1.Get)('id/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], PacienteController.prototype, "findPacienteById", null);
 __decorate([
     (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),

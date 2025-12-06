@@ -41,19 +41,22 @@ let PacienteService = class PacienteService {
             throw new common_1.InternalServerErrorException('Erro ao criar paciente.');
         }
     }
-    async update(id, dto) {
-        const paciente = await this.pacienteRepository.findOne({ where: { id } });
-        if (!paciente) {
-            throw new common_1.NotFoundException('Paciente não encontrado');
-        }
-        Object.assign(paciente, dto);
-        return this.pacienteRepository.save(paciente);
-    }
     findAll() {
         return this.pacienteRepository.find();
     }
     findByCpf(cpf) {
         return this.pacienteRepository.find({ where: { cpf } });
+    }
+    findPacienteById(id) {
+        return this.pacienteRepository.findOne({ where: { id } });
+    }
+    async update(id, dto) {
+        const paciente = await this.findPacienteById(id);
+        if (!paciente) {
+            throw new common_1.NotFoundException('Paciente não encontrado');
+        }
+        Object.assign(paciente, dto);
+        return this.pacienteRepository.save(paciente);
     }
 };
 exports.PacienteService = PacienteService;

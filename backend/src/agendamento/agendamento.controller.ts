@@ -1,4 +1,17 @@
-import { Controller, Get, Post, Body, Param, Delete, ParseIntPipe,Patch, HttpCode,UsePipes,ValidationPipe,HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  ParseIntPipe,
+  Patch,
+  HttpCode,
+  UsePipes,
+  ValidationPipe,
+  HttpStatus,
+} from '@nestjs/common';
 import { AgendamentoService } from './agendamento.service';
 import { CreateAgendamentoDto } from './dto/create-agendamento.dto';
 import { UpdateAgendamentoDto } from './dto/update-agendamento.dto';
@@ -23,7 +36,7 @@ export class AgendamentoController {
     const date = new Date(data);
     return this.agendamentoService.findByDate(date);
   }
-  
+
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.agendamentoService.findById(id);
@@ -31,7 +44,13 @@ export class AgendamentoController {
 
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
-  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
+  @UsePipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  )
   async patch(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateAgendamentoDto,
@@ -42,5 +61,11 @@ export class AgendamentoController {
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.agendamentoService.remove(id);
+  }
+
+  @Patch(':id/cancelar')
+  @HttpCode(HttpStatus.OK)
+  async cancelar(@Param('id', ParseIntPipe) id: number): Promise<Agendamento> {
+    return await this.agendamentoService.cancelAgendamento(id);
   }
 }
