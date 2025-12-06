@@ -18,6 +18,13 @@ export default function Prontuario() {
     endereco: ''
   });
 
+    // Lista de consultas do médico e seleção
+  const [consultas, setConsultas] = useState([]);
+  const [selectedConsulta, setSelectedConsulta] = useState(null);
+
+  // Campo de busca por médico (id/CRM)
+  const [medicoBusca, setMedicoBusca] = useState('');
+
   // Histórico de consultas/atendimentos anteriores - Precisa vim do banco 
   const [historico, setHistorico] = useState([]);
 
@@ -37,6 +44,100 @@ export default function Prontuario() {
 
   const [loading, setLoading] = useState(true);
 
+  const handleSelectConsulta = async (consulta) => {
+    setSelectedConsulta(consulta);
+    const pacienteObj = consulta.paciente || {};
+    setPaciente({
+      id: pacienteObj.id || consulta.id_paciente || null,
+      nome: pacienteObj.nome || pacienteObj.nome_completo || '',
+      cpf: pacienteObj.cpf || '',
+      dataNascimento: pacienteObj.dataNascimento || pacienteObj.data_nascimento || '',
+      contato: pacienteObj.contato || '',
+      endereco: pacienteObj.endereco || ''
+    });
+    setPacienteEncontrado(true);
+
+    // Atualizar histórico do paciente
+    try {
+      setLoading(true);
+      const resHistorico = await api.get('/agendamentos');
+      const all = Array.isArray(resHistorico.data) ? resHistorico.data : [];
+      const pacienteId = pacienteObj.id || consulta.id_paciente || consulta.paciente_id;
+      const hist = all.filter(a => (a.paciente?.id || a.paciente_id) === pacienteId);
+      setHistorico(hist);
+    } catch (err) {
+      console.warn('Erro ao buscar histórico:', err);
+      setHistorico([]);
+    } finally {
+      setLoading(false);
+    }
+
+    // Rolar para o formulário
+    setTimeout(() => {
+      document.querySelector('.prontuario-formulario')?.scrollIntoView({ behavior: 'smooth' });
+    }, 200);
+  };
+
+  const handleBuscarPorMedico = async (medicoId) => {
+    if (!medicoId || !String(medicoId).trim()) {
+      alert('Informe o médico (ID ou CRM)');
+      return;
+    }
+    try {
+      setLoading(true);
+      // Chama a rota que existe no backend
+      const res = await api.get(`/agendamentos`);
+      console.log('agendamentos recebidos:', res.data);
+      const lista = Array.isArray(res.data) ? res.data : [];
+      // Filtra no cliente pelos agendamentos cujo médico tem o id informado
+      // Ajuste o campo conforme sua estrutura: c.medico?.id ou c.medico?.funcionario?.id se necessário
+      const filtradas = lista.filter(c => {
+        const medico = c.medico || {};
+        // se você está usando CRM em vez de id, adapte aqui
+        return String(medico.id) === String(medicoId) || String(medico.funcionario?.id) === String(medicoId);
+      });
+      setConsultas(filtradas);
+
+      if (filtradas.length > 0) {
+        const primeira = filtradas[0];
+        setSelectedConsulta(primeira);
+        const pacienteObj = primeira.paciente || {};
+        setPaciente({
+          id: pacienteObj.id || primeira.paciente_id || null,
+          nome: pacienteObj.nome || pacienteObj.nome_completo || '',
+          cpf: pacienteObj.cpf || '',
+          dataNascimento: pacienteObj.dataNascimento || pacienteObj.data_nascimento || '',
+          contato: pacienteObj.contato || '',
+          endereco: pacienteObj.endereco || ''
+        });
+        setPacienteEncontrado(true);
+
+        // Buscar histórico: use agendamentos filtrando pelo paciente
+        try {
+          const resHist = await api.get('/agendamentos');
+          const all = Array.isArray(resHist.data) ? resHist.data : [];
+          const hist = all.filter(a => (a.paciente?.id || a.paciente_id) === (pacienteObj.id || primeira.paciente_id));
+          setHistorico(hist);
+        } catch (err) {
+          console.warn('Erro ao buscar histórico (agendamentos):', err);
+          setHistorico([]);
+        }
+      } else {
+        setSelectedConsulta(null);
+        setPaciente({ id: null, nome: '', cpf: '', dataNascimento: '', contato: '', endereco: '' });
+        setPacienteEncontrado(false);
+        setHistorico([]);
+        alert('Nenhuma consulta/agenda encontrada para esse médico');
+      }
+    } catch (err) {
+      console.error('Erro ao buscar agendamentos por médico:', err);
+      alert('Erro ao buscar consultas. Veja o console para detalhes.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
   // Função para buscar paciente pelo CPF
   const handleBuscarPaciente = async () => {
     if (!cpfBuscando.trim()) {
@@ -49,6 +150,9 @@ export default function Prontuario() {
 
       // Buscar paciente pelo CPF - ROTA CORRIGIDA: /pacientes/cpf/:cpf
       const resPaciente = await api.get(`/pacientes/cpf/${cpfBuscando}`);
+      const all = Array.isArray(resHistorico.data) ? resHistorico.data : [];
+      const hist = all.filter(a => (a.paciente?.id || a.paciente_id) === pacienteData.id);
+      setHistorico(hist);
 
       // resPaciente.data é um array, pega o primeiro resultado
       const pacienteData = Array.isArray(resPaciente.data)
@@ -157,28 +261,65 @@ export default function Prontuario() {
       {/* PAINEL DE BUSCA DE PACIENTE */}
       <div className="prontuario-search">
         <div className="search-container">
-          <h3>Buscar Paciente</h3>
+          <h3>Buscar Consultas por Médico</h3>
           <div className="search-row">
             <input
               type="text"
-              placeholder="Digite o CPF do paciente (ex: 12345678901)"
-              value={cpfBuscando}
-              onChange={(e) => setCpfBuscando(e.target.value)}
+              placeholder="Digite o ID/CRM do médico"
+              value={medicoBusca}
+              onChange={(e) => setMedicoBusca(e.target.value)}
               onKeyPress={(e) => {
-                if (e.key === 'Enter') handleBuscarPaciente();
+                if (e.key === 'Enter') handleBuscarPorMedico(medicoBusca);
               }}
             />
-            <button onClick={handleBuscarPaciente} disabled={loading}>
-              {loading ? 'Buscando...' : 'Buscar'}
+            <button onClick={() => handleBuscarPorMedico(medicoBusca)} disabled={loading}>
+              {loading ? 'Buscando...' : 'Buscar consultas'}
             </button>
           </div>
         </div>
       </div>
 
+      {consultas.length > 0 && (
+        <section className="consultas-list" style={{ maxWidth: 1200, margin: '12px auto', padding: 12 }}>
+          <h4>Consultas encontradas</h4>
+          <div className="lista-consultas">
+            {consultas.map((c) => (
+              <div
+                key={c.id}
+                className={`consulta-item ${selectedConsulta?.id === c.id ? 'selected' : ''}`}
+                onClick={() => handleSelectConsulta(c)}
+                style={{ cursor: 'pointer', padding: 10, borderBottom: '1px solid #eee', display: 'flex', gap: 12, alignItems: 'center' }}
+              >
+                <div style={{ minWidth: 160 }}>
+                  {c.data ? new Date(c.data).toLocaleString('pt-BR') : '-'}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: 600 }}>{c.paciente?.nome || c.paciente_nome || '-'}</div>
+                  <div style={{ color: '#666' }}>{c.motivo_consulta || c.motivo || '-'}</div>
+                </div>
+                <div style={{ minWidth: 100, textAlign: 'right', color: '#333' }}>
+                  {c.status || '-'}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* CABEÇALHO FIXO - SÓ APARECE APÓS BUSCAR */}
     {pacienteEncontrado && (
       <div className="prontuario-header">
         <div className="paciente-info">
+            {selectedConsulta && (
+              <div className="consulta-info" style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(150px,1fr))', gap: 12 }}>
+                  <div><label>Data da Consulta:</label><div>{new Date(selectedConsulta.data).toLocaleString('pt-BR')}</div></div>
+                  <div><label>Motivo:</label><div>{selectedConsulta.motivo_consulta || selectedConsulta.motivo || '-'}</div></div>
+                  <div><label>Status:</label><div>{selectedConsulta.status || '-'}</div></div>
+                  <div><label>Médico:</label><div>{selectedConsulta.medico?.funcionario?.nome || selectedConsulta.medico?.nome || '-'}</div></div>
+                </div>
+              </div>
+            )}
           <div className="info-group">
             <label>Nome:</label>
             <span>{paciente.nome || '-'}</span>
@@ -206,35 +347,6 @@ export default function Prontuario() {
         </div>
       </div>
     )}
-
-      <div className="prontuario-header">
-        <div className="paciente-info">
-          <div className="info-group">
-            <label>Nome:</label>
-            <span>{paciente.nome || '-'}</span>
-          </div>
-          <div className="info-group">
-            <label>CPF:</label>
-            <span>{paciente.cpf || '-'}</span>
-          </div>
-          <div className="info-group">
-            <label>Data de Nascimento:</label>
-            <span>{paciente.dataNascimento || '-'}</span>
-          </div>
-          <div className="info-group">
-            <label>Idade:</label>
-            <span>{calcularIdade(paciente.dataNascimento)} anos</span>
-          </div>
-          <div className="info-group">
-            <label>Contato:</label>
-            <span>{paciente.contato || '-'}</span>
-          </div>
-          <div className="info-group">
-            <label>Endereço:</label>
-            <span>{paciente.endereco || '-'}</span>
-          </div>
-        </div>
-      </div>
 
       <main className="page-prontuario">
         {/* HISTÓRICO DE ATENDIMENTOS */}
