@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Agendamento = void 0;
 const typeorm_1 = require("typeorm");
 const paciente_entity_1 = require("../../paciente/entities/paciente.entity");
+const medico_entity_1 = require("../../medico/entities/medico.entity");
 let Agendamento = class Agendamento {
 };
 exports.Agendamento = Agendamento;
@@ -20,18 +21,15 @@ __decorate([
     __metadata("design:type", Number)
 ], Agendamento.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'int', nullable: true }),
-    __metadata("design:type", Number)
-], Agendamento.prototype, "id_medico", void 0);
-__decorate([
     (0, typeorm_1.ManyToOne)(() => paciente_entity_1.Paciente),
-    (0, typeorm_1.JoinColumn)({ name: 'id_paciente' }),
+    (0, typeorm_1.JoinColumn)({ name: 'paciente_id' }),
     __metadata("design:type", paciente_entity_1.Paciente)
 ], Agendamento.prototype, "paciente", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'varchar', length: 100, nullable: true }),
-    __metadata("design:type", String)
-], Agendamento.prototype, "especialidade", void 0);
+    (0, typeorm_1.ManyToOne)(() => medico_entity_1.Medico),
+    (0, typeorm_1.JoinColumn)({ name: 'medico_id' }),
+    __metadata("design:type", medico_entity_1.Medico)
+], Agendamento.prototype, "medico", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'timestamp', nullable: false }),
     __metadata("design:type", Date)
@@ -40,10 +38,6 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'varchar', length: 20, default: 'agendada' }),
     __metadata("design:type", String)
 ], Agendamento.prototype, "status", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'varchar', length: 255, nullable: true }),
-    __metadata("design:type", String)
-], Agendamento.prototype, "prontuario_path", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'varchar', length: 500, nullable: true }),
     __metadata("design:type", String)

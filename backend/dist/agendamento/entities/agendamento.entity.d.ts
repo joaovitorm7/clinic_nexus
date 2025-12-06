@@ -1,11 +1,10 @@
 import { Paciente } from '../../paciente/entities/paciente.entity';
+import { Medico } from '../../medico/entities/medico.entity';
 export declare class Agendamento {
     id: number;
-    id_medico: number;
     paciente: Paciente;
-    especialidade: string;
+    medico: Medico;
     data: Date;
     status: string;
-    prontuario_path: string;
     motivo_consulta: string;
 }

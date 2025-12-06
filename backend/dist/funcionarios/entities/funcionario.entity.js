@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Funcionario = void 0;
 const typeorm_1 = require("typeorm");
 const medico_entity_1 = require("../../medico/entities/medico.entity");
+const class_validator_1 = require("class-validator");
 let Funcionario = class Funcionario {
 };
 exports.Funcionario = Funcionario;
@@ -40,6 +41,7 @@ __decorate([
     __metadata("design:type", String)
 ], Funcionario.prototype, "cargo", void 0);
 __decorate([
+    (0, class_validator_1.IsOptional)(),
     (0, typeorm_1.Column)({ type: 'date', nullable: true }),
     __metadata("design:type", Date)
 ], Funcionario.prototype, "data_desativacao", void 0);

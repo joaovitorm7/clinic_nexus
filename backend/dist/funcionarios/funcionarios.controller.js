@@ -25,6 +25,9 @@ let FuncionariosController = class FuncionariosController {
     async findAll() {
         return this.funcionarioService.findAll();
     }
+    async findOneByCpf(cpf) {
+        return cpf;
+    }
     async findOne(id) {
         return `Retornar funcionário com id ${id}`;
     }
@@ -50,10 +53,17 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FuncionariosController.prototype, "findAll", null);
 __decorate([
+    (0, common_1.Get)(':cpf'),
+    __param(0, (0, common_1.Param)('cpf')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], FuncionariosController.prototype, "findOneByCpf", null);
+__decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", Promise)
 ], FuncionariosController.prototype, "findOne", null);
 __decorate([

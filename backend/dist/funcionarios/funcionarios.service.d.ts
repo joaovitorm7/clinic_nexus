@@ -17,4 +17,5 @@ export declare class FuncionarioService {
     findAll(): Promise<Funcionario[]>;
     findById(id: number): Promise<Funcionario>;
     findByEmail(email: string): Promise<Funcionario>;
+    findByCpf(cpf: string): Promise<Funcionario>;
 }

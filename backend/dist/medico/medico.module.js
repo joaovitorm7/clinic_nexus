@@ -15,6 +15,8 @@ const medico_entity_1 = require("./entities/medico.entity");
 const especialidade_entity_1 = require("./entities/especialidade.entity");
 const funcionarios_module_1 = require("../funcionarios/funcionarios.module");
 const funcionario_entity_1 = require("../funcionarios/entities/funcionario.entity");
+const especialidade_service_1 = require("./especialidade.service");
+const medico_controller_2 = require("./medico.controller");
 let MedicoModule = class MedicoModule {
 };
 exports.MedicoModule = MedicoModule;
@@ -24,8 +26,8 @@ exports.MedicoModule = MedicoModule = __decorate([
             typeorm_1.TypeOrmModule.forFeature([medico_entity_1.Medico, especialidade_entity_1.Especialidade, funcionario_entity_1.Funcionario]),
             funcionarios_module_1.FuncionariosModule,
         ],
-        controllers: [medico_controller_1.MedicoController],
-        providers: [medico_service_1.MedicoService],
+        controllers: [medico_controller_1.MedicoController, medico_controller_2.EspecialidadeController],
+        providers: [medico_service_1.MedicoService, especialidade_service_1.EspecialidadeService],
         exports: [medico_service_1.MedicoService],
     })
 ], MedicoModule);

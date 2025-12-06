@@ -2,7 +2,6 @@ import { DataSource } from 'typeorm';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
 
-// Carrega variáveis de ambiente do .env
 dotenv.config();
 
 export const AppDataSource = new DataSource({
@@ -12,16 +11,11 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
-  synchronize: false, // nunca use synchronize em produção
+
+  synchronize: false,
   logging: true,
 
-  // Pega todas as entidades espalhadas por pastas
   entities: [path.join(__dirname, '/**/*.entity.{ts,js}')],
+  migrations: [path.join(__dirname, '/migrations/*.{ts,js}')],
 
-  // Pega todas as migrations (TS para dev, JS para build)
-  migrations: ['src/migrations/*{.ts,.js}'],
-
-  extra: {
-    createDatabase: true, // cria o DB se não existir
-  },
 });

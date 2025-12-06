@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
 import { Medico } from '../../medico/entities/medico.entity';
+import { IsOptional } from 'class-validator';
 
 @Entity('Funcionario')
 export class Funcionario {
@@ -21,6 +22,7 @@ export class Funcionario {
   @Column({ type: 'varchar', length: 100, nullable: false })
   cargo: string;
 
+  @IsOptional()
   @Column({ type: 'date', nullable: true })
   data_desativacao: Date | null;
 

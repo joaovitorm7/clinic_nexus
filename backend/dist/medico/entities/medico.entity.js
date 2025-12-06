@@ -21,12 +21,12 @@ __decorate([
     __metadata("design:type", Number)
 ], Medico.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => funcionario_entity_1.Funcionario),
+    (0, typeorm_1.OneToOne)(() => funcionario_entity_1.Funcionario, { nullable: false }),
     (0, typeorm_1.JoinColumn)({ name: 'funcionario_id' }),
     __metadata("design:type", funcionario_entity_1.Funcionario)
 ], Medico.prototype, "funcionario", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => especialidade_entity_1.Especialidade),
+    (0, typeorm_1.ManyToOne)(() => especialidade_entity_1.Especialidade, { nullable: true }),
     (0, typeorm_1.JoinColumn)({ name: 'especialidade_id' }),
     __metadata("design:type", especialidade_entity_1.Especialidade)
 ], Medico.prototype, "especialidade", void 0);

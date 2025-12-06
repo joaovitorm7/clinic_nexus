@@ -15,7 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AgendamentoController = void 0;
 const common_1 = require("@nestjs/common");
 const agendamento_service_1 = require("./agendamento.service");
-const create_agendamento_dto_1 = require("./create-agendamento.dto");
+const create_agendamento_dto_1 = require("./dto/create-agendamento.dto");
+const update_agendamento_dto_1 = require("./dto/update-agendamento.dto");
 let AgendamentoController = class AgendamentoController {
     constructor(agendamentoService) {
         this.agendamentoService = agendamentoService;
@@ -31,7 +32,10 @@ let AgendamentoController = class AgendamentoController {
         return this.agendamentoService.findByDate(date);
     }
     findOne(id) {
-        return this.agendamentoService.findOne(id);
+        return this.agendamentoService.findById(id);
+    }
+    async patch(id, dto) {
+        return await this.agendamentoService.update(id, dto);
     }
     remove(id) {
         return this.agendamentoService.remove(id);
@@ -65,6 +69,16 @@ __decorate([
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
 ], AgendamentoController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Patch)(':id'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, common_1.UsePipes)(new common_1.ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true })),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, update_agendamento_dto_1.UpdateAgendamentoDto]),
+    __metadata("design:returntype", Promise)
+], AgendamentoController.prototype, "patch", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),

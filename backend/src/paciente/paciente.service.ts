@@ -2,15 +2,17 @@ import {
   Injectable,
   InternalServerErrorException,
   ConflictException,
-  ServiceUnavailableException,
+  ServiceUnavailableException, NotFoundException
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Paciente } from './entities/paciente.entity';
-import { CreatePacienteDto } from './create-paciente.dto';
+import { CreatePacienteDto } from './dto/create-paciente.dto';
+import { UpdatePacienteDto } from './dto/update-paciente.dto';
 
 @Injectable()
 export class PacienteService {
+  pacienteRepo: any;
   constructor(
     @InjectRepository(Paciente)
     private readonly pacienteRepository: Repository<Paciente>,
@@ -43,6 +45,8 @@ export class PacienteService {
       throw new InternalServerErrorException('Erro ao criar paciente.');
     }
   }
+
+
   findAll(): Promise<Paciente[]> {
     return this.pacienteRepository.find();
   }
@@ -50,16 +54,21 @@ export class PacienteService {
   findByCpf(cpf: string): Promise<Paciente[]> {
     return this.pacienteRepository.find({ where: { cpf } });
   }
-
-  async findById(id: number): Promise<Paciente> {
-    return this.pacienteRepository.findOne({
-      where: { id }
-    });
-  }
-
-  async update(id: number, updatePacienteDto: CreatePacienteDto): Promise<Paciente> {
-    await this.pacienteRepository.update(id, updatePacienteDto);
+  findPacienteById(id: number): Promise<Paciente | null> {
     return this.pacienteRepository.findOne({ where: { id } });
   }
+
+  async update(id, dto: UpdatePacienteDto) {
+  const paciente = await this.findPacienteById(id);
+
+  if (!paciente) {
+    throw new NotFoundException('Paciente não encontrado');
+  }
+
+  Object.assign(paciente, dto);
+
+  return this.pacienteRepository.save(paciente);
+}
+
 }
   

@@ -8,9 +8,10 @@ import { AppService } from './app.service';
 import { PacienteModule } from './paciente/paciente.module';
 import { AgendamentoModule } from './agendamento/agendamento.module';
 import { Especialidade } from './medico/entities/especialidade.entity';
-import { EspecialidadeModule } from './medico/especialidade.module';
 import { MedicoModule } from './medico/medico.module';
 import { AgendaModule } from './agenda/agenda.module';
+import { Prontuario } from './agendamento/entities/prontuario.entity';
+import { ProntuarioModule } from './agendamento/prontuario.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -45,8 +46,9 @@ import { AgendaModule } from './agenda/agenda.module';
     UsuarioModule,
     AuthModule,
     AgendamentoModule,
-    EspecialidadeModule,
-    MedicoModule
+    MedicoModule,
+    ProntuarioModule,
+    //AgendaModule, !descomentar quando implementar :)
   ],
   controllers: [AppController],
   providers: [AppService],

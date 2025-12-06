@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import { Funcionario } from './entities/funcionario.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Medico } from '../medico/entities/medico.entity';
-
+import { NotFoundException } from '@nestjs/common';
 @Injectable()
 export class FuncionarioService {
   constructor(
@@ -56,5 +56,8 @@ export class FuncionarioService {
   }
   async findByEmail(email:string): Promise<Funcionario>{
     return this.funcionarioRepo.findOne({where:{email}})
+  }
+  async findByCpf(cpf:string):Promise<Funcionario>{
+    return this.funcionarioRepo.findOne({where:{cpf}})
   }
 }

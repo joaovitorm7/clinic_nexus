@@ -17,9 +17,20 @@ export const criarPaciente = async (pacienteData) => {
     throw error;
   }
 };
+//Editar Paciente
+export const editarPaciente = async (id, pacienteData) => {
+  try {
+    const response = await api.patch(`/pacientes/${id}`, pacienteData);
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao editar paciente", error);
+    throw error;
+  }
+};
 
 export default {
   getPatientByCPF,
   getPatientById,
-  criarPaciente
+  criarPaciente,
+  editarPaciente
 };

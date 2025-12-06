@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Medico } from '../../medico/entities/medico.entity'; 
 
-@Entity('agenda')
+@Entity('Agenda')
 export class Agenda {
   @PrimaryGeneratedColumn()
   id: number;

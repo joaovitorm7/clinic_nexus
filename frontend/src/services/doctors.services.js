@@ -19,7 +19,7 @@ export const getDoctorById = async (id) => {
   }
 }
 export const getDoctorByEspecialidadeId = async (especialidade_id)=>{
-    const response = await api.get(`/medicos/especialidade/${especialidade_id}`)
+    const response = await api.get(`/medico/especialidade/${especialidade_id}`)
     return response.data;
 }
 
@@ -27,7 +27,7 @@ export const getDoctorByEspecialidadeId = async (especialidade_id)=>{
 
 export const createDoctor = async (doctorData) => {
   try {
-    const response = await api.post('/medicos', doctorData);
+    const response = await api.post('/medico', doctorData);
     return response.data;
   } catch (error) {
     console.error(error.response?.data || error.message || error);
@@ -36,7 +36,7 @@ export const createDoctor = async (doctorData) => {
 }
 export const updateDoctor = async (id, doctorData) => {
   try {
-    const response = await api.put(`/medicos/${id}`, doctorData);
+    const response = await api.put(`/medico/${id}`, doctorData);
     return response.data;
   } catch (error) {
     console.error(error.response?.data || error.message || error);

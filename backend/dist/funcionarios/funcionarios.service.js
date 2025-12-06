@@ -51,6 +51,9 @@ let FuncionarioService = class FuncionarioService {
     async findByEmail(email) {
         return this.funcionarioRepo.findOne({ where: { email } });
     }
+    async findByCpf(cpf) {
+        return this.funcionarioRepo.findOne({ where: { cpf } });
+    }
 };
 exports.FuncionarioService = FuncionarioService;
 exports.FuncionarioService = FuncionarioService = __decorate([

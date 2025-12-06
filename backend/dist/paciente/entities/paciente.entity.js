@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Paciente = void 0;
 const typeorm_1 = require("typeorm");
+const agendamento_entity_1 = require("../../agendamento/entities/agendamento.entity");
 let Paciente = class Paciente {
 };
 exports.Paciente = Paciente;
@@ -34,6 +35,14 @@ __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Paciente.prototype, "contato", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Paciente.prototype, "endereco", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => agendamento_entity_1.Agendamento, (agendamento) => agendamento.paciente),
+    __metadata("design:type", Array)
+], Paciente.prototype, "agendamentos", void 0);
 exports.Paciente = Paciente = __decorate([
     (0, typeorm_1.Entity)('Paciente')
 ], Paciente);

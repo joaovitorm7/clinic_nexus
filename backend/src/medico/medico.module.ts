@@ -6,14 +6,15 @@ import { Medico } from './entities/medico.entity';
 import { Especialidade } from './entities/especialidade.entity';
 import { FuncionariosModule } from '../funcionarios/funcionarios.module';
 import { Funcionario } from '../funcionarios/entities/funcionario.entity';
-
+import { EspecialidadeService } from './especialidade.service';
+import { EspecialidadeController } from './medico.controller';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Medico, Especialidade, Funcionario]),
     FuncionariosModule,
   ],
-  controllers: [MedicoController],      
-  providers: [MedicoService],
+  controllers: [MedicoController, EspecialidadeController],
+  providers: [MedicoService, EspecialidadeService],
   exports: [MedicoService],
 })
 export class MedicoModule {}

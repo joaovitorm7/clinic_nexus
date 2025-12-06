@@ -11,7 +11,8 @@ export declare class FuncionariosController {
         id_cargo: number;
     }): Promise<import("./entities/funcionario.entity").Funcionario>;
     findAll(): Promise<import("./entities/funcionario.entity").Funcionario[]>;
-    findOne(id: string): Promise<string>;
+    findOneByCpf(cpf: string): Promise<string>;
+    findOne(id: number): Promise<string>;
     update(id: string, updateData: any): Promise<string>;
     remove(id: string): Promise<string>;
 }

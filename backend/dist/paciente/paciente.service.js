@@ -47,14 +47,16 @@ let PacienteService = class PacienteService {
     findByCpf(cpf) {
         return this.pacienteRepository.find({ where: { cpf } });
     }
-    async findById(id) {
-        return this.pacienteRepository.findOne({
-            where: { id }
-        });
-    }
-    async update(id, updatePacienteDto) {
-        await this.pacienteRepository.update(id, updatePacienteDto);
+    findPacienteById(id) {
         return this.pacienteRepository.findOne({ where: { id } });
+    }
+    async update(id, dto) {
+        const paciente = await this.findPacienteById(id);
+        if (!paciente) {
+            throw new common_1.NotFoundException('Paciente não encontrado');
+        }
+        Object.assign(paciente, dto);
+        return this.pacienteRepository.save(paciente);
     }
 };
 exports.PacienteService = PacienteService;
