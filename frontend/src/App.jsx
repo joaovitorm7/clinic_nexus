@@ -15,6 +15,8 @@ import Consultas from "./pages/recepcao/Visualizar/Consulta";
 import DashboardFunc from "./pages/Admin/Funcionarios/DashboardFunc";
 import EmployeePage from "./EmployeePage";
 import EditarAgenda from "./pages/recepcao/EditarAgenda/EditarAgenda";
+import DashboardMedico from "./pages/AlaMedica/Dashboard/DashboardAlaMedica";
+import Prontuario from "./pages/AlaMedica/prontuario/Prontuario";
 
 import CalendarPage from "./pages/recepcao/AgendaMedico/AgendaMedico";
 function App() {
@@ -36,7 +38,7 @@ function App() {
         <Route path="/admin/medicos" element={<DashboardMed />} />
         <Route path ="/test" element ={<EmployeePage/>} />
 
-        <Route path="/alamedica" element={<DashboardAlaMedica />} />
+        <Route path="/alamedica" element={<DashboardMedico/>} />
         <Route path="/alamedica/prontuario" element={<Prontuario />} />
        
 
