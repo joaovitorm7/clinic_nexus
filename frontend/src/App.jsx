@@ -14,14 +14,14 @@ import AgendarConsulta from './pages/recepcao/AgendarConsulta/AgendarConsulta';
 import Consultas from "./pages/recepcao/Visualizar/Consulta";
 import DashboardFunc from "./pages/Admin/Funcionarios/DashboardFunc";
 import EmployeePage from "./EmployeePage";
-import DashboardAlaMedica from './pages/AlaMedica/Dashboard/DashboardAlaMedica';
-import Prontuario from './pages/AlaMedica/prontuario/Prontuario';
+import EditarAgenda from "./pages/recepcao/EditarAgenda/EditarAgenda";
 
+import CalendarPage from "./pages/recepcao/AgendaMedico/AgendaMedico";
 function App() {
 
   //teste para deslogar pelo console
   const { logout } = useAuth();
-  window.logout = logout; 
+  window.logout = logout;
 
   //todo: css para calendario
 
@@ -30,10 +30,8 @@ function App() {
       <Route path="/" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-
-
         <Route path="/administracao" element={<Dashboard />} />
-        <Route path="/funcionarios" element={<DashboardFunc />} />   
+        <Route path="/funcionarios" element={<DashboardFunc />} />
         <Route path="/admin/funcionarios/addFunc" element={<AddFunc />} />
         <Route path="/admin/medicos" element={<DashboardMed />} />
         <Route path ="/test" element ={<EmployeePage/>} />
@@ -45,11 +43,12 @@ function App() {
         <Route path="/recepcao/agendar" element={<AgendarConsulta />} />
         <Route path="/recepcao" element={<Recepcao/>} />
         <Route path="/consultas" element={<Consultas/>} />
-        <Route path="/recepcao/pacientes/novo" element={<CadastrarPaciente />} />
-        <Route path="/recepcao/pacientes" element={<VisualizarPacientes />} />
-        <Route path="/recepcao/pacientes/:id/editar" element={<CadastrarPaciente />} /> {/* reutilizando o formulário para edição */}
+
+        <Route path="/recepcao/EditarAgenda" element={<EditarAgenda />} />
+
         
 
+        /* <Route path="/calendario" element={<CalendarPage />} /> */
     </Routes>
   );
 }

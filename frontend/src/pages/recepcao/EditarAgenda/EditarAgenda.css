@@ -1,0 +1,178 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden !important;
+    height: 100%;
+}
+
+.agenda-root {
+    max-width: 820px;
+    margin: 12px auto;
+    padding: 8px;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    color: #222;
+    overflow: hidden !importanT;
+}
+
+.agenda-title {
+    text-align: center;
+    margin-bottom: 12px;
+    font-size: 22px;
+}
+
+.agenda-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.btn {
+    background: #eee;
+    border: 1px solid #ddd;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.btn.primary { background: #2c7be5; color: #fff; border: none; }
+.btn.danger { background: #e55454; color: #fff; border: none; }
+.btn.small { padding: 4px 8px; font-size: 13px; }
+
+.month-label {
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    margin-top: 8px;
+    font-weight: 700;
+    color: #444;
+    overflow: hidden !important;
+}
+.weekday {
+    text-align: center;
+    padding: 6px 0;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-top: 8px;
+    overflow: hidden !important;
+}
+
+.cell {
+    min-height: 70px;
+    border-radius: 8px;
+    padding: 6px;
+    box-sizing: border-box;
+    overflow: hidden !important;
+}
+
+.cell.empty {
+    background: transparent;
+    border: none;
+}
+
+.cell.day {
+    background: #fff;
+    border: 1px solid #e6e6e6;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.cell-daynum {
+    font-weight: 600;
+    font-size: 14px;
+    text-align: left;
+}
+
+.cell-dot {
+    width: 9px;
+    height: 9px;
+    background: #2c7be5;
+    border-radius: 50%;
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+}
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    overflow: hidden !important;
+}
+
+.modal-box {
+    width: 680px;
+    max-width: 95%;
+    max-height: 95vh;
+    background: #fff;
+    border-radius: 10px;
+    padding: 18px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    overflow: hidden !important;
+}
+
+.existing-list {
+    margin-bottom: 12px;
+    max-height: 180px;
+    overflow: hidden !important;
+    border-radius: 6px;
+    padding: 8px;
+    background: #f7f9fc;
+    border: 1px solid #eef3fb;
+}
+
+.entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    background: #ffffff;
+    border: 1px solid #eef2f7;
+}
+.entry-main { max-width: 72%; }
+.entry-times { color:#555; margin-top:6px; font-size:13px; }
+
+.form label { display:block; margin-top: 8px; font-weight: 600; }
+.form input[type="text"], .form input[type="time"] {
+    width: 100%;
+    padding: 8px;
+    margin-top: 6px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+.time-row { display:flex; gap:12px; align-items:center; margin-top:6px; }
+.time-row > div { flex: 1; }
+
+.modal-actions {
+    display:flex;
+    gap:10px;
+    margin-top: 12px;
+    flex-wrap:wrap;
+    align-items:center;
+}
+
+.muted { color:#666; font-style:italic; }
+
+@media (max-width: 700px) {
+    .modal-box { width: 92%; padding: 12px; }
+    .entry-main { max-width: 60%; }
+}

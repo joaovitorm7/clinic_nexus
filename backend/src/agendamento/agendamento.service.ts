@@ -17,7 +17,7 @@ export class AgendamentoService {
     @InjectRepository(Medico)
     private readonly medicoRepository: Repository<Medico>,
     @InjectRepository(Funcionario)
-    private readonly funcionarioRepository:Repository<Funcionario>
+    private readonly funcionarioRepository: Repository<Funcionario>,
   ) {}
 
   async create(dto: CreateAgendamentoDto): Promise<Agendamento> {
@@ -32,7 +32,12 @@ export class AgendamentoService {
   findById(id: number): Promise<Agendamento> {
     return this.agendamentoRepository.findOne({
       where: { id },
-      relations: ['paciente', 'medico', 'medico.especialidade','medico.funcionario'],
+      relations: [
+        'paciente',
+        'medico',
+        'medico.especialidade',
+        'medico.funcionario',
+      ],
     });
   }
 
@@ -81,19 +86,48 @@ export class AgendamentoService {
     return await this.agendamentoRepository.save(agendamento);
   }
   async updateStatus(id: number, status: string) {
-  const agendamento = await this.agendamentoRepository.findOne({ where: { id } });
+    const agendamento = await this.agendamentoRepository.findOne({
+      where: { id },
+    });
 
-  if (!agendamento) {
-    throw new NotFoundException('Agendamento não encontrado');
+    if (!agendamento) {
+      throw new NotFoundException('Agendamento não encontrado');
+    }
+
+    agendamento.status = status;
+
+    return this.agendamentoRepository.save(agendamento);
   }
 
-  agendamento.status = status;
+  async cancelAgendamento(id: number): Promise<Agendamento> {
+    const agendamento = await this.agendamentoRepository.findOne({
+      where: { id },
+      relations: ['paciente', 'medico'],
+    });
 
-  return this.agendamentoRepository.save(agendamento);
-}
+    if (!agendamento) {
+      throw new NotFoundException('Agendamento não encontrado');
+    }
 
+    // Validar se já foi realizada
+    if (agendamento.status === 'realizada') {
+      throw new Error('Não é possível cancelar uma consulta já realizada');
+    }
 
-  async findAgendamentosByPacienteId(pacienteId: number): Promise<Agendamento[]> {
+    // Validar se já está cancelada
+    if (agendamento.status === 'cancelada') {
+      throw new Error('Esta consulta já foi cancelada');
+    }
+
+    // Atualizar status para cancelada
+    agendamento.status = 'cancelada';
+
+    return await this.agendamentoRepository.save(agendamento);
+  }
+
+  async findAgendamentosByPacienteId(
+    pacienteId: number,
+  ): Promise<Agendamento[]> {
     return this.agendamentoRepository.find({
       where: { paciente: { id: pacienteId } },
       relations: ['paciente'],
@@ -102,7 +136,12 @@ export class AgendamentoService {
 
   async findAll(): Promise<Agendamento[]> {
     return this.agendamentoRepository.find({
-      relations: ['paciente', 'medico', 'medico.especialidade','medico.funcionario'],
+      relations: [
+        'paciente',
+        'medico',
+        'medico.especialidade',
+        'medico.funcionario',
+      ],
     });
   }
 

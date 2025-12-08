@@ -5,6 +5,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+html {
+  background: linear-gradient(to top, #b3e5ef, #ecf4fc, #f7f7f8);
+}
+
 body {
   margin: 0;
   min-width: 320px;

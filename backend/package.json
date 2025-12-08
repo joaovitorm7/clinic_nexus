@@ -5,14 +5,14 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
-"scripts": {
-  "db:create": "ts-node src/data-sources/create-database.ts",
-  "db:drop":"ts-node src/data-sources/drop-database.ts",
-  "migration:create": "npx typeorm migration:create",
-  "db:sync": "npx typeorm-ts-node-commonjs schema:sync -d ./src/data-source.ts",
-  "migration:generate": "npx typeorm-ts-node-commonjs migration:generate -d ./src/data-source.ts ./src/migrations/new",
-  "migration:run": "npx typeorm-ts-node-commonjs migration:run -d ./src/data-source.ts",
-  "migration:revert": "npx typeorm-ts-node-commonjs migration:revert -d ./src/data-source.ts",
+  "scripts": {
+    "db:create": "ts-node src/data-sources/create-database.ts",
+    "db:drop": "ts-node src/data-sources/drop-database.ts",
+    "migration:create": "npx typeorm migration:create",
+    "db:sync": "npx typeorm-ts-node-commonjs schema:sync -d ./src/data-source.ts",
+    "migration:generate": "npx typeorm-ts-node-commonjs migration:generate -d ./src/data-source.ts ./src/migrations/new",
+    "migration:run": "npx typeorm-ts-node-commonjs migration:run -d ./src/data-source.ts",
+    "migration:revert": "npx typeorm-ts-node-commonjs migration:revert -d ./src/data-source.ts",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
@@ -84,6 +84,9 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/$1"
+    }
   }
 }

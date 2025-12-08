@@ -1,47 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { getAgendamentos } from '../../../services/agendamentoService';
-import './Consulta.css';
-import { FaTrash, FaPencilAlt, FaArrowLeft } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
-import api from '../../../services/api';
+import React, { useState, useEffect } from "react";
+import {
+  getAgendamentos,
+  cancelarAgendamento,
+} from "../../../services/agendamentoService";
+import "./Consulta.css";
 
 const Consultas = () => {
   const [consultas, setConsultas] = useState([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
-
-  // Função para cancelar consulta
-  const handleCancelarConsulta = async (consultaId) => {
-    const confirmacao = window.confirm(
-      'Tem certeza que deseja cancelar esta consulta? Esta ação não pode ser desfeita.'
-    );
-
-    if (!confirmacao) {
-      return;
-    }
-
-    try {
-      // Fazer DELETE na API
-      await api.delete(`/agendamentos/${consultaId}`);
-
-      // Remover da lista local (atualizar UI)
-      setConsultas(prev => prev.filter(c => c.id !== consultaId));
-
-      alert('Consulta cancelada com sucesso!');
-    } catch (err) {
-      console.error('Erro ao cancelar consulta:', err);
-      alert('Erro ao cancelar consulta. Tente novamente.');
-    }
-  };
-
-  // Função para editar consulta
-  const handleEditarConsulta = (consultaId) => {
-    navigate(`/consultas/${consultaId}/editar`);
-  };
-
-  const handleVoltar = () => {
-    navigate(-1);
-  }
+  const [cancelando, setCancelando] = useState(null);
+  const [mensagem, setMensagem] = useState({ tipo: "", texto: "" });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,7 +17,7 @@ const Consultas = () => {
         const consultasData = await getAgendamentos();
         setConsultas(consultasData || []);
       } catch (err) {
-        console.error('Erro ao carregar consultas:', err);
+        console.error("Erro ao carregar consultas:", err);
       } finally {
         setLoading(false);
       }
@@ -57,6 +25,37 @@ const Consultas = () => {
 
     fetchData();
   }, []);
+
+  const handleCancelarConsulta = async (consultaId) => {
+    if (!window.confirm("Tem certeza que deseja cancelar esta consulta?")) {
+      return;
+    }
+
+    setCancelando(consultaId);
+    try {
+      await cancelarAgendamento(consultaId);
+      setConsultas(
+        consultas.map((c) =>
+          c.id === consultaId ? { ...c, status: "cancelada" } : c
+        )
+      );
+      setMensagem({
+        tipo: "sucesso",
+        texto: "Consulta cancelada com sucesso!",
+      });
+    } catch (err) {
+      console.error("Erro ao cancelar consulta:", err);
+      setMensagem({
+        tipo: "erro",
+        texto:
+          err.response?.data?.message ||
+          "Erro ao cancelar consulta. Tente novamente.",
+      });
+    } finally {
+      setCancelando(null);
+      setTimeout(() => setMensagem({ tipo: "", texto: "" }), 3000);
+    }
+  };
 
   if (loading) return <p>Carregando consultas...</p>;
 
@@ -72,6 +71,12 @@ const Consultas = () => {
       </button>
 
       <h1>Consultas Agendadas</h1>
+
+      {mensagem.texto && (
+        <div className={`mensagem mensagem-${mensagem.tipo}`}>
+          {mensagem.texto}
+        </div>
+      )}
 
       {consultas.length === 0 ? (
         <p>Nenhuma consulta encontrada.</p>
@@ -90,33 +95,43 @@ const Consultas = () => {
             </tr>
           </thead>
           <tbody>
-            {consultas.map((c) => (
-              <tr key={c.id}>
-                <td>{c.id}</td>
-                <td>{c.paciente ? c.paciente.nome : 'Não encontrado'}</td>
-                <td>{c.id_medico ?? '-'}</td>
-                <td>{c.especialidade ?? '-'}</td>
-                <td>{new Date(c.data).toLocaleString()}</td>
-                <td>{c.status}</td>
-                <td>{c.motivo_consulta ?? '-'}</td>
-                <td>
-                  <button
-                    className="btn-editar"
-                    onClick={() => handleEditarConsulta(c.id)}
-                    title="Editar consulta"
-                  >
-                    <FaPencilAlt size={16} />
-                  </button>
-                  <button
-                    className="btn-cancelar"
-                    onClick={() => handleCancelarConsulta(c.id)}
-                    title="Cancelar consulta"
-                  >
-                    <FaTrash size={16} />
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {consultas.map((c) => {
+              const pacienteNome = c.paciente?.nome ?? "Não encontrado";
+
+              const medicoNome = c.medico?.funcionario?.nome ?? "Não informado";
+
+              const especialidadeNome =
+                c.medico?.especialidade?.nome ?? "Não informado";
+
+              const dataStr = c.data ? new Date(c.data).toLocaleString() : "-";
+
+              return (
+                <tr key={c.id}>
+                  <td>{c.id}</td>
+                  <td>{pacienteNome}</td>
+                  <td>{medicoNome}</td> {/* Médico = funcionário */}
+                  <td>{especialidadeNome}</td> {/* Especialidade */}
+                  <td>{dataStr}</td>
+                  <td>{c.status ?? "-"}</td>
+                  <td>{c.motivo_consulta ?? c.motivo ?? "-"}</td>
+                  <td>
+                    {c.status !== "cancelada" && c.status !== "realizada" ? (
+                      <button
+                        className="btn-cancelar"
+                        onClick={() => handleCancelarConsulta(c.id)}
+                        disabled={cancelando === c.id}
+                      >
+                        {cancelando === c.id ? "Cancelando..." : "Cancelar"}
+                      </button>
+                    ) : (
+                      <span className="status-bloqueado">
+                        {c.status === "cancelada" ? "Cancelada" : "Realizada"}
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       )}

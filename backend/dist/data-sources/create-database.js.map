@@ -1,1 +1,0 @@
-{"version":3,"file":"create-database.js","sourceRoot":"","sources":["../../src/data-sources/create-database.ts"],"names":[],"mappings":";;AAAA,yDAAmD;AACnD,gDAA+C;AAE/C,KAAK,UAAU,IAAI;IACjB,MAAM,IAAA,kCAAc,EAAC;QACnB,UAAU,EAAE,IAAI;QAChB,OAAO,EAAE,2BAAa,CAAC,OAAO;KAC/B,CAAC,CAAC;IAEH,OAAO,CAAC,GAAG,CAAC,8BAA8B,CAAC,CAAC;AAC9C,CAAC;AAED,IAAI,EAAE,CAAC"}
