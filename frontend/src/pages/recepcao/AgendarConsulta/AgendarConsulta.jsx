@@ -1,24 +1,50 @@
-import { useState, useEffect, useRef } from 'react';
-import { createAgendamento } from '../../../services/agendamentoService';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getAllEspecialidades } from '../../../services/especialidadeService';
+import { getDoctorByEspecialidadeId } from '../../../services/doctors.services';
 import { getPatientByCPF, criarPaciente, editarPaciente } from '../../../services/pacienteService';
-import api from '../../../services/api';
+import { createAgendamento } from '../../../services/agendamentoService';
 import './AgendarConsulta.css';
-import { useNavigate } from "react-router-dom";
 
-const AgendarConsulta = () => {
+
+export default function AgendarConsulta() {
   const navigate = useNavigate();
 
-  const [patientType, setPatientType] = useState('new');
   const [formData, setFormData] = useState({
+    id: null,
     fullName: '',
     birthDate: '',
     cpf: '',
     phone: '',
     email: '',
-    id: null
+    endereco: ''
   });
 
+  const [consultaData, setConsultaData] = useState({
+    cardNumber: '',
+    specialtyId: '',
+    doctorId: '',
+    consultationType: 'primeira',
+    date: '',
+    period: '',
+    time: '',
+    observations: ''
+  });
+
+  const [specialties, setSpecialties] = useState([]);
+  const [doctors, setDoctors] = useState([]);
+
+  const [loadingSpecialties, setLoadingSpecialties] = useState(false);
+  const [loadingDoctors, setLoadingDoctors] = useState(false);
+  const [doctorsError, setDoctorsError] = useState(null);
+
+  const [cpfStatus, setCpfStatus] = useState('idle');
+  const [loadingPatient, setLoadingPatient] = useState(false);
+  const cpfDebounceRef = useRef(null);
+
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+
   const [newPatientForm, setNewPatientForm] = useState({
     fullName: '',
     cpf: '',
@@ -27,7 +53,7 @@ const AgendarConsulta = () => {
     phone: '',
     email: ''
   });
-  const [showEditModal, setShowEditModal] = useState(false);
+
   const [editPatientForm, setEditPatientForm] = useState({
     fullName: '',
     cpf: '',
@@ -38,425 +64,203 @@ const AgendarConsulta = () => {
   });
 
   const [editingPatientId, setEditingPatientId] = useState(null);
-  const [newPatientErrors, setNewPatientErrors] = useState({
-    fullName: '',
-    cpf: '',
-    birthDate: '',
-    address: '',
-    phone: '',
-    email: ''
-  });
-
-  const [specialties, setSpecialties] = useState([]);
-  const [doctors, setDoctors] = useState([]);
-  const [loadingSpecialties, setLoadingSpecialties] = useState(false);
-  const [loadingDoctors, setLoadingDoctors] = useState(false);
-  const [cpfStatus, setCpfStatus] = useState('idle');
-  const [loadingPatient, setLoadingPatient] = useState(false);
-  const cpfDebounceRef = useRef(null);
-
-  const [consultaData, setConsultaData] = useState({
-    cardNumber: '',
-    specialtyId: '',
-    doctorId: '',
-    consultationType: '',
-    date: '',
-    period: '',
-    time: '',
-    observations: ''
-  });
-
-  const handlePatientTypeChange = (e) => {
-    const type = e.target.value;
-    setPatientType(type);
-    if (type === 'new') {
-      setFormData({ fullName: '', birthDate: '', cpf: '', phone: '', email: '', id: null });
-    }
-  };
-
-  const handleCPFSearch = async (cpf) => {
-    try {
-      const response = await getPatientByCPF(cpf);
-      if (response?.data && response.data.length > 0) {
-        const paciente = response.data[0];
-        setFormData((prev) => ({
-          ...prev,
-          id: paciente.id,
-          fullName: paciente.nome,
-          birthDate: paciente.data_nascimento,
-          cpf: paciente.cpf,
-          phone: paciente.contato,
-          email: paciente.email || paciente.contato,
-          endereco: paciente.endereco || ''
-        }));
-      }
-    } catch (error) {
-      console.error('Erro ao buscar paciente:', error);
-    }
-  };
 
   const normalizeCPF = (cpf) => (cpf || '').replace(/\D/g, '');
 
-  const searchPatientByCPF = async (rawCpf) => {
-    setLoadingPatient(true);
-    setCpfStatus('loading');
+  useEffect(() => {
+    (async () => {
+      setLoadingSpecialties(true);
+      try {
+        const res = await getAllEspecialidades();
+        setSpecialties(res?.data ?? res ?? []);
+      } catch (err) {
+        setSpecialties([]);
+      } finally {
+        setLoadingSpecialties(false);
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    const id = consultaData.specialtyId;
+    setDoctors([]);
+    setDoctorsError(null);
+    setConsultaData((prev) => ({ ...prev, doctorId: '' }));
+    if (!id) return;
+    (async () => {
+      try {
+        setLoadingDoctors(true);
+        const res = await getDoctorByEspecialidadeId(id);
+        const arr = Array.isArray(res) ? res : (res?.data ?? []);
+        const mapped = (arr || []).map((m) => ({
+          id: m.id,
+          nome: m.nome || m.funcionario?.nome || 'Médico',
+          crm: m.crm
+        }));
+        setDoctors(mapped);
+      } catch (err) {
+        setDoctors([]);
+        setDoctorsError('Erro ao buscar médicos');
+      } finally {
+        setLoadingDoctors(false);
+      }
+    })();
+  }, [consultaData.specialtyId]);
+
+  // Função que efetivamente busca paciente no backend por CPF
+  const searchPatient = async (cpf) => {
     try {
-      const response = await getPatientByCPF(rawCpf);
-      if (response?.data && response.data.length > 0) {
-        const paciente = response.data[0];
+      setLoadingPatient(true);
+      setCpfStatus('loading');
+      const res = await getPatientByCPF(cpf);
+      const arr = res?.data ?? res ?? [];
+      if (Array.isArray(arr) && arr.length > 0) {
+        const p = arr[0];
         setFormData({
-          id: paciente.id,
-          fullName: paciente.nome,
-          birthDate: paciente.data_nascimento,
-          cpf: paciente.cpf,
-          phone: paciente.contato,
-          email: paciente.email || paciente.contato || ''
+          id: p.id,
+          fullName: p.nome,
+          birthDate: p.data_nascimento,
+          cpf: p.cpf,
+          phone: p.contato,
+          email: p.email || '',
+          endereco: p.endereco || ''
         });
-        setPatientType('existing');
         setCpfStatus('found');
       } else {
-        setPatientType('new');
         setCpfStatus('not_found');
-        setFormData((prev) => ({ ...prev, id: null, fullName: '', birthDate: '', phone: '', email: '' }));
+        // limpa dados parcialmente (mantém cpf digitado)
+        setFormData((prev) => ({ ...prev, id: null, fullName: '', birthDate: '', phone: '', email: '', endereco: '' }));
       }
     } catch (err) {
-      console.error('Erro ao buscar paciente por CPF:', err.response?.data || err);
       setCpfStatus('idle');
     } finally {
       setLoadingPatient(false);
     }
   };
 
-  const handleCPFInput = (e) => {
-    const { value } = e.target;
-    setFormData((prev) => ({ ...prev, cpf: value }));
-
-    if (cpfDebounceRef.current) clearTimeout(cpfDebounceRef.current);
-
-    cpfDebounceRef.current = setTimeout(() => {
-      const raw = normalizeCPF(value);
-      if (raw.length === 11) {
-        searchPatientByCPF(raw);
-      } else {
-        setCpfStatus('idle');
-        setPatientType('new');
-      }
-    }, 400);
-  };
-
-  useEffect(() => {
-    return () => {
-      if (cpfDebounceRef.current) clearTimeout(cpfDebounceRef.current);
-    };
-  }, []);
-
-  const openCreateModal = () => {
-    setNewPatientForm((prev) => ({ ...prev, cpf: formData.cpf || '' }));
-    setShowCreateModal(true);
-  };
-
-  function openEditModal(patient) {
-    setEditPatientForm({
-      fullName: patient.fullName || '',
-      cpf: patient.cpf || '',
-      birthDate: patient.birthDate || '',
-      address: patient.address || '',
-      phone: patient.phone || '',
-      email: patient.email || ''
-    });
-    setEditingPatientId(patient.id ?? null);
-    setShowEditModal(true);
-  }
-
-  function handleEditPatientChange(e) {
-    const { name, value } = e.target;
-    setEditPatientForm((prev) => ({ ...prev, [name]: value }));
-  }
-
-  async function handleEditPatientSave() {
-    try {
-      const payload = {
-        nome: editPatientForm.fullName,
-        cpf: (editPatientForm.cpf || '').replace(/\D/g, ''),
-        data_nascimento: editPatientForm.birthDate || null,
-        contato: editPatientForm.phone || editPatientForm.email || null,
-        endereco: editPatientForm.address || ''
-      };
-
-      const id = editingPatientId || editPatientForm.id || formData.id;
-      if (!id) {
-        alert('ID do paciente ausente. Reabra o modal.');
-        return;
-      }
-
-      const updated = await editarPaciente(id, payload);
-
-      const updatedPatient = updated || {
-        id,
-        nome: payload.nome,
-        cpf: payload.cpf,
-        data_nascimento: payload.data_nascimento,
-        contato: payload.contato,
-        endereco: payload.endereco
-      };
-
-      setFormData({
-        id: updatedPatient.id ?? id,
-        fullName: updatedPatient.nome ?? payload.nome,
-        birthDate: updatedPatient.data_nascimento ?? payload.data_nascimento,
-        cpf: updatedPatient.cpf ?? payload.cpf,
-        phone: updatedPatient.contato ?? payload.contato,
-        email: updatedPatient.email ?? updatedPatient.contato ?? '',
-        endereco: updatedPatient.endereco ?? payload.endereco
-      });
-
-      setCpfStatus('found');
-      setPatientType('existing');
-      setShowEditModal(false);
-    } catch (err) {
-      console.error('Erro ao atualizar paciente', err.response?.data || err);
-      alert('Falha ao atualizar paciente: ' + (err.response?.data?.message || err.message || String(err)));
-    }
-  }
-
-  const closeCreateModal = () => setShowCreateModal(false);
-
-  const normalizeOnlyDigits = (s) => (s || '').replace(/\D/g, '');
-  const normalizePhone = (s) => (s || '').replace(/[^\d+]/g, '');
-
-  const isValidCPF = (cpf) => {
-    const raw = normalizeOnlyDigits(cpf);
-    return raw.length === 11;
-  };
-
-  const isValidPhone = (phone) => {
-    if (!phone) return false;
-    const p = normalizePhone(phone);
-    const regex = /^\+?\d{7,15}$/;
-    return regex.test(p);
-  };
-
-  const isValidEmail = (email) => {
-    if (!email) return false;
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(String(email).toLowerCase());
-  };
-
-  const isValidDateString = (s) => {
-    if (!s) return false;
-    const d = new Date(s);
-    if (Number.isNaN(d.getTime())) return false;
-    const today = new Date();
-    return d <= today;
-  };
-
-  const isValidFullName = (name) => !!name && name.trim().length >= 3;
-
-  const handleNewPatientChange = (e) => {
-    const { name, value: rawValue } = e.target;
-    let value = rawValue;
-
-    if (name === 'cpf') {
-      value = normalizeOnlyDigits(value).slice(0, 11);
-    }
-    if (name === 'phone') {
-      value = value.replace(/[^\d+]/g, '');
-      if (value.startsWith('+')) {
-        value = '+' + value.slice(1).slice(0, 15);
-      } else {
-        value = value.slice(0, 15);
-      }
-    }
-    if (name === 'email') value = value.trim();
-
-    setNewPatientForm((prev) => ({ ...prev, [name]: value }));
-
-    setNewPatientErrors((prev) => {
-      const next = { ...prev };
-      switch (name) {
-        case 'cpf':
-          next.cpf = value ? (isValidCPF(value) ? '' : 'CPF deve ter 11 dígitos numéricos') : 'CPF obrigatório';
-          break;
-        case 'phone':
-          next.phone = value ? (isValidPhone(value) ? '' : 'Telefone inválido (ex: +5511999999999 ou 11999999999)') : '';
-          break;
-        case 'email':
-          next.email = value ? (isValidEmail(value) ? '' : 'E-mail inválido') : '';
-          break;
-        case 'birthDate':
-          next.birthDate = value ? (isValidDateString(value) ? '' : 'Data inválida') : 'Data de nascimento obrigatória';
-          break;
-        case 'fullName':
-          next.fullName = value ? (isValidFullName(value) ? '' : 'Nome muito curto') : 'Nome obrigatório';
-          break;
-        default:
-          next[name] = '';
-      }
-      return next;
-    });
-  };
-
-  const validateNewPatientForm = () => {
-    const errors = {
-      fullName: '',
-      cpf: '',
-      birthDate: '',
-      address: '',
-      phone: '',
-      email: ''
-    };
-
-    if (!isValidFullName(newPatientForm.fullName)) errors.fullName = 'Nome obrigatório (min 3 caracteres)';
-    if (!isValidCPF(newPatientForm.cpf)) errors.cpf = 'CPF deve conter 11 dígitos';
-    if (!isValidDateString(newPatientForm.birthDate)) errors.birthDate = 'Data de nascimento inválida';
-    const contato = newPatientForm.phone || newPatientForm.email || '';
-    if (!contato) {
-      errors.phone = 'Telefone ou e-mail é obrigatório';
-      errors.email = 'Telefone ou e-mail é obrigatório';
+  // Nova função pública interna pedida: recebe um CPF (com ou sem formatação),
+  // normaliza e dispara a busca. Pode ser reutilizada por outros handlers.
+  const handleCPFsearch = async (cpfInput) => {
+    const raw = normalizeCPF(cpfInput);
+    if (raw.length === 11) {
+      await searchPatient(raw);
     } else {
-      if (newPatientForm.phone && !isValidPhone(newPatientForm.phone)) errors.phone = 'Telefone inválido';
-      if (newPatientForm.email && !isValidEmail(newPatientForm.email)) errors.email = 'E-mail inválido';
+      // se CPF inválido, resetar estado relacionado
+      setCpfStatus('idle');
+      setFormData((p) => ({ ...p, id: null, fullName: '', birthDate: '', phone: '', email: '', endereco: '' }));
     }
-
-    setNewPatientErrors(errors);
-    return Object.values(errors).every((v) => !v);
   };
 
-  const handleCreatePatientSave = async () => {
-    if (!newPatientForm.fullName || !newPatientForm.cpf) {
-      alert('Preencha nome e CPF para cadastrar o paciente.');
-      return;
-    }
-    if (!newPatientForm.birthDate) {
-      alert('Preencha a data de nascimento (obrigatória).');
-      return;
-    }
-    const contato = newPatientForm.phone || newPatientForm.email;
-    if (!contato) {
-      alert('Preencha telefone ou e-mail (contato obrigatório).');
-      return;
-    }
-
-    try {
-      const contato = newPatientForm.phone || newPatientForm.email;
-
-      const payload = {
-        nome: newPatientForm.fullName,
-        cpf: newPatientForm.cpf.replace(/\D/g, ''),
-        data_nascimento: newPatientForm.birthDate,
-        contato,
-        endereco: newPatientForm.address || ''
-      };
-
-      const criado = await criarPaciente(payload);
-
-      setFormData({
-        id: criado.id,
-        fullName: criado.nome,
-        birthDate: criado.data_nascimento,
-        cpf: criado.cpf,
-        phone: criado.contato,
-        email: criado.email,
-        endereco: criado.endereco || ''
-      });
-      setCpfStatus('found');
-      setPatientType('existing');
-      setShowCreateModal(false);
-      alert('Paciente cadastrado com sucesso.');
-    } catch (err) {
-      console.error('Erro ao criar paciente:', err.response?.data || err);
-      const serverMsg = err.response?.data?.message || JSON.stringify(err.response?.data) || err.message;
-      alert('Falha ao cadastrar paciente. ' + serverMsg);
-    }
+  // handler de input com debounce que usa handleCPFsearch
+  const handleCPFInput = (e) => {
+    const value = e.target.value;
+    setFormData((p) => ({ ...p, cpf: value }));
+    if (cpfDebounceRef.current) clearTimeout(cpfDebounceRef.current);
+    cpfDebounceRef.current = setTimeout(() => {
+      handleCPFsearch(value);
+    }, 400);
   };
 
   const handleConsultaChange = (e) => {
     const { name, value } = e.target;
-    setConsultaData((prev) => ({ ...prev, [name]: value }));
+    setConsultaData((p) => ({ ...p, [name]: value }));
   };
 
-  function getTimeSlots(period) {
-    if (!period) return [];
-    const slots = [];
-    const config = { manha: [8, 12], tarde: [13, 17], noite: [18, 21] };
-    const [startHour, endHour] = config[period] || [];
-    for (let h = startHour; h < endHour; h++) {
-      for (let m = 0; m < 60; m += 30) {
-        slots.push(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`);
-      }
-    }
-    return slots;
-  }
+  const handleNewPatientChange = (e) => {
+    const { name, value } = e.target;
+    setNewPatientForm((p) => ({ ...p, [name]: value }));
+  };
 
-  useEffect(() => {
-    const loadSpecialties = async () => {
-      try {
-        setLoadingSpecialties(true);
-        const res = await api.get('/especialidades');
-        setSpecialties(res.data);
-      } catch (err) {
-        console.error('Erro ao carregar especialidades:', err);
-      } finally {
-        setLoadingSpecialties(false);
-      }
-    };
-    loadSpecialties();
-  }, []);
+  const handleEditPatientChange = (e) => {
+    const { name, value } = e.target;
+    setEditPatientForm((p) => ({ ...p, [name]: value }));
+  };
 
-  useEffect(() => {
-    if (!consultaData.specialtyId) {
-      setDoctors([]);
-      return;
-    }
-    const loadDoctors = async () => {
-      try {
-        setLoadingDoctors(true);
-        const res = await api.get(`/medicos/especialidade/${consultaData.specialtyId}`);
-        setDoctors(res.data);
-      } catch (err) {
-        console.error('Erro ao carregar médicos:', err);
-      } finally {
-        setLoadingDoctors(false);
-      }
+  const closeCreateModal = () => setShowCreateModal(false);
+
+  const handleCreatePatientSave = async () => {
+    const data = {
+      nome: newPatientForm.fullName,
+      cpf: normalizeCPF(newPatientForm.cpf),
+      data_nascimento: newPatientForm.birthDate,
+      contato: newPatientForm.phone || newPatientForm.email,
+      endereco: newPatientForm.address
     };
-    loadDoctors();
-  }, [consultaData.specialtyId]);
+    const res = await criarPaciente(data);
+    const novo = res?.data ?? res;
+    setFormData({
+      id: novo.id,
+      fullName: novo.nome,
+      birthDate: novo.data_nascimento,
+      cpf: novo.cpf,
+      phone: novo.contato,
+      email: novo.email || '',
+      endereco: novo.endereco || ''
+    });
+    setShowCreateModal(false);
+    setCpfStatus('found');
+  };
+
+  const handleEditPatientSave = async () => {
+    const payload = {
+      nome: editPatientForm.fullName,
+      cpf: normalizeCPF(editPatientForm.cpf),
+      data_nascimento: editPatientForm.birthDate,
+      contato: editPatientForm.phone || editPatientForm.email,
+      endereco: editPatientForm.address
+    };
+    await editarPaciente(editingPatientId, payload);
+    setShowEditModal(false);
+    setFormData({
+      id: editingPatientId,
+      fullName: payload.nome,
+      birthDate: payload.data_nascimento,
+      cpf: payload.cpf,
+      phone: payload.contato,
+      email: editPatientForm.email,
+      endereco: payload.endereco
+    });
+  };
+
+  const createPatientIfNeeded = async () => {
+    if (formData.id) return formData.id;
+    const payload = {
+      nome: formData.fullName,
+      cpf: normalizeCPF(formData.cpf),
+      data_nascimento: formData.birthDate,
+      contato: formData.phone || formData.email,
+      endereco: formData.endereco
+    };
+    const res = await criarPaciente(payload);
+    const novo = res?.data ?? res;
+    return novo.id;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const pacienteId = await createPatientIfNeeded();
+    const payload = {
+      id_paciente: pacienteId,
+      ...(consultaData.doctorId ? { id_medico: Number(consultaData.doctorId) } : {}),
+      ...(consultaData.specialtyId ? { especialidade: specialties.find((s) => String(s.id) === String(consultaData.specialtyId))?.nome } : {}),
+      data: new Date(`${consultaData.date}T${consultaData.time}:00`).toISOString(),
+      motivo_consulta: consultaData.observations,
+      status: 'agendada'
+    };
+    await createAgendamento(payload);
+    alert('Consulta agendada com sucesso!');
+    navigate('/recepcao');
+  };
 
-    let pacienteId = formData.id;
-
-    try {
-      if (patientType === 'new') {
-        const novoPaciente = await criarPaciente({
-          nome: formData.fullName,
-          cpf: formData.cpf,
-          data_nascimento: formData.birthDate,
-          contato: formData.phone,
-          endereco: formData.endereco
-        });
-        pacienteId = novoPaciente.id;
-      }
-
-      const payload = {
-        id_paciente: pacienteId,
-        id_medico: consultaData.doctorId ? Number(consultaData.doctorId) : undefined,
-        especialidade: consultaData.specialtyId
-          ? specialties.find((s) => s.id == consultaData.specialtyId)?.nome
-          : undefined,
-        data: new Date(`${consultaData.date}T${consultaData.time}:00`).toISOString(),
-        motivo_consulta: consultaData.observations || undefined,
-        status: 'agendada'
-      };
-
-      await createAgendamento(payload);
-      alert('Consulta agendada com sucesso!');
-      navigate('/recepcao');
-    } catch (error) {
-      console.error('Erro no agendamento:', error.response?.data || error);
-      alert('Falha ao agendar consulta.');
+  const getTimeSlots = (period) => {
+    const cfg = { manha: [8, 12], tarde: [13, 17], noite: [18, 21] };
+    if (!cfg[period]) return [];
+    const [start, end] = cfg[period];
+    const r = [];
+    for (let h = start; h < end; h++) {
+      for (let m = 0; m < 60; m += 30) r.push(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`);
     }
+    return r;
   };
 
   return (
@@ -545,6 +349,30 @@ const AgendarConsulta = () => {
                       >
                         Editar
                       </button>
+                    </div>
+                  </>
+                )}
+
+                {cpfStatus !== 'found' && (
+                  <>
+                    <div className="form-field">
+                      <label>Nome Completo</label>
+                      <input type="text" value={formData.fullName} onChange={(e) => setFormData((p) => ({ ...p, fullName: e.target.value }))} />
+                    </div>
+
+                    <div className="form-field">
+                      <label>Data de Nascimento</label>
+                      <input type="date" value={formData.birthDate} onChange={(e) => setFormData((p) => ({ ...p, birthDate: e.target.value }))} />
+                    </div>
+
+                    <div className="form-field">
+                      <label>Telefone</label>
+                      <input type="tel" value={formData.phone} onChange={(e) => setFormData((p) => ({ ...p, phone: e.target.value }))} />
+                    </div>
+
+                    <div className="form-field">
+                      <label>E-mail</label>
+                      <input type="email" value={formData.email} onChange={(e) => setFormData((p) => ({ ...p, email: e.target.value }))} />
                     </div>
                   </>
                 )}
@@ -745,13 +573,9 @@ const AgendarConsulta = () => {
               <button type="submit">Agendar Consulta</button>
             </div>
 
-            <button onClick={() => navigate(`/consultas/${c.id}/editar`)}>Editar</button>
-
           </form>
         </div>
       </div>
     </div>
   );
-};
-
-export default AgendarConsulta;
+}

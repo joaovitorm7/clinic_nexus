@@ -2,7 +2,7 @@
 import api from './api';
 
 // Buscar paciente por CPF
-export const getPatientByCPF = (cpf) => api.get(`/pacientes/${cpf}`);
+export const getPatientByCPF = (cpf) => api.get(`/pacientes/cpf/${cpf}`);
 
 // Buscar paciente por ID
 export const getPatientById = (id) => api.get(`/pacientes/id/${id}`);
