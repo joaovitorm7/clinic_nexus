@@ -2,6 +2,7 @@ import {
   Controller,
   Post,
   Get,
+  Put,
   Patch,
   Delete,
   Param,
@@ -23,7 +24,7 @@ export class ProntuarioController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true }))
   async create(@Body() createDto: CreateProntuarioDto): Promise<Prontuario> {
     return this.prontuarioService.create(createDto);
   }
@@ -47,14 +48,26 @@ export class ProntuarioController {
   ): Promise<Prontuario | null> {
     return this.prontuarioService.findByAgendamentoId(agendamentoId);
   }
+
   @Get('paciente/:id')
+  @HttpCode(HttpStatus.OK)
   async findByPaciente(@Param('id', ParseIntPipe) id: number): Promise<Prontuario[]> {
     return this.prontuarioService.findByPacienteId(id);
   }
 
+  @Put(':id')
+  @HttpCode(HttpStatus.OK)
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true }))
+  async replace(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateDto: UpdateProntuarioDto,
+  ): Promise<Prontuario> {
+    return this.prontuarioService.update(id, updateDto);
+  }
+
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
-  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true }))
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateDto: UpdateProntuarioDto,
@@ -62,9 +75,9 @@ export class ProntuarioController {
     return this.prontuarioService.update(id, updateDto);
   }
 
-    @Delete(':id')
-    @HttpCode(HttpStatus.NO_CONTENT)
-    async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
-      return this.prontuarioService.remove(id);
-    }
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    return this.prontuarioService.remove(id);
+  }
 }

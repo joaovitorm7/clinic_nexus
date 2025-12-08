@@ -1,85 +1,88 @@
-const { app, BrowserWindow } = require("electron");
-const path = require("path");
-const { spawn } = require("child_process");
+const { app, BrowserWindow,screen } = require('electron');
+const path = require('path');
+const { spawn } = require('child_process');
+const waitOn = require('wait-on');
 
 let mainWindow;
 let backendProcess;
+let viteProcess;
 
 const BACKEND_PORT = 4000;
+const BACKEND_TCP = `tcp:localhost:${BACKEND_PORT}`;
+const DEV_URL = 'http://localhost:5173';
 
+function startBackend() {
+  return new Promise((resolve, reject) => {
+    const backendPath = path.join(__dirname, '../backend');
+    const backendEntry = path.join(backendPath, 'dist/main.js');
 
+    backendProcess = spawn('node', [backendEntry], {
+      cwd: backendPath,
+      shell: true,
+      stdio: 'ignore',
+      windowsHide: true,       // <<< evita abrir console
+      env: { ...process.env, PORT: String(BACKEND_PORT) },
+    });
+
+    waitOn({ resources: [BACKEND_TCP], timeout: 20000 }, (err) => {
+      if (err) return reject(new Error('Backend não iniciou a tempo'));
+      resolve();
+    });
+  });
+}
+
+function startFrontendDevServer() {
+  return new Promise((resolve, reject) => {
+    const frontendPath = path.join(__dirname, '../frontend');
+
+    viteProcess = spawn('npm', ['run', 'dev'], {
+      cwd: frontendPath,
+      shell: true,
+      stdio: 'ignore',
+      windowsHide: true,        // <<< evita abrir console
+      env: { ...process.env },
+    });
+
+    waitOn({ resources: [DEV_URL], timeout: 20000 }, (err) => {
+      if (err) return reject(new Error('Frontend não iniciou a tempo'));
+      resolve();
+    });
+  });
+}
 
 function createWindow() {
+  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+
   mainWindow = new BrowserWindow({
-    width: 1280,
-    height: 800,
+    width,
+    height,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
     },
   });
 
-  const waitOn = require("wait-on");
-
-  // Para desenvolvimento, carregar o Vite dev server
-  const devURL = "http://localhost:5173";
-
-  mainWindow.loadURL(devURL).catch((err) => {
-    console.error("Erro ao carregar URL do frontend:", err);
-  });
-
-  mainWindow.webContents.openDevTools();
-
-  mainWindow.on("closed", () => {
-    mainWindow = null;
-    if (backendProcess) backendProcess.kill();
-  });
+  mainWindow.loadURL(DEV_URL);
 }
 
-function startBackend() {
-  const backendPath = path.join(__dirname, "../backend");
-  const backendEntry = path.join(backendPath, "dist/main.js");
-
-  console.log(`Iniciando backend na porta ${BACKEND_PORT}...`);
-
-  backendProcess = spawn("node", [backendEntry], {
-    cwd: backendPath,
-    shell: true,
-    stdio: "inherit",
-    env: { ...process.env, PORT: BACKEND_PORT }
-  });
-
-  backendProcess.on("close", (code) => {
-    console.log(`Backend finalizado com código ${code}`);
-  });
+function shutdownAll() {
+  try { viteProcess?.kill(); } catch {}
+  try { backendProcess?.kill(); } catch {}
 }
 
-// Inicia o Vite dev server antes do Electron
-function startFrontendDevServer() {
-  const frontendPath = path.join(__dirname, "../frontend");
-  const viteProcess = spawn("npm", ["run", "dev"], {
-    cwd: frontendPath,
-    shell: true,
-    stdio: "inherit"
-  });
-
-  viteProcess.on("close", (code) => {
-    console.log(`Frontend finalizado com código ${code}`);
-  });
-}
-
-app.whenReady().then(() => {
-  startBackend();
-  startFrontendDevServer(); // start Vite dev server
-  createWindow();
-
-  app.on("activate", () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
-});
-
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
+app.whenReady().then(async () => {
+  try {
+    await startBackend();
+    await startFrontendDevServer();
+    createWindow();
+  } catch (err) {
+    console.error(err);
+    shutdownAll();
     app.quit();
   }
+});
+
+app.on('window-all-closed', () => {
+  shutdownAll();
+  if (process.platform !== 'darwin') app.quit();
 });

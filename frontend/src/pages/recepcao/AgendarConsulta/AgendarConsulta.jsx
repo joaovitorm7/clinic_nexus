@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { createAgendamento } from '../../../services/agendamentoService';
-import { getPatientByCPF, criarPaciente } from '../../../services/pacienteService';
+import { getPatientByCPF, criarPaciente, editarPaciente } from '../../../services/pacienteService';
 import api from '../../../services/api';
 import './AgendarConsulta.css';
 import { useNavigate } from "react-router-dom";
@@ -18,9 +18,27 @@ const AgendarConsulta = () => {
     id: null
   });
 
-  // Modal de cadastro rápido de paciente
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newPatientForm, setNewPatientForm] = useState({
+    fullName: '',
+    cpf: '',
+    birthDate: '',
+    address: '',
+    phone: '',
+    email: ''
+  });
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editPatientForm, setEditPatientForm] = useState({
+    fullName: '',
+    cpf: '',
+    birthDate: '',
+    address: '',
+    phone: '',
+    email: ''
+  });
+
+  const [editingPatientId, setEditingPatientId] = useState(null);
+  const [newPatientErrors, setNewPatientErrors] = useState({
     fullName: '',
     cpf: '',
     birthDate: '',
@@ -33,7 +51,7 @@ const AgendarConsulta = () => {
   const [doctors, setDoctors] = useState([]);
   const [loadingSpecialties, setLoadingSpecialties] = useState(false);
   const [loadingDoctors, setLoadingDoctors] = useState(false);
-  const [cpfStatus, setCpfStatus] = useState('idle'); 
+  const [cpfStatus, setCpfStatus] = useState('idle');
   const [loadingPatient, setLoadingPatient] = useState(false);
   const cpfDebounceRef = useRef(null);
 
@@ -45,7 +63,7 @@ const AgendarConsulta = () => {
     date: '',
     period: '',
     time: '',
-    observations: '',
+    observations: ''
   });
 
   const handlePatientTypeChange = (e) => {
@@ -56,25 +74,26 @@ const AgendarConsulta = () => {
     }
   };
 
-const handleCPFSearch = async (cpf) => {
-  try {
-    const response = await getPatientByCPF(cpf);
-    if (response?.data && response.data.length > 0) {
-      const paciente = response.data[0]; 
-      setFormData({
-        id: paciente.id,
-        fullName: paciente.nome,
-        birthDate: paciente.data_nascimento,
-        cpf: paciente.cpf,
-        phone: paciente.contato,
-        email: paciente.contato, 
-        endereco: paciente.endereco
-      });
+  const handleCPFSearch = async (cpf) => {
+    try {
+      const response = await getPatientByCPF(cpf);
+      if (response?.data && response.data.length > 0) {
+        const paciente = response.data[0];
+        setFormData((prev) => ({
+          ...prev,
+          id: paciente.id,
+          fullName: paciente.nome,
+          birthDate: paciente.data_nascimento,
+          cpf: paciente.cpf,
+          phone: paciente.contato,
+          email: paciente.email || paciente.contato,
+          endereco: paciente.endereco || ''
+        }));
+      }
+    } catch (error) {
+      console.error('Erro ao buscar paciente:', error);
     }
-  } catch (error) {
-    console.error('Erro ao buscar paciente:', error);
-  }
-};
+  };
 
   const normalizeCPF = (cpf) => (cpf || '').replace(/\D/g, '');
 
@@ -96,10 +115,8 @@ const handleCPFSearch = async (cpf) => {
         setPatientType('existing');
         setCpfStatus('found');
       } else {
-        // não encontrado
         setPatientType('new');
         setCpfStatus('not_found');
-        // opcional: limpar campos exceto cpf
         setFormData((prev) => ({ ...prev, id: null, fullName: '', birthDate: '', phone: '', email: '' }));
       }
     } catch (err) {
@@ -110,29 +127,21 @@ const handleCPFSearch = async (cpf) => {
     }
   };
 
-
   const handleCPFInput = (e) => {
     const { value } = e.target;
-    // atualiza o formData com o valor "formatado" visualmente (se quiser manter máscara, preserve aqui)
     setFormData((prev) => ({ ...prev, cpf: value }));
 
-    // limpa debounce anterior
-    if (cpfDebounceRef.current) {
-      clearTimeout(cpfDebounceRef.current);
-    }
+    if (cpfDebounceRef.current) clearTimeout(cpfDebounceRef.current);
 
-    // inicia novo debounce
     cpfDebounceRef.current = setTimeout(() => {
       const raw = normalizeCPF(value);
-      // só pesquisa quando tiver 11 dígitos (ajuste se seu backend aceita menos ou máscara)
       if (raw.length === 11) {
         searchPatientByCPF(raw);
       } else {
-        // se digitar menos de 11, voltar ao estado inicial
         setCpfStatus('idle');
         setPatientType('new');
       }
-    }, 400); // debounce 400ms
+    }, 400);
   };
 
   useEffect(() => {
@@ -141,13 +150,76 @@ const handleCPFSearch = async (cpf) => {
     };
   }, []);
 
-    // Abrir/fechar modal de cadastro
-    const openCreateModal = () => {
-      // popular cpf do modal com o cpf atual, se houver
-      setNewPatientForm((prev) => ({ ...prev, cpf: formData.cpf || '' }));
-      setShowCreateModal(true);
-    };
-    const closeCreateModal = () => setShowCreateModal(false);
+  const openCreateModal = () => {
+    setNewPatientForm((prev) => ({ ...prev, cpf: formData.cpf || '' }));
+    setShowCreateModal(true);
+  };
+
+  function openEditModal(patient) {
+    setEditPatientForm({
+      fullName: patient.fullName || '',
+      cpf: patient.cpf || '',
+      birthDate: patient.birthDate || '',
+      address: patient.address || '',
+      phone: patient.phone || '',
+      email: patient.email || ''
+    });
+    setEditingPatientId(patient.id ?? null);
+    setShowEditModal(true);
+  }
+
+  function handleEditPatientChange(e) {
+    const { name, value } = e.target;
+    setEditPatientForm((prev) => ({ ...prev, [name]: value }));
+  }
+
+  async function handleEditPatientSave() {
+    try {
+      const payload = {
+        nome: editPatientForm.fullName,
+        cpf: (editPatientForm.cpf || '').replace(/\D/g, ''),
+        data_nascimento: editPatientForm.birthDate || null,
+        contato: editPatientForm.phone || editPatientForm.email || null,
+        endereco: editPatientForm.address || ''
+      };
+
+      const id = editingPatientId || editPatientForm.id || formData.id;
+      if (!id) {
+        alert('ID do paciente ausente. Reabra o modal.');
+        return;
+      }
+
+      const updated = await editarPaciente(id, payload);
+
+      const updatedPatient = updated || {
+        id,
+        nome: payload.nome,
+        cpf: payload.cpf,
+        data_nascimento: payload.data_nascimento,
+        contato: payload.contato,
+        endereco: payload.endereco
+      };
+
+      setFormData({
+        id: updatedPatient.id ?? id,
+        fullName: updatedPatient.nome ?? payload.nome,
+        birthDate: updatedPatient.data_nascimento ?? payload.data_nascimento,
+        cpf: updatedPatient.cpf ?? payload.cpf,
+        phone: updatedPatient.contato ?? payload.contato,
+        email: updatedPatient.email ?? updatedPatient.contato ?? '',
+        endereco: updatedPatient.endereco ?? payload.endereco
+      });
+
+      setCpfStatus('found');
+      setPatientType('existing');
+      setShowEditModal(false);
+    } catch (err) {
+      console.error('Erro ao atualizar paciente', err.response?.data || err);
+      alert('Falha ao atualizar paciente: ' + (err.response?.data?.message || err.message || String(err)));
+    }
+  }
+
+  const closeCreateModal = () => setShowCreateModal(false);
 
   const normalizeOnlyDigits = (s) => (s || '').replace(/\D/g, '');
   const normalizePhone = (s) => (s || '').replace(/[^\d+]/g, '');
@@ -184,32 +256,22 @@ const handleCPFSearch = async (cpf) => {
     const { name, value: rawValue } = e.target;
     let value = rawValue;
 
-    // normalizações por campo
     if (name === 'cpf') {
-      // aceita apenas dígitos e limita 11
       value = normalizeOnlyDigits(value).slice(0, 11);
     }
     if (name === 'phone') {
-      // permite + e dígitos, limitação total (excluindo +) até 15 dígitos
       value = value.replace(/[^\d+]/g, '');
-      // opcional: limite de caracteres gerais
       if (value.startsWith('+')) {
         value = '+' + value.slice(1).slice(0, 15);
       } else {
         value = value.slice(0, 15);
       }
     }
-    if (name === 'email') {
-      value = value.trim();
-    }
-    if (name === 'fullName') {
-      value = value; // você pode aplicar .replace(/\s+/g,' ') se quiser normalizar espaços
-    }
+    if (name === 'email') value = value.trim();
 
-    setNewPatientForm(prev => ({ ...prev, [name]: value }));
+    setNewPatientForm((prev) => ({ ...prev, [name]: value }));
 
-    // validação imediata (feedback rápido)
-    setNewPatientErrors(prev => {
+    setNewPatientErrors((prev) => {
       const next = { ...prev };
       switch (name) {
         case 'cpf':
@@ -247,7 +309,6 @@ const handleCPFSearch = async (cpf) => {
     if (!isValidFullName(newPatientForm.fullName)) errors.fullName = 'Nome obrigatório (min 3 caracteres)';
     if (!isValidCPF(newPatientForm.cpf)) errors.cpf = 'CPF deve conter 11 dígitos';
     if (!isValidDateString(newPatientForm.birthDate)) errors.birthDate = 'Data de nascimento inválida';
-    // contato obrigatório: phone ou email (já usamos isso antes), então validamos ao menos um:
     const contato = newPatientForm.phone || newPatientForm.email || '';
     if (!contato) {
       errors.phone = 'Telefone ou e-mail é obrigatório';
@@ -258,59 +319,56 @@ const handleCPFSearch = async (cpf) => {
     }
 
     setNewPatientErrors(errors);
-    // retorna verdadeiro se não houver mensagens
-    return Object.values(errors).every(v => !v);
+    return Object.values(errors).every((v) => !v);
   };
 
-    const handleCreatePatientSave = async () => {
-      if (!newPatientForm.fullName || !newPatientForm.cpf) {
-        alert('Preencha nome e CPF para cadastrar o paciente.');
-        return;
-      }
-      if (!newPatientForm.birthDate) {
-        alert('Preencha a data de nascimento (obrigatória).');
-        return;
-      }
-      const contato = newPatientForm.phone || newPatientForm.email;
-      if (!contato) {
-        alert('Preencha telefone ou e-mail (contato obrigatório).');
-        return;
-      }
-
-      try {
+  const handleCreatePatientSave = async () => {
+    if (!newPatientForm.fullName || !newPatientForm.cpf) {
+      alert('Preencha nome e CPF para cadastrar o paciente.');
+      return;
+    }
+    if (!newPatientForm.birthDate) {
+      alert('Preencha a data de nascimento (obrigatória).');
+      return;
+    }
     const contato = newPatientForm.phone || newPatientForm.email;
+    if (!contato) {
+      alert('Preencha telefone ou e-mail (contato obrigatório).');
+      return;
+    }
 
-    const payload = {
-    nome: newPatientForm.fullName,
-    cpf: newPatientForm.cpf.replace(/\D/g, ''),
-    data_nascimento: newPatientForm.birthDate,
-    contato: contato,
-    endereco: newPatientForm.address || ""
-    };
+    try {
+      const contato = newPatientForm.phone || newPatientForm.email;
 
+      const payload = {
+        nome: newPatientForm.fullName,
+        cpf: newPatientForm.cpf.replace(/\D/g, ''),
+        data_nascimento: newPatientForm.birthDate,
+        contato,
+        endereco: newPatientForm.address || ''
+      };
 
-        const criado = await criarPaciente(payload);
+      const criado = await criarPaciente(payload);
 
-        // Atualiza o formulário principal com os dados do paciente criado
-        setFormData({
-          id: criado.id,
-          fullName: criado.nome,
-          birthDate: criado.data_nascimento,
-          cpf: criado.cpf,
-          phone: criado.contato,
-          email: criado.email,
-          endereco: criado.endereco || ''
-        });
-        setCpfStatus('found');
-        setPatientType('existing');
-        setShowCreateModal(false);
-        alert('Paciente cadastrado com sucesso.');
-      } catch (err) {
-        console.error('Erro ao criar paciente:', err.response?.data || err);
-        const serverMsg = err.response?.data?.message || JSON.stringify(err.response?.data) || err.message;
-        alert('Falha ao cadastrar paciente. ' + serverMsg);
-      }
-    };
+      setFormData({
+        id: criado.id,
+        fullName: criado.nome,
+        birthDate: criado.data_nascimento,
+        cpf: criado.cpf,
+        phone: criado.contato,
+        email: criado.email,
+        endereco: criado.endereco || ''
+      });
+      setCpfStatus('found');
+      setPatientType('existing');
+      setShowCreateModal(false);
+      alert('Paciente cadastrado com sucesso.');
+    } catch (err) {
+      console.error('Erro ao criar paciente:', err.response?.data || err);
+      const serverMsg = err.response?.data?.message || JSON.stringify(err.response?.data) || err.message;
+      alert('Falha ao cadastrar paciente. ' + serverMsg);
+    }
+  };
 
   const handleConsultaChange = (e) => {
     const { name, value } = e.target;
@@ -364,45 +422,42 @@ const handleCPFSearch = async (cpf) => {
     loadDoctors();
   }, [consultaData.specialtyId]);
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+    let pacienteId = formData.id;
 
-  let pacienteId = formData.id;
+    try {
+      if (patientType === 'new') {
+        const novoPaciente = await criarPaciente({
+          nome: formData.fullName,
+          cpf: formData.cpf,
+          data_nascimento: formData.birthDate,
+          contato: formData.phone,
+          endereco: formData.endereco
+        });
+        pacienteId = novoPaciente.id;
+      }
 
-  try {
-    if (patientType === 'new') {
-      const novoPaciente = await criarPaciente({
-        nome: formData.fullName,
-        cpf: formData.cpf,
-        data_nascimento: formData.birthDate, 
-        contato: formData.phone,
-        endereco: formData.endereco
-      });
-      pacienteId = novoPaciente.id;
+      const payload = {
+        id_paciente: pacienteId,
+        id_medico: consultaData.doctorId ? Number(consultaData.doctorId) : undefined,
+        especialidade: consultaData.specialtyId
+          ? specialties.find((s) => s.id == consultaData.specialtyId)?.nome
+          : undefined,
+        data: new Date(`${consultaData.date}T${consultaData.time}:00`).toISOString(),
+        motivo_consulta: consultaData.observations || undefined,
+        status: 'agendada'
+      };
+
+      await createAgendamento(payload);
+      alert('Consulta agendada com sucesso!');
+      navigate('/recepcao');
+    } catch (error) {
+      console.error('Erro no agendamento:', error.response?.data || error);
+      alert('Falha ao agendar consulta.');
     }
-
-    const payload = {
-      id_paciente: pacienteId,
-      id_medico: consultaData.doctorId ? Number(consultaData.doctorId) : undefined,
-      especialidade: consultaData.specialtyId
-        ? specialties.find(s => s.id == consultaData.specialtyId)?.nome
-        : undefined,
-      data: new Date(`${consultaData.date}T${consultaData.time}:00`).toISOString(),
-      motivo_consulta: consultaData.observations || undefined,
-      status: 'agendada',
-    };
-
-    await createAgendamento(payload);
-    alert('Consulta agendada com sucesso!');
-    navigate('/recepcao');
-
-  } catch (error) {
-    console.error('Erro no agendamento:', error.response?.data || error);
-    alert('Falha ao agendar consulta.');
-  }
-};
-
+  };
 
   return (
     <div className="page-agendar">
@@ -411,8 +466,6 @@ const handleSubmit = async (e) => {
 
         <div className="form-container">
           <form onSubmit={handleSubmit}>
-
-            {/* Dados do paciente */}
             <div className="form-section">
               <h2>Dados do Paciente</h2>
 
@@ -427,15 +480,14 @@ const handleSubmit = async (e) => {
                       onChange={handleCPFInput}
                       placeholder="Digite o CPF (somente números)"
                     />
-                    
+
                     {loadingPatient && <span style={{ marginLeft: 8 }}>Buscando...</span>}
 
                     {cpfStatus === 'not_found' && (
                       <button
                         type="button"
                         onClick={() => {
-                          // pré-preenche o modal com o CPF atual e abre modal
-                          setNewPatientForm(prev => ({ ...prev, cpf: normalizeCPF(formData.cpf) }));
+                          setNewPatientForm((prev) => ({ ...prev, cpf: normalizeCPF(formData.cpf) }));
                           setShowCreateModal(true);
                         }}
                         style={{ padding: '6px 10px', borderRadius: 6, background: '#1A3B6C', color: '#fff', border: 'none', cursor: 'pointer' }}
@@ -446,7 +498,6 @@ const handleSubmit = async (e) => {
                   </div>
                 </div>
 
-                {/* Exibe os campos do paciente somente quando encontrado (leitura) ou quando desejar editar */}
                 {cpfStatus === 'found' && (
                   <>
                     <div className="form-field">
@@ -468,6 +519,33 @@ const handleSubmit = async (e) => {
                       <label>E-mail</label>
                       <input type="email" name="email" value={formData.email || ''} readOnly />
                     </div>
+                    <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'center' }}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditPatientForm({
+                            cpf: normalizeCPF(formData.cpf),
+                            fullName: formData.fullName,
+                            birthDate: formData.birthDate,
+                            address: formData.endereco || '',
+                            phone: formData.phone || '',
+                            email: formData.email || ''
+                          });
+                          setEditingPatientId(formData.id);
+                          setShowEditModal(true);
+                        }}
+                        style={{
+                          padding: '12px 21px',
+                          borderRadius: 6,
+                          background: '#1A3B6C',
+                          color: '#fff',
+                          border: 'none',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        Editar
+                      </button>
+                    </div>
                   </>
                 )}
               </div>
@@ -486,56 +564,118 @@ const handleSubmit = async (e) => {
 
                     <div className="form-field">
                       <label>CPF</label>
-          <input type="text" name="cpf" value={newPatientForm.cpf} onChange={handleNewPatientChange} />
-        </div>
+                      <input type="text" name="cpf" value={newPatientForm.cpf} onChange={handleNewPatientChange} />
+                    </div>
 
-        <div className="form-field">
-          <label>Data de Nascimento</label>
-          <input type="date" name="birthDate" value={newPatientForm.birthDate} onChange={handleNewPatientChange} />
-        </div>
+                    <div className="form-field">
+                      <label>Data de Nascimento</label>
+                      <input type="date" name="birthDate" value={newPatientForm.birthDate} onChange={handleNewPatientChange} />
+                    </div>
 
-        <div className="form-field">
-          <label>Endereço</label>
-          <input type="text" name="address" value={newPatientForm.address} onChange={handleNewPatientChange} />
-        </div>
+                    <div className="form-field">
+                      <label>Endereço</label>
+                      <input type="text" name="address" value={newPatientForm.address} onChange={handleNewPatientChange} />
+                    </div>
 
-        <div className="form-field">
-          <label>E-mail</label>
-          <input type="email" name="email" value={newPatientForm.email} onChange={handleNewPatientChange} />
-        </div>
+                    <div className="form-field">
+                      <label>E-mail</label>
+                      <input type="email" name="email" value={newPatientForm.email} onChange={handleNewPatientChange} />
+                    </div>
 
-        <div className="form-field">
-          <label>Telefone</label>
-          <input type="tel" name="phone" value={newPatientForm.phone} onChange={handleNewPatientChange} />
-        </div>
-      </div>
+                    <div className="form-field">
+                      <label>Telefone</label>
+                      <input type="tel" name="phone" value={newPatientForm.phone} onChange={handleNewPatientChange} />
+                    </div>
+                  </div>
 
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
-        <button type="button" onClick={closeCreateModal} style={{ padding: '8px 12px', borderRadius: 8 }}>Cancelar</button>
-        <button type="button" onClick={handleCreatePatientSave} style={{ padding: '8px 12px', borderRadius: 8, background: '#1A3B6C', color: '#fff', border: 'none' }}>Salvar</button>
-      </div>
-    </div>
-  </div>
-)}
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
+                    <button type="button" onClick={closeCreateModal} style={{ padding: '8px 12px', borderRadius: 8 }}>Cancelar</button>
+                    <button type="button" onClick={handleCreatePatientSave} style={{ padding: '8px 12px', borderRadius: 8, background: '#1A3B6C', color: '#fff', border: 'none' }}>Salvar</button>
+                  </div>
+                </div>
+              </div>
+            )}
 
-            {/* Dados da consulta */}
+            {showEditModal && (
+              <div className="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="edit-patient-title" style={{
+                position: 'fixed',
+                inset: 0,
+                background: 'rgba(0,0,0,0.4)',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                zIndex: 1000
+              }}>
+                <div className="modal-window" style={{
+                  width: 560,
+                  maxWidth: '95%',
+                  background: '#fff',
+                  borderRadius: 8,
+                  padding: 20,
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.2)'
+                }}>
+                  <h3 id="edit-patient-title" style={{ marginTop: 0 }}>Editar Paciente</h3>
+
+                  <div className="fields-group" style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: 12
+                  }}>
+                    <div className="form-field" style={{ display: 'flex', flexDirection: 'column' }}>
+                      <label>Nome Completo</label>
+                      <input type="text" name="fullName" value={editPatientForm.fullName} onChange={handleEditPatientChange} />
+                    </div>
+
+                    <div className="form-field" style={{ display: 'flex', flexDirection: 'column' }}>
+                      <label>CPF</label>
+                      <input
+                        type="text"
+                        name="cpf"
+                        value={editPatientForm.cpf}
+                        onChange={handleEditPatientChange}
+                      />
+                    </div>
+
+                    <div className="form-field" style={{ display: 'flex', flexDirection: 'column' }}>
+                      <label>Data de Nascimento</label>
+                      <input type="date" name="birthDate" value={editPatientForm.birthDate || ''} onChange={handleEditPatientChange} />
+                    </div>
+
+                    <div className="form-field" style={{ display: 'flex', flexDirection: 'column' }}>
+                      <label>Telefone</label>
+                      <input type="tel" name="phone" value={editPatientForm.phone || ''} onChange={handleEditPatientChange} />
+                    </div>
+
+                    <div className="form-field" style={{ display: 'flex', flexDirection: 'column' }}>
+                      <label>E-mail</label>
+                      <input type="email" name="email" value={editPatientForm.email || ''} onChange={handleEditPatientChange} />
+                    </div>
+
+                    <div className="form-field" style={{ display: 'flex', flexDirection: 'column' }}>
+                      <label>Endereço</label>
+                      <input type="text" name="address" value={editPatientForm.address || ''} onChange={handleEditPatientChange} />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
+                    <button type="button" onClick={() => setShowEditModal(false)} style={{ padding: '8px 12px', borderRadius: 8 }}>Cancelar</button>
+                    <button type="button" onClick={handleEditPatientSave} style={{ padding: '8px 12px', borderRadius: 8, background: '#1A3B6C', color: '#fff', border: 'none' }}>Salvar</button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="form-section">
               <h2>Dados da Consulta</h2>
               <div className="fields-group">
                 <div className="form-field">
                   <label>Nº Carteirinha</label>
-                  <input type="text" name="cardNumber"
-                    value={consultaData.cardNumber}
-                    onChange={handleConsultaChange} />
+                  <input type="text" name="cardNumber" value={consultaData.cardNumber} onChange={handleConsultaChange} />
                 </div>
 
                 <div className="form-field">
                   <label>Especialidade</label>
-                  <select
-                    name="specialtyId"
-                    value={consultaData.specialtyId}
-                    onChange={handleConsultaChange}
-                  >
+                  <select name="specialtyId" value={consultaData.specialtyId} onChange={handleConsultaChange}>
                     <option value="">Selecione a especialidade</option>
                     {loadingSpecialties && <option>Carregando...</option>}
                     {specialties.map((s) => (
@@ -546,14 +686,9 @@ const handleSubmit = async (e) => {
 
                 <div className="form-field">
                   <label>Médico</label>
-                  <select
-                    name="doctorId"
-                    value={consultaData.doctorId}
-                    onChange={handleConsultaChange}
-                  >
+                  <select name="doctorId" value={consultaData.doctorId} onChange={handleConsultaChange}>
                     <option value="">Selecione o médico</option>
                     {loadingDoctors && <option>Carregando...</option>}
-
                     {doctors.map((d) => (
                       <option key={d.id} value={d.id}>{d.nome}</option>
                     ))}
@@ -562,11 +697,7 @@ const handleSubmit = async (e) => {
 
                 <div className="form-field">
                   <label>Tipo de Consulta</label>
-                  <select
-                    name="consultationType"
-                    value={consultaData.consultationType}
-                    onChange={handleConsultaChange}
-                  >
+                  <select name="consultationType" value={consultaData.consultationType} onChange={handleConsultaChange}>
                     <option value="primeira">Primeira Consulta</option>
                     <option value="retorno">Retorno</option>
                     <option value="exame">Exame</option>
@@ -575,33 +706,17 @@ const handleSubmit = async (e) => {
               </div>
             </div>
 
-            {/* Horário */}
             <div className="form-section">
               <h2>Horário</h2>
               <div className="fields-group">
                 <div className="form-field">
                   <label>Data</label>
-                  <input
-                    type="date"
-                    name="date"
-                    value={consultaData.date}
-                    onChange={(e) => {
-                      handleConsultaChange(e);
-                      setConsultaData((prev) => ({ ...prev, time: '' }));
-                    }}
-                  />
+                  <input type="date" name="date" value={consultaData.date} onChange={(e) => { handleConsultaChange(e); setConsultaData((prev) => ({ ...prev, time: '' })); }} />
                 </div>
 
                 <div className="form-field">
                   <label>Período</label>
-                  <select
-                    name="period"
-                    value={consultaData.period}
-                    onChange={(e) => {
-                      handleConsultaChange(e);
-                      setConsultaData((prev) => ({ ...prev, time: '' }));
-                    }}
-                  >
+                  <select name="period" value={consultaData.period} onChange={(e) => { handleConsultaChange(e); setConsultaData((prev) => ({ ...prev, time: '' })); }}>
                     <option value="">Selecione</option>
                     <option value="manha">Manhã</option>
                     <option value="tarde">Tarde</option>
@@ -611,11 +726,7 @@ const handleSubmit = async (e) => {
 
                 <div className="form-field">
                   <label>Horário</label>
-                  <select
-                    name="time"
-                    value={consultaData.time}
-                    onChange={handleConsultaChange}
-                  >
+                  <select name="time" value={consultaData.time} onChange={handleConsultaChange}>
                     <option value="">Selecione</option>
                     {getTimeSlots(consultaData.period).map((t) => (
                       <option key={t} value={t}>{t}</option>
@@ -625,12 +736,7 @@ const handleSubmit = async (e) => {
 
                 <div className="form-field" style={{ gridColumn: '1 / -1' }}>
                   <label>Observações</label>
-                  <textarea
-                    name="observations"
-                    value={consultaData.observations}
-                    onChange={handleConsultaChange}
-                    rows="4"
-                  />
+                  <textarea name="observations" value={consultaData.observations} onChange={handleConsultaChange} rows="4" />
                 </div>
               </div>
             </div>

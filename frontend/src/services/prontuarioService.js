@@ -1,21 +1,71 @@
 import api from './api';
 
-export const getProntuarioByPacienteId = async (pacienteId) => {
-  const response = await api.get(`/prontuarios/paciente/${pacienteId}`);
-  return response.data;
+export const getProntuarios = async () => {
+  try {
+    const response = await api.get('/prontuario');
+    return response.data;
+  } catch (error) {
+    console.error(error.response?.data || error.message || error);
+    throw error;
+  }
 };
 
-export const createProntuario = async (prontuarioData) => {
-  const response = await api.post('/prontuarios', prontuarioData);
-  return response.data;
+export const getProntuarioById = async (id) => {
+  try {
+    const response = await api.get(`/prontuario/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(error.response?.data || error.message || error);
+    throw error;
+  }
 };
 
-export const updateProntuario = async (prontuarioId, prontuarioData) => {
-  const response = await api.put(`/prontuarios/${prontuarioId}`, prontuarioData);
-  return response.data;
+export const getProntuarioByAgendamentoId = async (agendamentoId) => {
+  try {
+    const response = await api.get(`/prontuario/agendamento/${agendamentoId}`);
+    return response.data;
+  } catch (error) {
+    console.error(error.response?.data || error.message || error);
+    throw error;
+  }
 };
 
-export const deleteProntuario = async (prontuarioId) => {
-  const response = await api.delete(`/prontuarios/${prontuarioId}`);
-  return response.data;
+export const getProntuariosByPacienteId = async (pacienteId) => {
+  try {
+    const response = await api.get(`/prontuario/paciente/${pacienteId}`);
+    return response.data;
+  } catch (error) {
+    console.error(error.response?.data || error.message || error);
+    throw error;
+  }
+};
+
+export const createProntuario = async (data) => {
+  try {
+    const response = await api.post('/prontuario', data);
+    return response.data;
+  } catch (error) {
+    console.error(error.response?.data || error.message || error);
+    throw error;
+  }
+};
+
+export const updateProntuario = async (id, data) => {
+  try {
+    const response = await api.put(`/prontuario/${id}`, data);
+    return response.data;
+  } catch (error) {
+    console.error(error.response?.data || error.message || error);
+    throw error;
+  }
+};
+
+export const deleteProntuario = async (id) => {
+  try {
+    const response = await api.delete(`/prontuario/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(error.response?.data || error.message || error);
+    throw error;
+  }
 };
