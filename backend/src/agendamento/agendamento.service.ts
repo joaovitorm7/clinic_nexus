@@ -7,7 +7,6 @@ import { UpdateAgendamentoDto } from './dto/update-agendamento.dto';
 import { Paciente } from 'src/paciente/entities/paciente.entity';
 import { Medico } from 'src/medico/entities/medico.entity';
 import { Funcionario } from 'src/funcionarios/entities/funcionario.entity';
-import {Agenda} from '../agenda/entities/agenda.entity.ts'
 @Injectable()
 export class AgendamentoService {
   constructor(
@@ -18,9 +17,7 @@ export class AgendamentoService {
     @InjectRepository(Medico)
     private readonly medicoRepository: Repository<Medico>,
     @InjectRepository(Funcionario)
-    private readonly funcionarioRepository:Repository<Funcionario>,
-    @InjectRepository(Agenda)
-    private readonly agendaRepository: Repository<Agenda>
+    private readonly funcionarioRepository: Repository<Funcionario>,
   ) {}
 
   async create(dto: CreateAgendamentoDto): Promise<Agendamento> {
@@ -29,12 +26,6 @@ export class AgendamentoService {
       paciente: dto.id_paciente ? { id: dto.id_paciente } : null,
       medico: dto.id_medico ? { id: dto.id_medico } : null,
     });
-    const agenda = this.agendamentoRepository.update( {
-    ...dto,
-    //date-agendamento 
-    medico: dto.id_medico ? {id: dto.id_medico}
-    medico.agenda.id_agenda()
-    })
     return await this.agendamentoRepository.save(agendamento);
   }
 
