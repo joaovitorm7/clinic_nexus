@@ -18,7 +18,7 @@ export class Agenda {
   @Column({ default: 'disponivel' })
   status: string;
 
-  //@ManyToOne(() => Medico, (medico) => medico.agendas, { eager: true })
-  //@JoinColumn({ name: 'id_medico' })
-  //medico: Medico;
+  @ManyToOne(() => Medico, (medico) => medico.agendas, { eager: true })
+  @JoinColumn({ name: 'id_medico' })
+  medico: Medico;
 }

@@ -14,7 +14,7 @@ export class AgendaService {
 
     @InjectRepository(Medico)
     private readonly medicoRepository: Repository<Medico>,
-  ) {}
+  ) { }
 
   // função de cadastro de agenda
   async create(createAgendaDto: CreateAgendaDto) {
@@ -92,6 +92,20 @@ export class AgendaService {
     if (!agenda) throw new NotFoundException('Agenda não encontrada');
 
     return agenda;
+  }
+
+  // lista agendas filtrando por médico
+  async findByMedico(id_medico: number) {
+    const agendas = await this.agendaRepository.find({
+      where: { id_medico },
+      relations: ['medico', 'medico.funcionario'],
+    } as any);
+
+    if (!agendas || agendas.length === 0) {
+      throw new NotFoundException('Nenhuma agenda encontrada para este médico');
+    }
+
+    return agendas;
   }
 
   // atualiza a agenda

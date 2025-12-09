@@ -16,8 +16,10 @@ export class AgendaController {
   findAll() {
     return this.agendaService.findAll();
   }
-  @Get(':medico/:id')
-  
+  @Get('medico/:id_medico')
+  findByMedico(@Param('id_medico') id_medico: string) {
+    return this.agendaService.findByMedico(+id_medico);
+  }
 
   @Get(':id')
   findOne(@Param('id') id: string) {

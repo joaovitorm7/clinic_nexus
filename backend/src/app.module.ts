@@ -48,7 +48,7 @@ import { ProntuarioModule } from './agendamento/prontuario.module';
     AgendamentoModule,
     MedicoModule,
     ProntuarioModule,
-    //AgendaModule, !descomentar quando implementar :)
+    AgendaModule
   ],
   controllers: [AppController],
   providers: [AppService],
