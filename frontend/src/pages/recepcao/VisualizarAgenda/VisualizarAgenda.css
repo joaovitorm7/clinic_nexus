@@ -1,63 +1,46 @@
-.page {
+.agenda-container {
     width: 100%;
-    min-height: 100vh;
+    height: 100vh;
     padding: 30px;
     box-sizing: border-box;
     background: linear-gradient(to top, #b3e5ef, #ecf4fc, #f7f7f8);
     overflow-y: auto;
 }
 
-.title {
+.titulo-agenda {
     text-align: center;
     margin-bottom: 20px;
     font-size: 26px;
-    font-weight: 700;
-    color: #212529;
 }
 
-.filters {
+.select-container {
+    margin-bottom: 25px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-bottom: 25px;
+    gap: 8px;
 }
 
-.filters select,
-.filters input {
+.select-container select {
     padding: 10px;
     border-radius: 6px;
     border: 1px solid #999;
     font-size: 16px;
-    background: white;
 }
 
-.grid {
+.lista-agenda {
     margin-top: 20px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 16px;
 }
 
-.card {
+.card-agenda {
     background: white;
     padding: 16px;
+    margin-bottom: 12px;
     border-radius: 10px;
     border: 1px solid #ccc;
-    transition: transform 0.2s;
 }
 
-.card:hover {
-    transform: translateY(-3px);
-}
-
-.card p {
+.card-agenda p {
     margin: 5px 0;
-}
-
-.empty {
-    text-align: center;
-    margin-top: 20px;
-    font-style: italic;
 }
 
 .status {
@@ -78,4 +61,10 @@
     background: #ffd6d6;
     color: #a30000;
     border: 1px solid #e39a9a;
+}
+
+.nenhuma-agenda {
+    text-align: center;
+    margin-top: 20px;
+    font-style: italic;
 }

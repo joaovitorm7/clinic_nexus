@@ -18,7 +18,7 @@ export default function AgendaMedico() {
       const formatted = data.map((a) => ({
         id: a.id,
         title: a.titulo ?? "Agendamento",
-        date: a.data 
+        date: a.data
       }));
 
       setEvents(formatted);
@@ -41,7 +41,7 @@ export default function AgendaMedico() {
         plugins={[dayGridPlugin]}
         initialView="dayGridMonth"
         events={events}
-        datesSet={handleDatesSet} 
+        datesSet={handleDatesSet}
         height="90vh"
       />
     </div>

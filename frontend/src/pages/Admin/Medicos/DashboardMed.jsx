@@ -45,7 +45,7 @@ export default function DashboardMed() {
         const payload = response?.data ?? response;
         let fetchedDoctors = Array.isArray(payload) ? payload : Array.isArray(payload?.data) ? payload.data : [];
 
-        if (search && search.trim() !== '') {
+        if (search.trim() !== '') {
           const q = search.toLowerCase();
           fetchedDoctors = fetchedDoctors.filter((doc) => {
             const nome = doc?.funcionario?.nome ?? doc?.nome ?? '';
@@ -100,9 +100,14 @@ export default function DashboardMed() {
         {loading ? (
           <p>Carregando médicos...</p>
         ) : doctors.length === 0 ? (
-          <p>Nenhum médico encontrado.</p>
+          <p className={styles.empty}>Nenhum médico encontrado.</p>
         ) : (
-          doctors.map((doc) => <DoctorCard key={doc.id ?? doc.funcionario?.id} doctor={doc} />)
+          doctors.map((doc) => (
+            <DoctorCard
+              key={doc.id ?? doc.funcionario?.id}
+              doctor={doc}
+            />
+          ))
         )}
       </div>
     </div>

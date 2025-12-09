@@ -17,6 +17,7 @@ import EmployeePage from "./EmployeePage";
 import EditarAgenda from "./pages/recepcao/EditarAgenda/EditarAgenda";
 import DashboardMedico from "./pages/AlaMedica/Dashboard/DashboardAlaMedica";
 import Prontuario from "./pages/AlaMedica/prontuario/Prontuario";
+import VisualizarAgenda from "./pages/recepcao/VisualizarAgenda/VisualizarAgenda";
 
 import CalendarPage from "./pages/recepcao/AgendaMedico/AgendaMedico";
 function App() {
@@ -40,7 +41,6 @@ function App() {
 
         <Route path="/alamedica" element={<DashboardMedico/>} />
         <Route path="/alamedica/prontuario" element={<Prontuario />} />
-       
 
         <Route path="/recepcao/agendar" element={<AgendarConsulta />} />
         <Route path="/recepcao" element={<Recepcao/>} />
@@ -48,10 +48,12 @@ function App() {
 
         <Route path="/recepcao/EditarAgenda" element={<EditarAgenda />} />
 
-        
+        <Route path="/recepcao/VisualizarAgenda" element={<VisualizarAgenda />} />
 
-        /* <Route path="/calendario" element={<CalendarPage />} /> */
-    </Routes>
+      {/*
+        <Route path="/calendario" element={<CalendarPage />} />
+      */}
+      </Routes>
   );
 }
 
