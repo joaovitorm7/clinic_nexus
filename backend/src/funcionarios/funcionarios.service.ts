@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Funcionario } from './entities/funcionario.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Medico } from '../medico/entities/medico.entity';
-import { NotFoundException } from '@nestjs/common';
+
 @Injectable()
 export class FuncionarioService {
   constructor(
@@ -16,35 +16,72 @@ export class FuncionarioService {
 
   async createFuncionario(data: {
     nome: string;
+    cpf?: string;
     telefone?: string;
-    cargo: string;
+    cargo?: string;
+    tipo?: string;
     email: string;
     senha: string;
     crm?: string;
     especialidadeId?: number;
   }): Promise<Funcionario> {
+    const cargoValue = data.cargo ?? data.tipo ?? null;
+    if (!cargoValue) throw new BadRequestException('cargo is required');
 
-    const funcionario = this.funcionarioRepo.create({
-      nome: data.nome,
-      telefone: data.telefone,
-      email: data.email,
-      cargo: data.cargo,
-      senha: data.senha, 
+    return await this.funcionarioRepo.manager.transaction(async manager => {
+      try {
+        if (data.email) {
+          const existingByEmail = await manager.findOne(Funcionario, { where: { email: data.email } });
+          if (existingByEmail) throw new BadRequestException('Já existe um funcionário com este e-mail.');
+        }
+        if (data.cpf) {
+          const existingByCpf = await manager.findOne(Funcionario, { where: { cpf: data.cpf } });
+          if (existingByCpf) throw new BadRequestException('Já existe um funcionário com este CPF.');
+        }
+
+        const funcionario = manager.create(Funcionario, {
+          nome: data.nome,
+          cpf: data.cpf ?? null,
+          telefone: data.telefone ?? null,
+          email: data.email,
+          cargo: cargoValue,
+          senha: data.senha,
+        });
+
+        const savedFuncionario = await manager.save(funcionario);
+
+        const cargoLower = (cargoValue ?? '').toString().toLowerCase();
+        if (cargoLower === 'médico' || cargoLower === 'medico') {
+          if (!data.crm || String(data.crm).trim() === '') {
+            throw new BadRequestException('crm is required for medico');
+          }
+          if (!data.especialidadeId) {
+            throw new BadRequestException('especialidadeId is required for medico');
+          }
+          const crmTrim = String(data.crm).trim();
+          const existingMedicoByCrm = await manager.findOne(Medico, { where: { crm: crmTrim } });
+          if (existingMedicoByCrm) {
+            throw new BadRequestException('Já existe um médico com este CRM.');
+          }
+
+          const medico = manager.create(Medico, {
+            crm: crmTrim,
+            especialidade: { id: data.especialidadeId },
+            funcionario: savedFuncionario,
+          });
+
+          await manager.save(medico);
+        }
+
+        return savedFuncionario;
+
+      } catch (err) {
+        if (err?.code === 'ER_DUP_ENTRY') {
+          throw new BadRequestException('Já existe um registro com estes dados únicos (CPF, email ou CRM).');
+        }
+        throw err;
+      }
     });
-
-    await this.funcionarioRepo.save(funcionario);
-
-    if (data.cargo.toLowerCase() === 'médico' || data.cargo.toLowerCase() === 'medico') {
-      const medico = this.medicoRepo.create({
-        crm: data.crm ?? null,
-        especialidade: data.especialidadeId ? { id: data.especialidadeId } : null,
-        funcionario,
-      });
-
-      await this.medicoRepo.save(medico);
-    }
-
-    return funcionario;
   }
 
   async findAll(): Promise<Funcionario[]> {
@@ -54,10 +91,12 @@ export class FuncionarioService {
   async findById(id: number): Promise<Funcionario> {
     return this.funcionarioRepo.findOne({ where: { id }, relations: ['medico'] });
   }
-  async findByEmail(email:string): Promise<Funcionario>{
-    return this.funcionarioRepo.findOne({where:{email}})
+
+  async findByEmail(email: string): Promise<Funcionario> {
+    return this.funcionarioRepo.findOne({ where: { email } });
   }
-  async findByCpf(cpf:string):Promise<Funcionario>{
-    return this.funcionarioRepo.findOne({where:{cpf}})
+
+  async findByCpf(cpf: string): Promise<Funcionario> {
+    return this.funcionarioRepo.findOne({ where: { cpf } });
   }
 }
