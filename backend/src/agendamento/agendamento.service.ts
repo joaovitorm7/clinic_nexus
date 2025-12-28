@@ -18,7 +18,7 @@ export class AgendamentoService {
     private readonly medicoRepository: Repository<Medico>,
     @InjectRepository(Funcionario)
     private readonly funcionarioRepository: Repository<Funcionario>,
-  ) {}
+  ) { }
 
   async create(dto: CreateAgendamentoDto): Promise<Agendamento> {
     const agendamento = this.agendamentoRepository.create({
@@ -166,7 +166,6 @@ export class AgendamentoService {
       relations: ['paciente', 'medico', 'medico.especialidade'],
     });
   }
-
   async remove(id: number): Promise<void> {
     await this.agendamentoRepository.delete(id);
   }

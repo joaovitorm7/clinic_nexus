@@ -12,6 +12,7 @@ import { MedicoModule } from './medico/medico.module';
 import { AgendaModule } from './agenda/agenda.module';
 import { Prontuario } from './agendamento/entities/prontuario.entity';
 import { ProntuarioModule } from './agendamento/prontuario.module';
+import { EspecialidadeModule } from './medico/especialidade.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -48,7 +49,8 @@ import { ProntuarioModule } from './agendamento/prontuario.module';
     AgendamentoModule,
     MedicoModule,
     ProntuarioModule,
-    AgendaModule
+    AgendaModule,
+    EspecialidadeModule
   ],
   controllers: [AppController],
   providers: [AppService],

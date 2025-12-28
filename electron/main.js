@@ -31,6 +31,11 @@ function startBackend() {
   });
 }
 
+function print() {
+  console.log("Hello world")
+  
+}
+
 function startFrontendDevServer() {
   return new Promise((resolve, reject) => {
     const frontendPath = path.join(__dirname, '../frontend');
@@ -73,6 +78,7 @@ function shutdownAll() {
 app.whenReady().then(async () => {
   try {
     await startBackend();
+    await print();
     await startFrontendDevServer();
     createWindow();
   } catch (err) {

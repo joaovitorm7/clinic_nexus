@@ -1,48 +1,46 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { FuncionarioService } from './funcionarios.service';
 
 @Controller('funcionarios')
 export class FuncionariosController {
-  constructor(private readonly funcionarioService: FuncionarioService) {}
+  constructor(
+    private readonly funcionarioService: FuncionarioService,
+  ) {}
 
   @Post()
   async create(@Body() data: {
     nome: string;
+    cpf?: string;
+    telefone?: string;
+    cargo?: string;
+    tipo?: string;
     email: string;
-    telefone: string;
-    cargo: string;
     senha: string;
-    id_cargo:number
+    crm?: string;
+    especialidadeId?: number;
   }) {
     return this.funcionarioService.createFuncionario(data);
   }
- 
 
   @Get()
   async findAll() {
     return this.funcionarioService.findAll();
   }
-  @Get(':cpf')
-  async findOneByCpf(@Param('cpf') cpf:string){
-    return cpf
 
+  @Get('cpf/:cpf')
+  async findByCpf(@Param('cpf') cpf: string) {
+    return this.funcionarioService.findByCpf(cpf);
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: number) {
-    return `Retornar funcionário com id ${id}`;
-  }
-
-  @Patch(':id')
-  async update(
-    @Param('id') id: string,
-    @Body() updateData: any,
-  ) {
-    return `Atualizar funcionário com id ${id}`;
-  }
-
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return `Remover funcionário com id ${id}`;
+  async findById(@Param('id', ParseIntPipe) id: number) {
+    return this.funcionarioService.findById(id);
   }
 }

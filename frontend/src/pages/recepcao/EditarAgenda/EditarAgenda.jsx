@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./EditarAgenda.css";
-
+import "../CadastroPaciente/CadastrarPaciente.jsx"
 /* ===== MOCK (migrations) ===== */
 
 const ESPECIALIDADES = [
@@ -24,7 +24,6 @@ export default function AgendaMensalMedicos() {
   const [selectedKey, setSelectedKey] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
-  // ✅ ESTADO NASCE DO LOCALSTORAGE (NÃO SOME)
   const [agendamentos, setAgendamentos] = useState(() => {
     try {
       const raw = localStorage.getItem("agendaMedicos_v1");

@@ -1,6 +1,10 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, ILike } from 'typeorm';
 import { Medico } from './entities/medico.entity';
 import { CreateMedicoDto } from './dto/create-medico.dto';
 import { UpdateMedicoDto } from './dto/update-medico.dto';
@@ -20,44 +24,51 @@ export class MedicoService {
     private readonly funcionarioRepository: Repository<Funcionario>,
   ) {}
 
-  async create(createMedicoDto: CreateMedicoDto): Promise<Medico> {
-    const funcionario = await this.funcionarioRepository.findOne({ 
-      where: { id: createMedicoDto.funcionarioId } 
+  async create(dto: CreateMedicoDto): Promise<Medico> {
+    const funcionario = await this.funcionarioRepository.findOne({
+      where: { id: dto.funcionarioId },
     });
+
     if (!funcionario) {
-      throw new BadRequestException('Funcionário inválido ou não encontrado');
+      throw new BadRequestException('Funcionário não encontrado');
     }
 
-    const especialidade = await this.especialidadeRepository.findOne({ 
-      where: { id: createMedicoDto.especialidadeId } 
+    const especialidade = await this.especialidadeRepository.findOne({
+      where: { id: dto.especialidadeId },
     });
+
     if (!especialidade) {
       throw new BadRequestException('Especialidade inválida');
     }
 
     const medico = this.medicoRepository.create({
+      id: dto.id,
       funcionario,
-      crm: createMedicoDto.crm,
+      crm: dto.crm,
       especialidade,
     });
 
     return this.medicoRepository.save(medico);
   }
 
-  findAll(): Promise<Medico[]> {
+  async findAll(nome?: string): Promise<Medico[]> {
     return this.medicoRepository.find({
-      relations: ['especialidade', 'funcionario'],
+      where: nome
+        ? { funcionario: { nome: ILike(`%${nome}%`) } }
+        : {},
+      relations: ['funcionario', 'especialidade'],
+      order: { funcionario: { nome: 'ASC' } },
     });
   }
 
   async findOne(id: number): Promise<Medico> {
     const medico = await this.medicoRepository.findOne({
       where: { id },
-      relations: ['especialidade', 'funcionario'],
+      relations: ['funcionario', 'especialidade'],
     });
 
     if (!medico) {
-      throw new NotFoundException(`Médico com id ${id} não encontrado`);
+      throw new NotFoundException(`Médico ${id} não encontrado`);
     }
 
     return medico;
@@ -66,30 +77,47 @@ export class MedicoService {
   async findByEspecialidadeId(especialidadeId: number): Promise<Medico[]> {
     return this.medicoRepository.find({
       where: { especialidade: { id: especialidadeId } },
-      relations: ['especialidade', 'funcionario'],
+      relations: ['funcionario', 'especialidade'],
     });
   }
 
-  async update(id: number, updateMedicoDto: UpdateMedicoDto): Promise<Medico> {
+  async getEspecialidadeByMedico(medicoId: number): Promise<Especialidade> {
+    const medico = await this.medicoRepository.findOne({
+      where: { id: medicoId },
+      relations: ['especialidade'],
+    });
+
+    if (!medico) {
+      throw new NotFoundException('Médico não encontrado');
+    }
+
+    return medico.especialidade;
+  }
+
+  async update(id: number, dto: UpdateMedicoDto): Promise<Medico> {
     const medico = await this.findOne(id);
 
-    if (updateMedicoDto.especialidadeId) {
+    if (dto.especialidadeId) {
       const especialidade = await this.especialidadeRepository.findOne({
-        where: { id: updateMedicoDto.especialidadeId },
+        where: { id: dto.especialidadeId },
       });
+
       if (!especialidade) {
         throw new BadRequestException('Especialidade inválida');
       }
+
       medico.especialidade = especialidade;
     }
 
-    Object.assign(medico, updateMedicoDto);
+    if (dto.crm !== undefined) {
+      medico.crm = dto.crm;
+    }
 
     return this.medicoRepository.save(medico);
   }
 
-  async remove(id: number): Promise<Medico> {
+  async remove(id: number): Promise<void> {
     const medico = await this.findOne(id);
-    return this.medicoRepository.remove(medico);
+    await this.medicoRepository.remove(medico);
   }
 }

@@ -2,28 +2,29 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-
+import { AppDataSource } from './data-source';
+import { seedEspecialidades } from './data-sources/especialidade.seed';
+import { Especialidade } from './medico/entities/especialidade.entity';
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
 
-  // Cria a aplicação
+  
+
   const app = await NestFactory.create(AppModule, {
-    logger: ['error', 'warn', 'log', 'debug', 'verbose'], // log completo
+    logger: ['error', 'warn', 'log', 'debug', 'verbose'],
   });
 
-  // Habilita CORS (permitindo chamadas do Electron, Postman etc)
+
   app.enableCors();
 
-  // Habilita validação global dos DTOs
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true, // remove propriedades não esperadas do body
-      forbidNonWhitelisted: true, // lança erro se vierem propriedades extras
-      transform: true, // converte automaticamente tipos (ex.: string -> number)
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
     }),
   );
 
-  // Acessa ConfigService para pegar dados do .env
   const configService = app.get(ConfigService);
 
   logger.log('=== CONFIGURAÇÃO DO AMBIENTE ===');
@@ -35,7 +36,19 @@ async function bootstrap() {
   logger.log(`DB_SYNC: ${configService.get<string>('DB_SYNC')}`);
   logger.log('================================');
 
-  // Porta da aplicação
+  if (!AppDataSource.isInitialized) {
+  await AppDataSource.initialize();
+}
+
+const especialidadeRepo = AppDataSource.getRepository(Especialidade);
+
+const existeEspecialidade = await especialidadeRepo.exist();
+
+if (!existeEspecialidade) {
+  await seedEspecialidades(AppDataSource);
+}
+
+ 
   const port = process.env.PORT || 3000;
   await app.listen(port);
   logger.log(`Aplicação rodando na porta ${port}`);

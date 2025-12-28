@@ -1,8 +1,14 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Funcionario } from './entities/funcionario.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Medico } from '../medico/entities/medico.entity';
+import { Usuario } from '../usuario/entities/usuario.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class FuncionarioService {
@@ -12,6 +18,9 @@ export class FuncionarioService {
 
     @InjectRepository(Medico)
     private readonly medicoRepo: Repository<Medico>,
+
+    @InjectRepository(Usuario)
+    private readonly usuarioRepo: Repository<Usuario>,
   ) {}
 
   async createFuncionario(data: {
@@ -25,78 +34,118 @@ export class FuncionarioService {
     crm?: string;
     especialidadeId?: number;
   }): Promise<Funcionario> {
-    const cargoValue = data.cargo ?? data.tipo ?? null;
-    if (!cargoValue) throw new BadRequestException('cargo is required');
+    const cargoValue = data.cargo ?? data.tipo;
+    if (!cargoValue) {
+      throw new BadRequestException('cargo is required');
+    }
 
-    return await this.funcionarioRepo.manager.transaction(async manager => {
-      try {
-        if (data.email) {
-          const existingByEmail = await manager.findOne(Funcionario, { where: { email: data.email } });
-          if (existingByEmail) throw new BadRequestException('Já existe um funcionário com este e-mail.');
+    return this.funcionarioRepo.manager.transaction(async manager => {
+      if (data.cpf) {
+        const existsCpf = await manager.findOne(Funcionario, {
+          where: { cpf: data.cpf },
+        });
+        if (existsCpf) {
+          throw new BadRequestException('CPF já cadastrado');
         }
-        if (data.cpf) {
-          const existingByCpf = await manager.findOne(Funcionario, { where: { cpf: data.cpf } });
-          if (existingByCpf) throw new BadRequestException('Já existe um funcionário com este CPF.');
+      }
+
+      const funcionario = manager.create(Funcionario, {
+        nome: data.nome,
+        cpf: data.cpf ?? null,
+        telefone: data.telefone ?? null,
+        cargo: cargoValue,
+      });
+
+      const savedFuncionario = await manager.save(funcionario);
+
+      const senhaHash = await bcrypt.hash(data.senha, 10);
+
+      const usuario = manager.create(Usuario, {
+        email: data.email,
+        senha: senhaHash,
+        funcionario: savedFuncionario,
+      });
+
+      await manager.save(usuario);
+
+      const cargoLower = cargoValue.toLowerCase();
+      if (cargoLower === 'médico' || cargoLower === 'medico') {
+        if (!data.crm || !data.especialidadeId) {
+          throw new BadRequestException(
+            'crm e especialidadeId são obrigatórios para médico',
+          );
         }
 
-        const funcionario = manager.create(Funcionario, {
-          nome: data.nome,
-          cpf: data.cpf ?? null,
-          telefone: data.telefone ?? null,
-          email: data.email,
-          cargo: cargoValue,
-          senha: data.senha,
+        const medico = manager.create(Medico, {
+          crm: data.crm.trim(),
+          especialidade: { id: data.especialidadeId } as any,
+          funcionario: savedFuncionario,
         });
 
-        const savedFuncionario = await manager.save(funcionario);
-
-        const cargoLower = (cargoValue ?? '').toString().toLowerCase();
-        if (cargoLower === 'médico' || cargoLower === 'medico') {
-          if (!data.crm || String(data.crm).trim() === '') {
-            throw new BadRequestException('crm is required for medico');
-          }
-          if (!data.especialidadeId) {
-            throw new BadRequestException('especialidadeId is required for medico');
-          }
-          const crmTrim = String(data.crm).trim();
-          const existingMedicoByCrm = await manager.findOne(Medico, { where: { crm: crmTrim } });
-          if (existingMedicoByCrm) {
-            throw new BadRequestException('Já existe um médico com este CRM.');
-          }
-
-          const medico = manager.create(Medico, {
-            crm: crmTrim,
-            especialidade: { id: data.especialidadeId },
-            funcionario: savedFuncionario,
-          });
-
-          await manager.save(medico);
-        }
-
-        return savedFuncionario;
-
-      } catch (err) {
-        if (err?.code === 'ER_DUP_ENTRY') {
-          throw new BadRequestException('Já existe um registro com estes dados únicos (CPF, email ou CRM).');
-        }
-        throw err;
+        await manager.save(medico);
       }
+
+      return savedFuncionario;
     });
   }
 
   async findAll(): Promise<Funcionario[]> {
-    return this.funcionarioRepo.find({ relations: ['medico'] });
+    return this.funcionarioRepo.find({
+      relations: ['medico'],
+      order: { nome: 'ASC' },
+    });
   }
 
   async findById(id: number): Promise<Funcionario> {
-    return this.funcionarioRepo.findOne({ where: { id }, relations: ['medico'] });
-  }
+    const funcionario = await this.funcionarioRepo.findOne({
+      where: { id: id },
+      relations: ['medico'],
+    });
 
-  async findByEmail(email: string): Promise<Funcionario> {
-    return this.funcionarioRepo.findOne({ where: { email } });
+    if (!funcionario) {
+      throw new NotFoundException('Funcionário não encontrado');
+    }
+
+    return funcionario;
   }
 
   async findByCpf(cpf: string): Promise<Funcionario> {
-    return this.funcionarioRepo.findOne({ where: { cpf } });
+    const funcionario = await this.funcionarioRepo.findOne({
+      where: { cpf },
+      relations: ['medico'],
+    });
+
+    if (!funcionario) {
+      throw new NotFoundException('Funcionário não encontrado');
+    }
+
+    return funcionario;
+  }
+
+  async desativar(id: number): Promise<Funcionario> {
+    const funcionario = await this.findById(id);
+
+    if (funcionario.data_desativacao) {
+      throw new BadRequestException('Funcionário já está desativado');
+    }
+
+    funcionario.data_desativacao = new Date();
+    return this.funcionarioRepo.save(funcionario);
+  }
+
+  async ativar(id: number): Promise<Funcionario> {
+    const funcionario = await this.findById(id);
+
+    if (!funcionario.data_desativacao) {
+      throw new BadRequestException('Funcionário já está ativo');
+    }
+
+    funcionario.data_desativacao = null;
+    return this.funcionarioRepo.save(funcionario);
+  }
+
+  async remove(id: number): Promise<void> {
+    const funcionario = await this.findById(id);
+    await this.funcionarioRepo.remove(funcionario);
   }
 }

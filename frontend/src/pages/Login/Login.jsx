@@ -29,20 +29,22 @@ function Login() {
     try {
       const usuario = await login(email, senha, lembrar);
 
-      switch (usuario.cargo?.toLowerCase()) {
-        case "administrador":
-          navigate("/administracao");
-          break;
-        case "medico":
-          navigate("/medico");
-          break;
-        case "recepcionista":
-          navigate("/recepcao");
-          break;
-        default:
-          navigate("/");
-          break;
-      }
+const cargo = usuario.funcionario?.cargo?.toLowerCase();
+
+switch (cargo) {
+  case "administrador":
+    navigate("/administracao");
+    break;
+  case "médico":
+    navigate("/alamedica");
+    break;
+  case "recepcionista":
+    navigate("/recepcao");
+    break;
+  default:
+    navigate("/");
+    break;
+}
     } catch (error) {
       let erroMsg = "Erro ao realizar login. Verifique suas credenciais.";
       if (error.message) {

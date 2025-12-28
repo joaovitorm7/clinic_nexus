@@ -1,23 +1,26 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Funcionario } from '../../funcionarios/entities/funcionario.entity';
-@Entity('Usuario')
+
+@Entity('usuario')
 export class Usuario {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ name: 'id' })
   id: number;
 
-  @OneToOne(() => Funcionario)   // relação 1:1
-  @JoinColumn({ name: 'id_cargo' }) // cria a coluna id_cargo no banco
-  funcionario: Funcionario;
-
-  @Column()
-  nome: string;
-
-  @Column({ unique: true })
+  @Column({ type: 'varchar', length: 45, nullable: true })
   email: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 255 })
   senha: string;
 
-  @Column({ default: 'ativo' })
-  status: string;
+  @ManyToOne(() => Funcionario, (funcionario) => funcionario.usuarios, {
+  nullable: true,
+  })
+  @JoinColumn({ name: 'funcionario_id' })
+  funcionario: Funcionario;
 }

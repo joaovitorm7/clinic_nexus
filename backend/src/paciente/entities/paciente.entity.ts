@@ -6,7 +6,7 @@ import {
 } from 'typeorm';
 import { Agendamento } from '../../agendamento/entities/agendamento.entity';
 
-@Entity('Paciente')
+@Entity('paciente')
 export class Paciente {
   @PrimaryGeneratedColumn()
   id: number;

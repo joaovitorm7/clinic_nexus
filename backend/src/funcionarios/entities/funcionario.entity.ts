@@ -1,35 +1,36 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToOne,
+  OneToMany,
+} from 'typeorm';
 import { Medico } from '../../medico/entities/medico.entity';
-import { IsOptional } from 'class-validator';
+import { Usuario } from '../../usuario/entities/usuario.entity';
 
-@Entity('Funcionario')
+@Entity('funcionario')
 export class Funcionario {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ name: 'idFuncionario' })
   id: number;
 
-  @Column({ type: 'varchar', length: 100, nullable: false })
-  nome: string;
-
-  @Column({ type: 'varchar', length: 14, unique: true, nullable: false })
+  @Column({ type: 'varchar', length: 45, nullable: true })
   cpf: string;
 
-  @Column({ type: 'varchar', length: 15, nullable: true, unique: true })
-  telefone: string;
-    
-  @Column({ type: 'varchar', length: 100, unique: true, nullable: false })
-  email: string;
+  @Column({ type: 'varchar', length: 45, nullable: true })
+  nome: string;
 
-  @Column({ type: 'varchar', length: 100, nullable: false })
+  @Column({ type: 'varchar', length: 45, nullable: true })
+  telefone: string;
+
+  @Column({ type: 'varchar', length: 45, nullable: true })
   cargo: string;
 
-  @IsOptional()
-  @Column({ type: 'date', nullable: true })
+  @Column({ type: 'datetime', name: 'data_desativacao', nullable: true })
   data_desativacao: Date | null;
 
-  @Column({ type: 'varchar', length: 255, nullable: false })
-  senha: string;
+  @OneToOne(() => Medico, (medico) => medico.funcionario)
+  medico: Medico;
 
-  @OneToOne(() => Medico, medico => medico.funcionario, { nullable: true })
-  @JoinColumn()
-  medico?: Medico;
+  @OneToMany(() => Usuario, (usuario) => usuario.funcionario)
+  usuarios: Usuario[];
 }

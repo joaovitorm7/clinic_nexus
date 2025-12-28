@@ -1,23 +1,28 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
-  OneToOne,
-  JoinColumn,
+  PrimaryColumn,
   ManyToOne,
   OneToMany,
+  JoinColumn,
+  PrimaryGeneratedColumn
 } from 'typeorm';
 import { Funcionario } from '../../funcionarios/entities/funcionario.entity';
 import { Especialidade } from './especialidade.entity';
-import { Agendamento } from '../../agendamento/entities/agendamento.entity';
-import { Agenda } from 'src/agenda/entities/agenda.entity';
-@Entity('Medico')
+import { Agenda } from '../../agenda/entities/agenda.entity';
+
+@Entity('medico')
 export class Medico {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => Funcionario, { nullable: false })
-  @JoinColumn({ name: 'funcionario_id' })
+  @Column({ type: 'int', nullable: true })
+  crm: string;
+
+  @ManyToOne(() => Funcionario, (funcionario) => funcionario.medico, {
+    nullable: false,
+  })
+  @JoinColumn({ name: 'funcionario_idFuncionario' })
   funcionario: Funcionario;
 
   @ManyToOne(() => Especialidade, { nullable: true })
@@ -26,7 +31,4 @@ export class Medico {
 
   @OneToMany(() => Agenda, (agenda) => agenda.medico)
   agendas: Agenda[];
-
-  @Column({ unique: true })
-  crm: string;
 }

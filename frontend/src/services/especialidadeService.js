@@ -4,6 +4,12 @@ import api from './api';
 // Buscar especialidade por ID 
 export const getEspecialidadeById = (id) => api.get(`/especialidades/id/${id}`);
 
+export const getEspecialidadeByMedicoId = async (medicoId) => {
+  const res = await api.get(`/especialidades/medico/${medicoId}`);
+  return res.data;
+};
+
+
 // Buscar todas as especialidades
 export const getAllEspecialidades = () => api.get('/especialidades');
 

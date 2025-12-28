@@ -1,16 +1,19 @@
-import api from "./api"; 
+import api from './api';
 
-export const login = async (email, senha) => {
-  try {
-    const response = await api.post("/auth/login", { email, senha });
-    const data = response.data;
+export async function login(email, senha) {
+  const response = await api.post('/auth/login', { email, senha });
+  const { usuario } = response.data;
 
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("usuario", JSON.stringify(data.usuario));
+  localStorage.setItem('usuario', JSON.stringify(usuario));
 
-    return data.usuario; 
-  } catch (error) {
-    console.error(error.response?.data || error.message || error);
-    throw error;
-  }
-};
+  return usuario;
+}
+
+export function logout() {
+  localStorage.removeItem('usuario');
+}
+
+export function getUsuarioLogado() {
+  const usuario = localStorage.getItem('usuario');
+  return usuario ? JSON.parse(usuario) : null;
+}

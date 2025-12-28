@@ -1,4 +1,11 @@
-import { IsString, IsNotEmpty, IsEmail, IsOptional, IsEnum, IsNumber } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsEnum,
+  IsEmail,
+  IsInt,
+} from 'class-validator';
 
 export enum Cargo {
   MEDICO = 'Médico',
@@ -10,13 +17,21 @@ export class CreateFuncionarioDto {
   @IsString()
   @IsNotEmpty()
   nome: string;
-  
-  @IsEmail()
-  @IsNotEmpty()
-  email: string;
 
   @IsEnum(Cargo)
   cargo: Cargo;
+
+  @IsString()
+  @IsNotEmpty()
+  cpf: string;
+
+  @IsString()
+  @IsOptional()
+  telefone?: string;
+
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
 
   @IsString()
   @IsNotEmpty()
@@ -24,6 +39,9 @@ export class CreateFuncionarioDto {
 
   @IsString()
   @IsOptional()
-  telefone?: string;
+  crm?: string;
 
+  @IsInt()
+  @IsOptional()
+  especialidadeId?: number;
 }

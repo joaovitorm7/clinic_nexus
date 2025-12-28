@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Medico } from '../../medico/entities/medico.entity'; 
 
-@Entity('Agenda')
+@Entity('agenda')
 export class Agenda {
   @PrimaryGeneratedColumn()
   id: number;
@@ -17,6 +17,9 @@ export class Agenda {
 
   @Column({ default: 'disponivel' })
   status: string;
+
+  @Column()
+  id_medico: number;
 
   @ManyToOne(() => Medico, (medico) => medico.agendas, { eager: true })
   @JoinColumn({ name: 'id_medico' })

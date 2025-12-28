@@ -1,30 +1,44 @@
-import { 
-  Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe 
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { MedicoService } from './medico.service';
+import { EspecialidadeService } from './especialidade.service';
 import { CreateMedicoDto } from './dto/create-medico.dto';
 import { UpdateMedicoDto } from './dto/update-medico.dto';
 
-import { EspecialidadeService } from './especialidade.service';
-import { CreateEspecialidadeDto } from './dto/create-especialidade.dto';
-
 @Controller('medico')
 export class MedicoController {
-  constructor(private readonly medicoService: MedicoService) {}
+  constructor(
+    private readonly medicoService: MedicoService,
+    private readonly especialidadeService: EspecialidadeService,
+  ) {}
 
   @Post()
-  create(@Body() createMedicoDto: CreateMedicoDto) {
-    return this.medicoService.create(createMedicoDto);
+  create(@Body() dto: CreateMedicoDto) {
+    return this.medicoService.create(dto);
   }
 
   @Get()
-  findAll() {
-    return this.medicoService.findAll();
+  findAll(@Query('nome') nome?: string) {
+    return this.medicoService.findAll(nome);
   }
 
-  @Get('especialidade/:especialidade_id')
+  @Get('especialidades')
+  findAllEspecialidades() {
+    return this.especialidadeService.findAll();
+  }
+
+  @Get('especialidade/:especialidadeId')
   findByEspecialidade(
-    @Param('especialidade_id', ParseIntPipe) especialidadeId: number
+    @Param('especialidadeId', ParseIntPipe) especialidadeId: number,
   ) {
     return this.medicoService.findByEspecialidadeId(especialidadeId);
   }
@@ -34,38 +48,21 @@ export class MedicoController {
     return this.medicoService.findOne(id);
   }
 
+  @Get(':id/especialidade')
+  getEspecialidade(@Param('id', ParseIntPipe) id: number) {
+    return this.medicoService.getEspecialidadeByMedico(id);
+  }
+
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateMedicoDto: UpdateMedicoDto,
+    @Body() dto: UpdateMedicoDto,
   ) {
-    return this.medicoService.update(id, updateMedicoDto);
+    return this.medicoService.update(id, dto);
   }
 
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.medicoService.remove(id);
-  }
-}
-
-@Controller('especialidades')
-export class EspecialidadeController {
-  constructor(
-    private readonly especialidadeService: EspecialidadeService,
-  ) {}
-
-  @Post()
-  create(@Body() dto: CreateEspecialidadeDto) {
-    return this.especialidadeService.create(dto);
-  }
-
-  @Get()
-  findAll() {
-    return this.especialidadeService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.especialidadeService.findOne(id);
   }
 }

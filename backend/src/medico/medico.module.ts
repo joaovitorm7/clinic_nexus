@@ -7,13 +7,13 @@ import { Especialidade } from './entities/especialidade.entity';
 import { FuncionariosModule } from '../funcionarios/funcionarios.module';
 import { Funcionario } from '../funcionarios/entities/funcionario.entity';
 import { EspecialidadeService } from './especialidade.service';
-import { EspecialidadeController } from './medico.controller';
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([Medico, Especialidade, Funcionario]),
     FuncionariosModule,
   ],
-  controllers: [MedicoController, EspecialidadeController],
+  controllers: [MedicoController],
   providers: [MedicoService, EspecialidadeService],
   exports: [MedicoService],
 })

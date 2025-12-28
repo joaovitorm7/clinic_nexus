@@ -1,43 +1,74 @@
-import { Especialidade } from "./entities/especialidade.entity";
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { CreateEspecialidadeDto } from './dto/create-especialidade.dto';
-
+import { Repository, ILike } from 'typeorm';
+import { Especialidade } from './entities/especialidade.entity';
 
 @Injectable()
 export class EspecialidadeService {
   constructor(
     @InjectRepository(Especialidade)
-    private readonly especialidadeRepository: Repository<Especialidade>,
+    private readonly especialidadeRepo: Repository<Especialidade>,
   ) {}
 
+  async create(nome: string): Promise<Especialidade> {
+    const existe = await this.especialidadeRepo.findOne({
+      where: { nome },
+    });
 
-async create(createEspecialidadeDto: CreateEspecialidadeDto) {
-  const exists = await this.especialidadeRepository.findOne({
-    where: { nome: createEspecialidadeDto.nome },
-  });
+    if (existe) {
+      throw new BadRequestException('Especialidade já cadastrada');
+    }
 
-  if (exists) {
-    throw new ConflictException(`Especialidade '${createEspecialidadeDto.nome}' já existe`);
+    const especialidade = this.especialidadeRepo.create({ nome });
+    return this.especialidadeRepo.save(especialidade);
   }
 
-  const especialidade = this.especialidadeRepository.create(createEspecialidadeDto);
-  return this.especialidadeRepository.save(especialidade);
-}
-
-
-  findAll() {
-    return this.especialidadeRepository.find();
+  async findAll(): Promise<Especialidade[]> {
+    return this.especialidadeRepo.find({
+      order: { nome: 'ASC' },
+    });
   }
 
-  async findOne(id: number) {
-    const especialidade =  await this.especialidadeRepository.findOne({ where: { id } }); 
+  async findById(id: number): Promise<Especialidade> {
+    const especialidade = await this.especialidadeRepo.findOne({
+      where: { id },
+    });
 
     if (!especialidade) {
-      throw new NotFoundException(`Especialidade com id ${id} não encontrada`);
+      throw new NotFoundException('Especialidade não encontrada');
     }
 
     return especialidade;
+  }
+
+  async findByNome(nome: string): Promise<Especialidade[]> {
+    return this.especialidadeRepo.find({
+      where: { nome: ILike(`%${nome}%`) },
+      order: { nome: 'ASC' },
+    });
+  }
+
+  async update(id: number, nome: string): Promise<Especialidade> {
+    const especialidade = await this.findById(id);
+
+    const existe = await this.especialidadeRepo.findOne({
+      where: { nome },
+    });
+
+    if (existe && existe.id !== id) {
+      throw new BadRequestException('Já existe outra especialidade com este nome');
+    }
+
+    especialidade.nome = nome;
+    return this.especialidadeRepo.save(especialidade);
+  }
+
+  async remove(id: number): Promise<void> {
+    const especialidade = await this.findById(id);
+    await this.especialidadeRepo.remove(especialidade);
   }
 }
