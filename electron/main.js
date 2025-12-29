@@ -1,4 +1,4 @@
-const { app, BrowserWindow,screen } = require('electron');
+const { app, BrowserWindow,screen, Menu } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
 const waitOn = require('wait-on');
@@ -31,11 +31,6 @@ function startBackend() {
   });
 }
 
-function print() {
-  console.log("Hello world")
-  
-}
-
 function startFrontendDevServer() {
   return new Promise((resolve, reject) => {
     const frontendPath = path.join(__dirname, '../frontend');
@@ -44,7 +39,7 @@ function startFrontendDevServer() {
       cwd: frontendPath,
       shell: true,
       stdio: 'ignore',
-      windowsHide: true,        // <<< evita abrir console
+      windowsHide: true,   
       env: { ...process.env },
     });
 
@@ -64,11 +59,15 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
+      devTools: false,
     },
   });
 
   mainWindow.loadURL(DEV_URL);
+  mainWindow.setMenu(null);
+
 }
+
 
 function shutdownAll() {
   try { viteProcess?.kill(); } catch {}
@@ -76,9 +75,9 @@ function shutdownAll() {
 }
 
 app.whenReady().then(async () => {
+  Menu.setApplicationMenu(null);
   try {
     await startBackend();
-    await print();
     await startFrontendDevServer();
     createWindow();
   } catch (err) {
