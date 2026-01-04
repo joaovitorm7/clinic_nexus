@@ -3,12 +3,14 @@ import {
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
-import { Funcionario } from './entities/funcionario.entity';
+import { Repository, DataSource } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as bcrypt from 'bcrypt';
+
+import { Funcionario } from './entities/funcionario.entity';
 import { Medico } from '../medico/entities/medico.entity';
 import { Usuario } from '../usuario/entities/usuario.entity';
-import * as bcrypt from 'bcrypt';
+import { UpdateFuncionarioDto } from './dto/update-funcionario.dto';
 
 @Injectable()
 export class FuncionarioService {
@@ -21,6 +23,8 @@ export class FuncionarioService {
 
     @InjectRepository(Usuario)
     private readonly usuarioRepo: Repository<Usuario>,
+
+    private readonly dataSource: DataSource,
   ) {}
 
   async createFuncionario(data: {
@@ -39,7 +43,7 @@ export class FuncionarioService {
       throw new BadRequestException('cargo is required');
     }
 
-    return this.funcionarioRepo.manager.transaction(async manager => {
+    return this.dataSource.transaction(async manager => {
       if (data.cpf) {
         const existsCpf = await manager.findOne(Funcionario, {
           where: { cpf: data.cpf },
@@ -98,7 +102,7 @@ export class FuncionarioService {
 
   async findById(id: number): Promise<Funcionario> {
     const funcionario = await this.funcionarioRepo.findOne({
-      where: { id: id },
+      where: { id },
       relations: ['medico'],
     });
 
@@ -120,6 +124,43 @@ export class FuncionarioService {
     }
 
     return funcionario;
+  }
+
+  async updateCompleto(
+    id: number,
+    dto: UpdateFuncionarioDto,
+  ): Promise<Funcionario> {
+    return this.dataSource.transaction(async manager => {
+      const funcionario = await manager.findOne(Funcionario, {
+        where: { id },
+        relations: ['medico'],
+      });
+
+      if (!funcionario) {
+        throw new NotFoundException('Funcionário não encontrado');
+      }
+
+      const { crm, especialidadeId, ...dadosFuncionario } = dto;
+
+      Object.assign(funcionario, dadosFuncionario);
+      await manager.save(funcionario);
+
+      if (funcionario.medico && (crm || especialidadeId)) {
+        if (crm !== undefined) {
+          funcionario.medico.crm = crm.trim();
+        }
+
+        if (especialidadeId !== undefined) {
+          funcionario.medico.especialidade = {
+            id: especialidadeId,
+          } as any;
+        }
+
+        await manager.save(funcionario.medico);
+      }
+
+      return funcionario;
+    });
   }
 
   async desativar(id: number): Promise<Funcionario> {

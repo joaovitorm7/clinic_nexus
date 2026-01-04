@@ -7,9 +7,15 @@ import { UpdateAgendamentoDto } from './dto/update-agendamento.dto';
 import { Paciente } from 'src/paciente/entities/paciente.entity';
 import { Medico } from 'src/medico/entities/medico.entity';
 import { Funcionario } from 'src/funcionarios/entities/funcionario.entity';
+import { AgendaService } from 'src/agenda/services/agenda.service';
+import { StatusAgenda } from 'src/agenda/enums/status-agenda.enum';
+import { Agenda } from 'src/agenda/entities/agenda.entity';
+
 @Injectable()
 export class AgendamentoService {
   constructor(
+    @InjectRepository(Agenda)
+    private readonly agendaRepository: Repository<Agenda>,
     @InjectRepository(Agendamento)
     private readonly agendamentoRepository: Repository<Agendamento>,
     @InjectRepository(Paciente)
@@ -18,16 +24,45 @@ export class AgendamentoService {
     private readonly medicoRepository: Repository<Medico>,
     @InjectRepository(Funcionario)
     private readonly funcionarioRepository: Repository<Funcionario>,
-  ) { }
+    private readonly agendaService: AgendaService, 
 
-  async create(dto: CreateAgendamentoDto): Promise<Agendamento> {
-    const agendamento = this.agendamentoRepository.create({
-      ...dto,
-      paciente: dto.id_paciente ? { id: dto.id_paciente } : null,
-      medico: dto.id_medico ? { id: dto.id_medico } : null,
-    });
-    return await this.agendamentoRepository.save(agendamento);
+  ) {}
+
+
+async create(dto: CreateAgendamentoDto): Promise<Agendamento> {
+  const agenda = await this.agendaRepository.findOne({
+    where: { id: dto.id_agenda },
+    relations: ['medico'],
+  });
+
+  if (!agenda) {
+    throw new NotFoundException('Agenda não encontrada');
   }
+
+  // Cria a consulta
+  const agendamento = this.agendamentoRepository.create({
+    data: dto.data,
+    status: 'agendada',
+    motivo_consulta: dto.motivo_consulta,
+    paciente: { id: dto.id_paciente },
+    medico: { id: dto.id_medico },
+    agenda,
+  });
+
+  const consultaSalva = await this.agendamentoRepository.save(agendamento);
+
+  // Atualiza agenda
+  agenda.status = StatusAgenda.OCUPADO;
+  agenda.consulta = consultaSalva;
+
+  await this.agendaRepository.save(agenda);
+
+  return this.agendamentoRepository.findOne({
+    where: { id: consultaSalva.id },
+    relations: ['paciente', 'medico', 'agenda'],
+  });
+}
+
 
   findById(id: number): Promise<Agendamento> {
     return this.agendamentoRepository.findOne({

@@ -16,7 +16,7 @@ export class Medico {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'int', nullable: true })
+  @Column({ type: 'varchar', length: 20, nullable: true })
   crm: string;
 
   @ManyToOne(() => Funcionario, (funcionario) => funcionario.medico, {

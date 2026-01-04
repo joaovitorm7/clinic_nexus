@@ -1,31 +1,15 @@
-import { 
-IsNotEmpty,
-IsOptional,
-IsString,
-IsNumber
-} from 'class-validator';
+import { IsDateString, IsInt, IsString } from 'class-validator';
+
 export class CreateAgendaDto {
-  @IsNumber()
-  @IsNotEmpty()
+  @IsInt()
   id_medico: number;
 
-  @IsString()
-  @IsNotEmpty()
-  data: string;
+  @IsDateString()
+  data: string; 
 
   @IsString()
-  @IsNotEmpty()
-  hora_inicio: string;
+  hora_inicio: string; 
 
   @IsString()
-  @IsNotEmpty()
-  hora_fim: string;
-
-  @IsString()
-  @IsOptional()
-  status?: string;
-
-  @IsNotEmpty()
-  @IsOptional()
-  test?: string;
+  hora_fim: string; 
 }

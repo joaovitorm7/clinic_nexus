@@ -1,7 +1,17 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { Medico } from '../../medico/entities/medico.entity'; 
-
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+  Unique,
+  OneToOne,
+} from 'typeorm';
+import { Medico } from '../../medico/entities/medico.entity';
+import { StatusAgenda } from '../enums/status-agenda.enum';
+import { Agendamento } from '../../agendamento/entities/agendamento.entity';
 @Entity('agenda')
+@Unique(['medico', 'data', 'hora_inicio'])
 export class Agenda {
   @PrimaryGeneratedColumn()
   id: number;
@@ -15,13 +25,26 @@ export class Agenda {
   @Column({ type: 'time' })
   hora_fim: string;
 
-  @Column({ default: 'disponivel' })
-  status: string;
+  @Column({
+    type: 'enum',
+    enum: StatusAgenda,
+    default: StatusAgenda.DISPONIVEL,
+  })
+  status: StatusAgenda;
 
-  @Column()
-  id_medico: number;
-
-  @ManyToOne(() => Medico, (medico) => medico.agendas, { eager: true })
+  @ManyToOne(() => Medico, (medico) => medico.agendas, {
+    nullable: false,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'id_medico' })
   medico: Medico;
+  
+ 
+  @OneToOne(() => Agendamento, (agendamento) => agendamento.agenda, {
+    nullable: true,
+  })
+  @JoinColumn({ name: 'id_consulta' })
+  consulta: Agendamento;
+
+
 }

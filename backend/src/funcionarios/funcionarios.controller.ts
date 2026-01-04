@@ -1,3 +1,4 @@
+
 import {
   Controller,
   Get,
@@ -5,9 +6,10 @@ import {
   Body,
   Param,
   ParseIntPipe,
+  Patch
 } from '@nestjs/common';
 import { FuncionarioService } from './funcionarios.service';
-
+import { UpdateFuncionarioDto } from './dto/update-funcionario.dto';
 @Controller('funcionarios')
 export class FuncionariosController {
   constructor(
@@ -27,6 +29,14 @@ export class FuncionariosController {
     especialidadeId?: number;
   }) {
     return this.funcionarioService.createFuncionario(data);
+  }
+
+   @Patch(':id')
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateFuncionarioDto,
+  ) {
+    return this.funcionarioService.updateCompleto(id, dto);
   }
 
   @Get()

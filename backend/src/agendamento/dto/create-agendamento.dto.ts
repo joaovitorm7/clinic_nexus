@@ -8,6 +8,9 @@ export class CreateAgendamentoDto {
   @IsInt()
   id_paciente: number;
 
+  @IsInt()
+  id_agenda: number;
+
   @IsOptional()
   @IsString()
   especialidade?: string;
@@ -18,10 +21,6 @@ export class CreateAgendamentoDto {
   @IsOptional()
   @IsString()
   status?: string;
-
-  @IsOptional()
-  @IsString()
-  prontuario_path?: string;
 
   @IsOptional()
   @IsString()

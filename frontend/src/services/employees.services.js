@@ -27,7 +27,7 @@ async function createEmployee(employeeData) {
 }
 
 async function updateEmployee(id, employeeData) {
-  const response = await api.put(`${ENDPOINT}/${id}`, employeeData);
+  const response = await api.patch(`${ENDPOINT}/${id}`, employeeData);
   return response.data;
 }
 
