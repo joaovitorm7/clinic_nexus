@@ -16,6 +16,8 @@ import Recepcao from "./pages/recepcao/DashboardRecepcao/DashboardRecepcao";
 import AgendarConsulta from './pages/recepcao/AgendarConsulta/AgendarConsulta';
 import Consultas from "./pages/recepcao/Visualizar/Consulta";
 import EditarAgenda from "./pages/recepcao/EditarAgenda/EditarAgenda";
+import CadastrarPaciente from "./pages/recepcao/CadastroPaciente/CadastrarPaciente";
+import VisualizarPacientes from "./pages/recepcao/VisualizarPacientes/VisualizarPacientes";
 import CalendarPage from "./pages/recepcao/AgendaMedico/AgendaMedico";
 
 // Ala Médica
@@ -49,6 +51,8 @@ function App() {
       <Route path="/recepcao/agendar" element={<AgendarConsulta />} />
       <Route path="/recepcao/editaragenda" element={<EditarAgenda />} />
       <Route path="/consultas" element={<Consultas />} />
+      <Route path="/recepcao/cadastrar-paciente" element={<CadastrarPaciente />} />
+      <Route path="/recepcao/pacientes" element={<VisualizarPacientes />} />
 
       {/* Teste */}
       <Route path="/test" element={<EmployeePage />} />

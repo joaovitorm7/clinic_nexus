@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './DashboardRecepcao.css';
 import '../../Admin/Dashboard/DashboardAdmin.css';
-import { FaCalendarAlt, FaUserInjured, FaNotesMedical } from 'react-icons/fa';
+import { FaCalendarAlt, FaUserInjured, FaNotesMedical, FaUserPlus, FaUserEdit, FaUsers } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom'; 
 import Navbar from '../../../components/Navbar/Navbar';
 
@@ -14,6 +14,27 @@ const Recepcao = () => {
       <div className="content-wrapper">
         <h1>Recepção</h1>
         <div className="cards">
+            <div className="card">
+              <div className="card-icon" aria-hidden="true"><FaUserPlus size={90} /></div>
+              <h3>Cadastrar Paciente</h3>
+              <p>Registrar um novo paciente no sistema.</p>
+              <Link to="/recepcao/cadastrar-paciente" className="card-btn card-link">Cadastrar</Link>
+            </div>
+
+            <div className="card">
+              <div className="card-icon" aria-hidden="true"><FaUserEdit size={90} /></div>
+              <h3>Editar Paciente</h3>
+              <p>Alterar dados de um paciente existente.</p>
+              <Link to="/recepcao/editar-paciente" className="card-btn card-link">Editar</Link>
+            </div>
+
+            <div className="card">
+              <div className="card-icon" aria-hidden="true"><FaUsers size={90} /></div>
+              <h3>Pacientes</h3>
+              <p>Ver lista de pacientes cadastrados.</p>
+              <Link to="/recepcao/pacientes" className="card-btn card-link">Ver Pacientes</Link>
+            </div>
+
           <div className="card">
             <div className="card-icon" aria-hidden="true"><FaCalendarAlt size={90} /></div>
             <h3>Consultas</h3>
