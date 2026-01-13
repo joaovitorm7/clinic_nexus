@@ -6,7 +6,7 @@ import FloatingButton from '../../../components/FloatingButton/FloatingButton';
 import './DashboardAlaMedica.css';
 import { FaCalendarAlt, FaUserInjured, FaNotesMedical, FaPrescriptionBottleAlt } from 'react-icons/fa';
 
-export default function DashboardMedico() {
+export default function DashboardAlaMedica() {
   const navigate = useNavigate();
 
   const cards = [

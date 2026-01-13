@@ -5,12 +5,16 @@ import { UpdateAgendamentoDto } from './dto/update-agendamento.dto';
 import { Paciente } from 'src/paciente/entities/paciente.entity';
 import { Medico } from 'src/medico/entities/medico.entity';
 import { Funcionario } from 'src/funcionarios/entities/funcionario.entity';
+import { AgendaService } from 'src/agenda/services/agenda.service';
+import { Agenda } from 'src/agenda/entities/agenda.entity';
 export declare class AgendamentoService {
+    private readonly agendaRepository;
     private readonly agendamentoRepository;
     private readonly pacienteRepository;
     private readonly medicoRepository;
     private readonly funcionarioRepository;
-    constructor(agendamentoRepository: Repository<Agendamento>, pacienteRepository: Repository<Paciente>, medicoRepository: Repository<Medico>, funcionarioRepository: Repository<Funcionario>);
+    private readonly agendaService;
+    constructor(agendaRepository: Repository<Agenda>, agendamentoRepository: Repository<Agendamento>, pacienteRepository: Repository<Paciente>, medicoRepository: Repository<Medico>, funcionarioRepository: Repository<Funcionario>, agendaService: AgendaService);
     create(dto: CreateAgendamentoDto): Promise<Agendamento>;
     findById(id: number): Promise<Agendamento>;
     update(id: number, dto: UpdateAgendamentoDto): Promise<Agendamento>;
