@@ -1,0 +1,9 @@
+.page-edit-paciente { display:flex; flex-direction:column; align-items:center; padding:24px; }
+
+.back-button { display:inline-flex; align-items:center; gap:8px; background:transparent; border:none; color:#1A3B6C; font-weight:700; cursor:pointer; padding:8px 12px; border-radius:8px; align-self:flex-start; font-size:1rem; margin-bottom:8px; }
+.back-button:hover { background:rgba(26,59,108,0.06); }
+
+.search-row { display:flex; gap:8px; margin:12px 0; }
+.edit-form { width:100%; max-width:720px; background:#fff; padding:16px; border-radius:8px; display:flex; flex-direction:column; gap:10px; }
+.edit-form label { display:flex; flex-direction:column; }
+.form-actions { display:flex; justify-content:space-between; margin-top:12px; }
