@@ -5,7 +5,6 @@ import './CadastrarPaciente.css';
 import api from '../../../services/api';
 
 export default function CadastrarPaciente() {
-
   const { id } = useParams(); 
   const navigate = useNavigate();
 
@@ -16,89 +15,120 @@ export default function CadastrarPaciente() {
     contato: ''
   });
 
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     if (id) {
-      // MODO EDIÇÃO
       buscarPacienteParaEditar(id);
-    } else {
-      // MODO NOVO PACIENTE - formulário vazio
-      console.log('Novo paciente');
     }
   }, [id]);
 
   const buscarPacienteParaEditar = async (pacienteId) => {
     try {
+      setLoading(true);
       const res = await api.get(`/pacientes/${pacienteId}`);
       setForm(res.data);
-      console.log('Dados do paciente carregados:', res.data);
     } catch (err) {
-      console.error('Erro ao buscar paciente:', err);
       alert('Erro ao carregar paciente para edição');
+    } finally {
+      setLoading(false);
     }
   };
-
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const dataToSave = {
-      nome: form.nome,
-      cpf: form.cpf,
-      dataNascimento: form.dataNascimento,  
-      contato: form.contato
-    };
-    if (id) {
-      // MODO EDIÇÃO - fazer PUT para atualizar
-      await api.put(`/pacientes/${id}`, form);
-      alert('Paciente atualizado com sucesso!');
-    } else {
-      // MODO NOVO - fazer POST para criar
-      await criarPaciente(form);
-      alert('Paciente cadastrado com sucesso!');
-      setForm({ nome: '', cpf: '', dataNascimento: '', contato: '' });
+    e.preventDefault();
+    try {
+      if (id) {
+        await api.put(`/pacientes/${id}`, form);
+        alert('Paciente atualizado com sucesso!');
+      } else {
+        await criarPaciente(form);
+        alert('Paciente cadastrado com sucesso!');
+        setForm({ nome: '', cpf: '', dataNascimento: '', contato: '' });
+      }
+      navigate('/recepcao/pacientes');
+    } catch (err) {
+      alert('Erro ao salvar paciente.');
     }
-    navigate('/recepcao/pacientes'); // Volta para lista
-  } catch (err) {
-    alert('Erro ao salvar paciente.');
-  }
-};
+  };
 
   return (
-    <div className="cadastrar-paciente-page">
-      <h1>{id ? 'Editar Paciente' : 'Novo Paciente'}</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          name="nome"
-          placeholder="Nome"
-          value={form.nome}
-          onChange={handleChange}
-        />
-        <input
-          name="cpf"
-          placeholder="CPF"
-          value={form.cpf}
-          onChange={handleChange}
-        />
-        <input
-          name="dataNascimento"
-          type="date"
-          value={form.dataNascimento}
-          onChange={handleChange}
-        />
-        <input
-          name="contato"
-          placeholder="Contato"
-          value={form.contato}
-          onChange={handleChange}
-        />
-        <button type="submit">
-          {id ? 'Atualizar' : 'Cadastrar'}
-        </button>
-      </form>
+    <div className="page-cadastrar-paciente">
+      <div className="cadastro-wrapper">
+        <h1>{id ? 'Editar Paciente' : 'Novo Paciente'}</h1>
+
+        <div className="form-container">
+          {loading ? (
+            <p style={{ textAlign: 'center' }}>Carregando dados...</p>
+          ) : (
+            <form onSubmit={handleSubmit}>
+              <div className="fields-group">
+                <div className="form-field">
+                  <label>Nome completo</label>
+                  <input
+                    name="nome"
+                    placeholder="Digite o nome completo"
+                    value={form.nome}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="form-field">
+                  <label>CPF</label>
+                  <input
+                    name="cpf"
+                    placeholder="Somente números"
+                    value={form.cpf}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="form-field">
+                  <label>Data de nascimento</label>
+                  <input
+                    name="dataNascimento"
+                    type="date"
+                    value={form.dataNascimento}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="form-field">
+                  <label>Contato</label>
+                  <input
+                    name="contato"
+                    placeholder="Telefone ou e-mail"
+                    value={form.contato}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-actions">
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => navigate('/recepcao/pacientes')}
+                >
+                  Cancelar
+                </button>
+
+                <button type="submit">
+                  {id ? 'Atualizar Paciente' : 'Cadastrar Paciente'}
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

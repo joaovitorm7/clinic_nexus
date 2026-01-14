@@ -30,23 +30,23 @@ const Recepcao = () => {
 
             <div className="card">
               <div className="card-icon" aria-hidden="true"><FaUsers size={90} /></div>
-              <h3>Pacientes</h3>
+              <h3>Visualizar Pacientes</h3>
               <p>Ver lista de pacientes cadastrados.</p>
               <Link to="/recepcao/pacientes" className="card-btn card-link">Ver Pacientes</Link>
             </div>
 
-          <div className="card">
-            <div className="card-icon" aria-hidden="true"><FaCalendarAlt size={90} /></div>
-            <h3>Consultas</h3>
-            <p>Visualizar as consultas agendadas.</p>
-            <Link to="/consultas" className="card-btn card-link">Visualizar Consultas</Link>
-          </div>
+            <div className="card">
+              <div className="card-icon" aria-hidden="true"><FaUserInjured size={90} /></div>
+              <h3>Agendar Consultas</h3>
+              <p>Agendar uma nova consulta.</p>
+              <Link to="/recepcao/agendar" className="card-btn card-link">Agendar</Link>
+            </div>
 
           <div className="card">
-            <div className="card-icon" aria-hidden="true"><FaUserInjured size={90} /></div>
-            <h3>Agendar</h3>
-            <p>Agendar uma nova consulta.</p>
-            <Link to="/recepcao/agendar" className="card-btn card-link">Agendar Consulta</Link>
+            <div className="card-icon" aria-hidden="true"><FaCalendarAlt size={90} /></div>
+            <h3>Visualizar Consultas</h3>
+            <p>Visualizar consultas agendadas.</p>
+            <Link to="/consultas" className="card-btn card-link">Ver Consultas</Link>
           </div>
 
           <div className="card">
