@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom'; 
+import { useParams, useNavigate } from 'react-router-dom';
+import { FaArrowLeft } from 'react-icons/fa';
 import { criarPaciente } from '../../../services/pacienteService';
 import './CadastrarPaciente.css';
 import api from '../../../services/api';
@@ -59,6 +60,9 @@ export default function CadastrarPaciente() {
   return (
     <div className="page-cadastrar-paciente">
       <div className="cadastro-wrapper">
+        <button type="button" className="back-button" onClick={() => navigate('/recepcao')} aria-label="Voltar para Recepção">
+          <FaArrowLeft size={18} style={{ marginRight: 8 }} /> Voltar
+        </button>
         <h1>{id ? 'Editar Paciente' : 'Novo Paciente'}</h1>
 
         <div className="form-container">

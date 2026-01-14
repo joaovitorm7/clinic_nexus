@@ -16,6 +16,25 @@
   align-items: center;
 }
 
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: #1A3B6C;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  align-self: flex-start;
+  font-size: 1rem;
+  margin-bottom: 12px;
+}
+.back-button:hover {
+  background: rgba(26, 59, 108, 0.06);
+}
+
 .cadastro-wrapper h1 {
   color: #1A3B6C;
   margin-bottom: 28px;
