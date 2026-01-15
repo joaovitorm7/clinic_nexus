@@ -35,12 +35,19 @@ margin-top: 10px;
 
 /* Container dos Cards */
 .cards {
-display: flex;
-gap: 1.5rem;
-margin-top: 1.5rem;
-flex-wrap: wrap;
-justify-content: center;
-width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  justify-content: center;
+  width: 100%;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cards {
+  grid-auto-rows: 320px;
 }
 
 .card {

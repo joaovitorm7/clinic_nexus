@@ -6,6 +6,7 @@ import Dashboard from "./pages/Admin/Dashboard/DashboardAdmin";
 import DashboardFunc from "./pages/Admin/Funcionarios/DashboardFunc";
 import AddFunc from './pages/Admin/Funcionarios/AddFunc';
 import DashboardMed from "./pages/Admin/Medicos/DashboardMed";
+import EditarFuncionarios from "./pages/Admin/EditarFuncionarios/EditarFuncionarios";
 
 // Auth
 import Login from "./pages/Login/Login";
@@ -42,6 +43,7 @@ function App() {
       <Route path="/funcionarios" element={<DashboardFunc />} />
       <Route path="/admin/funcionarios/addFunc" element={<AddFunc />} />
       <Route path="/admin/medicos" element={<DashboardMed />} />
+      <Route path="/admin/editar-funcionarios" element={<EditarFuncionarios />} />
 
       {/* Ala Médica */}
       <Route path="/alamedica" element={<DashboardAlaMedica />} />

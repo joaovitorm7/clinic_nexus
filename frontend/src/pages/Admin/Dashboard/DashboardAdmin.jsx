@@ -1,7 +1,7 @@
 import React from "react";
 import "./DashboardAdmin.css";
 import { Link } from "react-router-dom";
-import { FaUserAlt, FaUserMd, FaCalendarCheck } from "react-icons/fa";
+import { FaUserAlt, FaUserMd, FaCalendarCheck, FaEdit } from "react-icons/fa";
 import "../../../components/Navbar/Navbar.jsx"
 
 export default function Dashboard() {
@@ -26,6 +26,13 @@ export default function Dashboard() {
             <h3>Funcionários</h3>
             <p>Cadastre novos funcionarios no sistema, gerencie e visualize dados.</p>
             <Link to="/funcionarios" className="card-btn card-link">Ver funcionários</Link>
+          </div>
+
+          <div className="card">
+            <div className="card-icon" aria-hidden="true"><FaEdit size={90} /></div>
+            <h3>Editar Funcionários</h3>
+            <p>Editar dados de funcionários existentes.</p>
+            <Link to="/admin/editar-funcionarios" className="card-btn card-link">Editar</Link>
           </div>
 
           <div className="card">
