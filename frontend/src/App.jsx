@@ -25,6 +25,7 @@ import CalendarPage from "./pages/recepcao/AgendaMedico/AgendaMedico";
 // Ala Médica
 import DashboardAlaMedica from "./pages/AlaMedica/Dashboard/DashboardAlaMedica";
 import Prontuario from "./pages/AlaMedica/prontuario/Prontuario";
+import ListarConsultas from "./pages/AlaMedica/ListarConsultas/ListarConsultas";
 
 // Outros
 import EmployeePage from "./EmployeePage";
@@ -48,6 +49,7 @@ function App() {
       {/* Ala Médica */}
       <Route path="/alamedica" element={<DashboardAlaMedica />} />
       <Route path="/alamedica/prontuario" element={<Prontuario />} />
+      <Route path="/medico/consultas" element={<ListarConsultas />} />
 
       {/* Recepção */}
       <Route path="/recepcao" element={<Recepcao />} />

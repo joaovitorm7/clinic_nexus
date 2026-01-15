@@ -14,6 +14,7 @@ export default function DashboardAlaMedica() {
     { id: 'pacientes', title: 'Pacientes', subtitle: 'Buscar e abrir prontuário', icon: <FaUserInjured />, path: '/medico/pacientes' },
     { id: 'prontuario', title: 'Prontuários', subtitle: 'Registrar atendimentos', icon: <FaNotesMedical />, path: '/alamedica/prontuario' },
     { id: 'receitas', title: 'Receitas', subtitle: 'Gerar e enviar prescrições', icon: <FaPrescriptionBottleAlt />, path: '/medico/receitas' },
+    { id: 'consultas', title: 'Minhas Consultas', subtitle: 'Ver todas as consultas agendadas', icon: <FaCalendarAlt />, path: '/medico/consultas' },
   ];
 
   return (

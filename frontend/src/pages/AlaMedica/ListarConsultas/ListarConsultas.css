@@ -1,0 +1,156 @@
+.page-listar-consultas {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: calc(100vh - 80px); /* Deixa espaço para navbar */
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: #1A3B6C;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+.back-button:hover {
+  background: rgba(26, 59, 108, 0.06);
+}
+
+.page-listar-consultas h1 {
+  color: #1A3B6C;
+  margin-bottom: 8px;
+  font-size: 2rem;
+}
+
+.medico-info {
+  color: #666;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+}
+
+/* Filtros */
+.filtros {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.filtros button {
+  padding: 8px 16px;
+  background: #e0e0e0;
+  border: 2px solid transparent;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.filtros button:hover {
+  background: #d0d0d0;
+}
+
+.filtros button.ativo {
+  background: #1A3B6C;
+  color: white;
+  border-color: #0f2847;
+}
+
+/* Tabela */
+.tabela-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: auto;
+}
+
+.consultas-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.consultas-table thead {
+  background: #f5f5f5;
+  border-bottom: 2px solid #ddd;
+}
+
+.consultas-table th {
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  color: #1A3B6C;
+}
+
+.consultas-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.consultas-table tbody tr:hover {
+  background: #f9f9f9;
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-agendada {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.status-concluida {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-cancelada {
+  background: #ffebee;
+  color: #c62828;
+}
+
+/* Ações */
+.acoes {
+  display: flex;
+  gap: 8px;
+}
+
+.acoes button {
+  padding: 6px 10px;
+  background: transparent;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.acoes button:hover {
+  background: #f0f0f0;
+  border-color: #1A3B6C;
+  color: #1A3B6C;
+}
+
+/* Estados */
+.loading,
+.sem-dados {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-size: 1.1rem;
+}
