@@ -4,7 +4,7 @@ import styles from './DashboardFunc.module.css';
 import EmployeeCard from '../../../components/EmployeeCard/EmployeeCard';
 import EmployeeModal from '../../../components/EmployeeModal/EmployeeModal';
 import { employeeService } from '../../../services/employees.services';
-import { FaPlus } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTimesCircle  } from 'react-icons/fa';
 
 export default function DashboardFunc() {
   const navigate = useNavigate();
@@ -69,10 +69,9 @@ export default function DashboardFunc() {
   }
 
   function handleEdit(emp) {
-    setModalEmployee(emp);
-    setModalMode('edit');
-    setModalOpen(true);
-  }
+  // Redirecionar para a página de editar funcionário
+  navigate(`/admin/editar-funcionarios?id=${emp.id}`);
+}
 
   function toggleSelectMode() {
     setSelectMode(prev => !prev);
@@ -171,7 +170,7 @@ export default function DashboardFunc() {
             onClick={toggleSelectMode}
             disabled={employees.length === 0}
           >
-            Desativar Funcionários
+            <FaTimesCircle style={{ marginRight: 8 }} /> Desativar Funcionários
           </button>
         ) : (
           <>
@@ -183,7 +182,7 @@ export default function DashboardFunc() {
               onClick={handleDeactivateClick}
               disabled={selectedEmployees.length === 0}
             >
-              Confirmar Seleção ({selectedEmployees.length})
+              <FaTimesCircle style={{ marginRight: 8 }} /> Confirmar Seleção ({selectedEmployees.length})
             </button>
           </>
         )}

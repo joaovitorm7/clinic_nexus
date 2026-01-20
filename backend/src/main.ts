@@ -40,13 +40,20 @@ async function bootstrap() {
   await AppDataSource.initialize();
 }
 
-const especialidadeRepo = AppDataSource.getRepository(Especialidade);
+try {
+  const especialidadeRepo = AppDataSource.getRepository(Especialidade);
+  const existeEspecialidade = await especialidadeRepo.exist();
 
-const existeEspecialidade = await especialidadeRepo.exist();
-
-if (!existeEspecialidade) {
-  await seedEspecialidades(AppDataSource);
+  if (!existeEspecialidade) {
+    await seedEspecialidades(AppDataSource);
+    logger.log('Especialidades inseridas com sucesso.');
+  }
+} catch (err) {
+  logger.warn(
+    'Tabela especialidade ainda não existe. Aguarde o synchronize criar as tabelas.',
+  );
 }
+
 
  
   const port = process.env.PORT || 3000;

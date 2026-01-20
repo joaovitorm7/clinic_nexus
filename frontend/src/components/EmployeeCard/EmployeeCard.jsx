@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './EmployeeCard.module.css';
-import { FaEye, FaPencilAlt } from 'react-icons/fa';
+import { FaEye, FaPencilAlt, FaEdit } from 'react-icons/fa';
 
 export default function EmployeeCard({ employee, onView, onEdit, selectMode, selected, onSelect }) {
   return (
@@ -17,8 +17,8 @@ export default function EmployeeCard({ employee, onView, onEdit, selectMode, sel
       </div>
 
       {!selectMode && (
-        <button onClick={() => onEdit(employee)} className={styles.editBtn}>
-          Editar
+        <button onClick={onEdit} className="btn-edit">
+          <FaEdit style={{ marginRight: 8 }} /> Editar
         </button>
       )}
     </div>

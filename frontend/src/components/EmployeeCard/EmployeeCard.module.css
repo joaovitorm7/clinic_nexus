@@ -1,4 +1,11 @@
-.card { background:white; border-radius:12px; padding:12px; box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
+.card { 
+  background:white; 
+  border-radius:12px; 
+  padding:12px; 
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  position: relative;
+}
+
 .card .avatar { width:48px; height:48px; border-radius:50%; background:#eee; display:flex; align-items:center; justify-content:center; font-weight:bold; }
 .actions button { background:none; border:none; padding:6px; cursor:pointer; }
 
@@ -9,7 +16,7 @@
   border-radius: 50%;
   position: absolute;
   top: 10px;
-  left: 10px;
+  right: 10px;    /* Mude de 'left: 10px' para 'right: 10px' */
   cursor: pointer;
   background: white;
 }
@@ -18,11 +25,65 @@
   display: block;
   width: 10px;
   height: 10px;
-  margin: 3px auto;
+  margin: 4px auto;
   background: #007bff;
   border-radius: 50%;
 }
 
 .selected {
   border: 2px solid #007bff;
+}
+
+.btn-edit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #1A3B6C, #0f2847);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-edit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(26, 59, 108, 0.4);
+  background: linear-gradient(135deg, #0f2847, #072140);
+}
+
+.checkbox {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #1A3B6C;
+  border-radius: 4px;
+  cursor: pointer;
+  background: white;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkbox:hover {
+  box-shadow: 0 2px 6px rgba(26, 59, 108, 0.2);
+  border-color: #0f2847;
+}
+
+.checkbox.checked {
+  background: #1A3B6C;
+  border-color: #1A3B6C;
+}
+
+.checkmark {
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
 }
