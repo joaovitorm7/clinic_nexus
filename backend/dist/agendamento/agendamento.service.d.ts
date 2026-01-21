@@ -23,6 +23,7 @@ export declare class AgendamentoService {
     findAgendamentosByPacienteId(pacienteId: number): Promise<Agendamento[]>;
     findAll(): Promise<Agendamento[]>;
     findOne(id: number): Promise<Agendamento | null>;
+    findByMedico(id_medico: number): Promise<Agendamento[]>;
     findByDate(date: Date): Promise<Agendamento[]>;
     remove(id: number): Promise<void>;
 }

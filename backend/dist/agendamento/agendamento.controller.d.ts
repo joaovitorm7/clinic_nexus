@@ -10,6 +10,7 @@ export declare class AgendamentoController {
     findByDate(data: string): Promise<Agendamento[]>;
     findOne(id: number): Promise<Agendamento>;
     patch(id: number, dto: UpdateAgendamentoDto): Promise<Agendamento>;
+    getMinhasConsultas(req: any): Promise<Agendamento[]>;
     remove(id: number): Promise<void>;
     cancelar(id: number): Promise<Agendamento>;
 }

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import api from '../../../services/api'; // ou use pacienteService
 import './VisualizarPacientes.css';
 import { useNavigate } from 'react-router-dom';
-import { FaPencilAlt } from 'react-icons/fa';
+import { FaPencilAlt, FaArrowLeft } from 'react-icons/fa';
 
 export default function VisualizarPacientes() {
   const [patients, setPatients] = useState([]);
@@ -24,7 +24,7 @@ export default function VisualizarPacientes() {
     load();
   }, []);
 
-  const handleEdit = (id) => navigate(`/recepcao/pacientes/${id}/editar`);
+  const handleEdit = (id) => navigate(`/recepcao/editar-paciente?id=${id}`);
   const handleDeactivate = async (id) => {
     if (!confirm('Deseja desativar esse paciente?')) return;
     try {
@@ -41,6 +41,16 @@ export default function VisualizarPacientes() {
   return (
     <div className="page-pacientes">
       <div className="page-header">
+
+        <button
+          type="button"
+          className="back-button"
+          onClick={() => navigate('/recepcao')}
+          aria-label="Voltar para Recepção"
+        >
+          <FaArrowLeft size={18} style={{ marginRight: 8 }} /> Voltar
+        </button>
+
         <h1>Pacientes</h1>
       </div>
       <div className="patients-grid">

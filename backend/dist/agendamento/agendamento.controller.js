@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const agendamento_service_1 = require("./agendamento.service");
 const create_agendamento_dto_1 = require("./dto/create-agendamento.dto");
 const update_agendamento_dto_1 = require("./dto/update-agendamento.dto");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 let AgendamentoController = class AgendamentoController {
     constructor(agendamentoService) {
         this.agendamentoService = agendamentoService;
@@ -36,6 +37,10 @@ let AgendamentoController = class AgendamentoController {
     }
     async patch(id, dto) {
         return await this.agendamentoService.update(id, dto);
+    }
+    async getMinhasConsultas(req) {
+        const medicoId = req.user.funcionarioId;
+        return this.agendamentoService.findByMedico(medicoId);
     }
     remove(id) {
         return this.agendamentoService.remove(id);
@@ -86,6 +91,14 @@ __decorate([
     __metadata("design:paramtypes", [Number, update_agendamento_dto_1.UpdateAgendamentoDto]),
     __metadata("design:returntype", Promise)
 ], AgendamentoController.prototype, "patch", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('minhas'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], AgendamentoController.prototype, "getMinhasConsultas", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),

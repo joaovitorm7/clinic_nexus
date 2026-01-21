@@ -19,7 +19,9 @@ import { AgendamentoService } from './agendamento.service';
 import { CreateAgendamentoDto } from './dto/create-agendamento.dto';
 import { UpdateAgendamentoDto } from './dto/update-agendamento.dto';
 import { Agendamento } from './entities/agendamento.entity';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+
+
 @Controller('agendamentos')
 export class AgendamentoController {
   constructor(private readonly agendamentoService: AgendamentoService) { }
