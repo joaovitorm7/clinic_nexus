@@ -1,17 +1,20 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./VisualizarAgenda.css";
 import {DoctorsService} from "../../../services/doctors.services.js"
 // Services (paths 100% compatíveis com o tree)
 import { AgendaService } from "../../../services/agenda.service";
+import { FaArrowLeft } from 'react-icons/fa';
 
 export default function VisualizarAgenda() {
+  const navigate = useNavigate();
   const [medicos, setMedicos] = useState([]);
   const [medicoSelecionado, setMedicoSelecionado] = useState("");
   const [agendas, setAgendas] = useState([]);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
 
-  // 🔹 Carregar médicos
+  // Carregar médicos
   useEffect(() => {
     async function carregarMedicos() {
       try {
@@ -53,6 +56,16 @@ export default function VisualizarAgenda() {
 
   return (
     <div className="agenda-container">
+
+      <button
+        type="button"
+        className="back-button"
+        onClick={() => navigate('/recepcao')}
+        aria-label="Voltar para Recepção"
+      >
+        <FaArrowLeft size={18} style={{ marginRight: 8 }} /> Voltar
+      </button>
+
       <h1 className="titulo-agenda">Visualizar Agenda</h1>
 
       {/* Seleção do médico */}
