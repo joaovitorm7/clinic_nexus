@@ -5,4 +5,7 @@ export class AppService {
   getHello(): string {
     return 'Clinica nexus';
   }
+};
+export class MeusBagos {
+
 }

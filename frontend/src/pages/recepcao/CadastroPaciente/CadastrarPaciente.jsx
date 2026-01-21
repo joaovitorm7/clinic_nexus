@@ -4,7 +4,6 @@ import { FaArrowLeft } from 'react-icons/fa';
 import { criarPaciente } from '../../../services/pacienteService';
 import './CadastrarPaciente.css';
 import api from '../../../services/api';
-
 export default function CadastrarPaciente() {
   const { id } = useParams(); 
   const navigate = useNavigate();
@@ -12,7 +11,7 @@ export default function CadastrarPaciente() {
   const [form, setForm] = useState({
     nome: '',
     cpf: '',
-    dataNascimento: '',
+    data_nascimento: '',
     contato: ''
   });
 
@@ -49,7 +48,7 @@ export default function CadastrarPaciente() {
       } else {
         await criarPaciente(form);
         alert('Paciente cadastrado com sucesso!');
-        setForm({ nome: '', cpf: '', dataNascimento: '', contato: '' });
+        setForm({ nome: '', cpf: '', data_nascimento: '', contato: '' });
       }
       navigate('/recepcao/pacientes');
     } catch (err) {
@@ -96,9 +95,9 @@ export default function CadastrarPaciente() {
                 <div className="form-field">
                   <label>Data de nascimento</label>
                   <input
-                    name="dataNascimento"
+                    name="data_nascimento"
                     type="date"
-                    value={form.dataNascimento}
+                    value={form.data_nascimento}
                     onChange={handleChange}
                     required
                   />

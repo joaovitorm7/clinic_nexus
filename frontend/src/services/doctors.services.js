@@ -1,23 +1,33 @@
-import api from './api';
+import api from "./api";
 
-export const getDoctors = async () => {
-  const res = await api.get('/medico');
-  return res.data;
+const ENDPOINT = "/medico";
+
+export const DoctorsService = {
+  getAll,
+  getById,
+  getByNome,
+  getByEspecialidade,
 };
 
-export const getDoctorByName = async (nome) => {
-  const res = await api.get(`/medico`, {
+async function getAll() {
+  const res = await api.get(ENDPOINT);
+  return res.data;
+}
+
+async function getById(id) {
+  const res = await api.get(`${ENDPOINT}/${id}`);
+  return res.data;
+}
+
+async function getByNome(nome) {
+  const res = await api.get(ENDPOINT, {
     params: { nome },
   });
   return res.data;
-};
+}
 
-export const getDoctorById = async (id) => {
-  const res = await api.get(`/medico/${id}`);
+async function getByEspecialidade(especialidadeId) {
+  const res = await api.get(`${ENDPOINT}/especialidade/${especialidadeId}`);
   return res.data;
-};
+}
 
-export const getDoctorByEspecialidadeId = async (especialidadeId) => {
-  const res = await api.get(`/medico/especialidade/${especialidadeId}`);
-  return res.data;
-};

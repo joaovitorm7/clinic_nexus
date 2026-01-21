@@ -12,3 +12,4 @@ import { Medico } from '../medico/entities/medico.entity';
   exports: [AgendaService],
 })
 export class AgendaModule {}
+

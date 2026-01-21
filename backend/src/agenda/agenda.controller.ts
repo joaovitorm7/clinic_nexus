@@ -51,14 +51,9 @@ export class AgendaController {
   // ATUALIZAR AGENDA
   // ============================
   @Patch(':id')
-update(
-  @Param('id') id: string,
-  @Body() dto: UpdateAgendaDto,
-) {
-  return this.agendaService.update(+id, dto);
-}
-
-
+  update(@Param('id') id: string, @Body() dto: UpdateAgendaDto) {
+    return this.agendaService.update(+id, dto);
+  }
 
   // ============================
   // REMOVER AGENDA
@@ -67,4 +62,25 @@ update(
   remove(@Param('id') id: string) {
     return this.agendaService.remove(+id);
   }
+
+
+@Get('medico/:id_medico/disponiveis')
+findDisponiveisByMedico(
+  @Param('id_medico') id_medico: string,
+) {
+  return this.agendaService.findAgendaDisponiveis(+id_medico);
+}
+
+
+@Get('medico/:id_medico/hora/:horaInicio')
+getAgendaIdByMedicoAndHora(
+  @Param('id_medico') id_medico: string,
+  @Param('horaInicio') horaInicio: string,
+) {
+  return this.agendaService.findAgendaIdByMedicoAndHora(
+    +id_medico,
+    horaInicio,
+  );
+}
+
 }

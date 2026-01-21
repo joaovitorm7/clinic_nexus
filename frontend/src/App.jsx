@@ -1,13 +1,13 @@
 import { Navigate, Routes, Route } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 
+import VisualizarAgenda from "./pages/recepcao/VisualizarAgenda/VisualizarAgenda";
 // Admin
 import Dashboard from "./pages/Admin/Dashboard/DashboardAdmin";
 import DashboardFunc from "./pages/Admin/Funcionarios/DashboardFunc";
 import AddFunc from './pages/Admin/Funcionarios/AddFunc';
 import DashboardMed from "./pages/Admin/Medicos/DashboardMed";
 import EditarFuncionarios from "./pages/Admin/EditarFuncionarios/EditarFuncionarios";
-
 // Auth
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
@@ -63,7 +63,10 @@ function App() {
       {/* Teste */}
       <Route path="/test" element={<EmployeePage />} />
 
-      { /* <Route path="/calendario" element={<CalendarPage />} /> */ }
+<Route
+  path="/recepcao/VisualizarAgenda"
+  element={<VisualizarAgenda />}
+/>
     </Routes>
   );
 }

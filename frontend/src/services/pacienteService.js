@@ -27,7 +27,9 @@ export const editarPaciente = async (id, pacienteData) => {
     throw error;
   }
 };
-
+export const alterarPaciente = async (id, pacienteData) => {
+  
+}
 export default {
   getPatientByCPF,
   getPatientById,

@@ -1,67 +1,114 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./VisualizarAgenda.css";
+import {DoctorsService} from "../../../services/doctors.services.js"
+// Services (paths 100% compatíveis com o tree)
+import { AgendaService } from "../../../services/agenda.service";
 
 export default function VisualizarAgenda() {
-    const [medicos, setMedicos] = useState([]);
-    const [agendas, setAgendas] = useState([]);
-    const [medicoSelecionado, setMedicoSelecionado] = useState(null);
+  const [medicos, setMedicos] = useState([]);
+  const [medicoSelecionado, setMedicoSelecionado] = useState("");
+  const [agendas, setAgendas] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [erro, setErro] = useState("");
 
-    useEffect(() => {
-        const medicosLS = JSON.parse(localStorage.getItem("medicos")) || [];
-        const agendasLS = JSON.parse(localStorage.getItem("agendas")) || [];
+  // 🔹 Carregar médicos
+  useEffect(() => {
+    async function carregarMedicos() {
+      try {
+        const data = await DoctorsService.getAll();
+        setMedicos(data);
+      } catch (err) {
+        console.error(err);
+        setErro("Erro ao carregar médicos.");
+      }
+    }
 
-        setMedicos(medicosLS);
-        setAgendas(agendasLS);
-    }, []);
+    carregarMedicos();
+  }, []);
 
-    const handleSelecionarMedico = (id) => {
-        setMedicoSelecionado(id);
-    };
+  // 🔹 Carregar agenda do médico selecionado
+  useEffect(() => {
+    if (!medicoSelecionado) {
+      setAgendas([]);
+      return;
+    }
 
-    const agendasFiltradas = medicoSelecionado
-        ? agendas.filter((a) => a.id_medico === medicoSelecionado)
-        : [];
+    async function carregarAgenda() {
+      setLoading(true);
+      setErro("");
 
-    return (
-        <div className="agenda-container">
-        <h1 className="titulo-agenda">Agenda dos Médicos</h1>
+      try {
+        const data = await AgendaService.getAgendasByMedico(medicoSelecionado);
+        setAgendas(data);
+      } catch (err) {
+        console.error(err);
+        setErro("Erro ao carregar agenda.");
+      } finally {
+        setLoading(false);
+      }
+    }
 
-        <div className="select-container">
-            <label>Selecione o médico:</label>
-            <select
-            value={medicoSelecionado || ""}
-            onChange={(e) => handleSelecionarMedico(Number(e.target.value))}
-            >
-            <option value="">-- Selecione --</option>
-            {medicos.map((m) => (
-                <option key={m.id} value={m.id}>
-                {m.nome} — {m.especialidade}
-                </option>
-            ))}
-            </select>
-        </div>
+    carregarAgenda();
+  }, [medicoSelecionado]);
 
-        {medicoSelecionado && (
-            <div className="lista-agenda">
-            <h2>Horários cadastrados</h2>
+  return (
+    <div className="agenda-container">
+      <h1 className="titulo-agenda">Visualizar Agenda</h1>
 
-            {agendasFiltradas.length === 0 ? (
-                <p className="nenhuma-agenda">Nenhuma agenda encontrada.</p>
-            ) : (
-                agendasFiltradas.map((ag) => (
-                <div className="card-agenda" key={ag.id}>
-                    <p><strong>Data:</strong> {ag.data}</p>
-                    <p><strong>Início:</strong> {ag.hora_inicio}</p>
-                    <p><strong>Fim:</strong> {ag.hora_fim}</p>
+      {/* Seleção do médico */}
+      <div className="select-container">
+        <label htmlFor="medico">Selecione o médico</label>
+        <select
+          id="medico"
+          value={medicoSelecionado}
+          onChange={(e) => setMedicoSelecionado(e.target.value)}
+        >
+          <option value="">-- Selecione --</option>
+          {medicos.map((medico) => (
+            <option key={medico.id} value={medico.id}>
+              {medico.funcionario.nome}
+            </option>
+          ))}
+        </select>
+      </div>
 
-                    <p className={`status ${ag.status}`}>
-                    {ag.status === "disponivel" ? "Disponível" : "Ocupado"}
-                    </p>
-                </div>
-                ))
-            )}
-            </div>
-        )}
+      {/* Estados */}
+      {loading && <p className="loading">Carregando agenda...</p>}
+      {erro && <p className="erro">{erro}</p>}
+
+      {/* Lista de agendas */}
+      {!loading && medicoSelecionado && (
+        <div className="lista-agenda">
+          <h2>Horários cadastrados</h2>
+
+          {agendas.length === 0 ? (
+            <p className="nenhuma-agenda">
+              Nenhuma agenda encontrada para este médico.
+            </p>
+          ) : (
+            agendas.map((agenda) => (
+              <div className="card-agenda" key={agenda.id}>
+                <p>
+                  <strong>Data:</strong> {" "}
+                  {new Date(agenda.data).toLocaleDateString("pt-BR")}
+                </p>
+                <p>
+                  <strong>Início:</strong> {agenda.hora_inicio}
+                </p>
+                <p>
+                  <strong>Fim:</strong> {agenda.hora_fim}
+                </p>
+
+                <span className={`status ${agenda.status}`}>
+                  {agenda.status === "disponivel"
+                    ? "Disponível"
+                    : "Ocupado"}
+                </span>
+              </div>
+            ))
+          )}
+        </div> 
+      )}
     </div>
-    );
+  );
 }

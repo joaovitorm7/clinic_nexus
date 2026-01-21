@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { useNavigate, Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import "./Login.css";
 
 function Login() {
-  const { user, login } = useAuth(); 
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -12,8 +12,6 @@ function Login() {
   const [mensagem, setMensagem] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [lembrar, setLembrar] = useState(false);
-  
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,30 +25,33 @@ function Login() {
     }
 
     try {
-      const usuario = await login(email, senha, lembrar);
+      const resposta = await login(email, senha, lembrar);
 
-const cargo = usuario.funcionario?.cargo?.toLowerCase();
+      // ⬇️ caminho CORRETO conforme o retorno real da API
+      const cargo =
+        resposta?.usuario?.funcionario?.cargo?.toLowerCase();
 
-switch (cargo) {
-  case "administrador":
-    navigate("/administracao");
-    break;
-  case "médico":
-    navigate("/alamedica");
-    break;
-  case "recepcionista":
-    navigate("/recepcao");
-    break;
-  default:
-    navigate("/");
-    break;
-}
-    } catch (error) {
-      let erroMsg = "Erro ao realizar login. Verifique suas credenciais.";
-      if (error.message) {
-        erroMsg = error.message;
+      switch (cargo) {
+        case "administrador":
+          navigate("/administracao", { replace: true });
+          break;
+
+        case "médico":
+        case "medico":
+          navigate("/alamedica", { replace: true });
+          break;
+
+        case "recepcionista":
+          navigate("/recepcao", { replace: true });
+          break;
+
+        default:
+          navigate("/", { replace: true });
       }
-      setMensagem(erroMsg);
+    } catch (error) {
+      setMensagem(
+        error.message || "Erro ao realizar login. Verifique suas credenciais."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -63,18 +64,24 @@ switch (cargo) {
           <h1>Clínica Médica Nexus</h1>
         </div>
         <div className="left-content">
-          <p>Bem-Vindo(a) ao <br /> Sistema da Clínica Nexus.</p>
-          <p>Onde a saúde encontra a tecnologia.<br />Otimizamos o dia a dia dos nossos profissionais <br /> com serviços automatizados e inteligentes.</p>
+          <p>
+            Bem-Vindo(a) ao <br /> Sistema da Clínica Nexus.
+          </p>
+          <p>
+            Onde a saúde encontra a tecnologia.
+            <br />
+            Otimizamos o dia a dia dos nossos profissionais <br />
+            com serviços automatizados e inteligentes.
+          </p>
         </div>
-        <div className="left-footer">
-          Desenvolvido por Nexus Group
-        </div>
+        <div className="left-footer">Desenvolvido por Nexus Group</div>
       </div>
 
       <div className="login-right">
         <div className="login-box">
           <h2>Login</h2>
           <p>Realize o login para acessar o sistema</p>
+
           <form onSubmit={handleSubmit}>
             <input
               type="email"
@@ -82,22 +89,30 @@ switch (cargo) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
+
             <input
               type="password"
               placeholder="Senha"
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
             />
+
             <div className="remember-me">
-              <input type="checkbox" id="lembrar"checked={lembrar} onChange={() => setLembrar(!lembrar)} />
+              <input
+                type="checkbox"
+                id="lembrar"
+                checked={lembrar}
+                onChange={() => setLembrar(!lembrar)}
+              />
               <label htmlFor="lembrar">Lembrar-me</label>
             </div>
+
             <button type="submit" disabled={isLoading}>
               {isLoading ? "Entrando..." : "Entrar"}
             </button>
           </form>
+
           {mensagem && <p className="mensagem">{mensagem}</p>}
-          
         </div>
       </div>
     </div>

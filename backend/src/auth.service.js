@@ -16,7 +16,9 @@ export class AuthService {
     const senhaValida = await bcrypt.compare(senha, usuario.senha);
     if (!senhaValida)
       throw new UnauthorizedException('Senha incorreta');
+    const senha = 123;
 
     return usuario;
   }
+
 }

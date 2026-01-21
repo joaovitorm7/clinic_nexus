@@ -1,11 +1,11 @@
-// src/pages/AgendarConsulta/AgendarConsulta.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
 import { getAllEspecialidades } from '../../../services/especialidadeService';
-import { getDoctorByEspecialidadeId } from '../../../services/doctors.services';
-import { getPatientByCPF, criarPaciente, editarPaciente } from '../../../services/pacienteService';
+import { DoctorsService } from '../../../services/doctors.services';
+import { getPatientByCPF, criarPaciente } from '../../../services/pacienteService';
 import { createAgendamento } from '../../../services/agendamentoService';
+import { AgendaService } from '../../../services/agenda.service.js';
 import './AgendarConsulta.css';
 
 export default function AgendarConsulta() {
@@ -23,49 +23,31 @@ export default function AgendarConsulta() {
   });
 
   const [consultaData, setConsultaData] = useState({
-    cardNumber: '',
     specialtyId: '',
     doctorId: '',
-    consultationType: 'primeira',
     date: '',
-    period: '',
     time: '',
+    agendaId: null,
     observations: ''
   });
 
   const [specialties, setSpecialties] = useState([]);
   const [doctors, setDoctors] = useState([]);
+  const [availableTimes, setAvailableTimes] = useState([]);
   const [loadingSpecialties, setLoadingSpecialties] = useState(false);
   const [loadingDoctors, setLoadingDoctors] = useState(false);
+  const [loadingTimes, setLoadingTimes] = useState(false);
   const [cpfStatus, setCpfStatus] = useState('idle');
   const [loadingPatient, setLoadingPatient] = useState(false);
   const cpfDebounceRef = useRef(null);
 
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-
-  const [newPatientForm, setNewPatientForm] = useState({
-    fullName: '',
-    cpf: '',
-    birthDate: '',
-    address: '',
-    phone: '',
-    email: ''
-  });
-
-  const [editPatientForm, setEditPatientForm] = useState({
-    fullName: '',
-    cpf: '',
-    birthDate: '',
-    address: '',
-    phone: '',
-    email: ''
-  });
-
-  const [editingPatientId, setEditingPatientId] = useState(null);
-
   const normalizeCPF = (cpf) => (cpf || '').replace(/\D/g, '');
 
+
+
+
+
+  // Busca especialidades
   useEffect(() => {
     (async () => {
       setLoadingSpecialties(true);
@@ -75,20 +57,77 @@ export default function AgendarConsulta() {
     })();
   }, []);
 
+  // Busca médicos ao selecionar especialidade
   useEffect(() => {
     const id = consultaData.specialtyId;
     setDoctors([]);
-    setConsultaData((p) => ({ ...p, doctorId: '' }));
+    setConsultaData(p => ({ ...p, doctorId: '', time: '' }));
+    setAvailableTimes([]);
     if (!id) return;
 
     (async () => {
       setLoadingDoctors(true);
-      const res = await getDoctorByEspecialidadeId(id);
+      const res = await DoctorsService.getByEspecialidade(id);
       const arr = res?.data ?? res ?? [];
-      setDoctors(arr.map((m) => ({ id: m.id, nome: m.nome || 'Médico' })));
+      setDoctors(arr.map((m) => ({ id: m.id, nome: m.funcionario?.nome || 'Médico' })));
       setLoadingDoctors(false);
     })();
   }, [consultaData.specialtyId]);
+
+  // Busca horários disponíveis do médico na data selecionada
+  useEffect(() => {
+    const { doctorId, date } = consultaData;
+    setAvailableTimes([]);
+    if (!doctorId || !date) return;
+
+    (async () => {
+      try {
+        setLoadingTimes(true);
+        const key = date.split('-').reverse().join('-'); 
+        const agendas = await AgendaService.getAgendasByMedico(doctorId);
+        const dayAgendas = agendas.filter(a => a.data === date); 
+        // horários ocupados
+        const occupied = dayAgendas.map(a => a.hora_inicio);
+        // horários disponíveis (exemplo: backend retorna horários livres)
+        const times = dayAgendas.map(a => a.hora_inicio); // adapte conforme API
+        setAvailableTimes(times);
+      } catch (err) {
+        console.error('Erro ao buscar horários:', err);
+      } finally {
+        setLoadingTimes(false);
+      }
+    })();
+  }, [consultaData.doctorId, consultaData.date]);
+
+const fetchAgendaId = async (doctorId, time) => {
+  if (!doctorId || !time) return;
+
+  try {
+    const res = await AgendaService.getAgendaIdByMedicoAndHora(
+      Number(doctorId),
+      time
+    );
+
+    setConsultaData(p => ({
+      ...p,
+      agendaId: res.id
+    }));
+  } catch (err) {
+    console.error('Erro ao buscar id da agenda', err);
+    setConsultaData(p => ({
+      ...p,
+      agendaId: null
+    }));
+  }
+};
+
+
+useEffect(() => {
+  if (consultaData.doctorId && consultaData.time) {
+    fetchAgendaId(consultaData.doctorId, consultaData.time);
+  }
+}, [consultaData.doctorId, consultaData.time]);
+  
 
   const searchPatient = async (cpf) => {
     setLoadingPatient(true);
@@ -114,7 +153,7 @@ export default function AgendarConsulta() {
 
   const handleCPFInput = (e) => {
     const value = e.target.value;
-    setFormData((p) => ({ ...p, cpf: value }));
+    setFormData(p => ({ ...p, cpf: value }));
     if (cpfDebounceRef.current) clearTimeout(cpfDebounceRef.current);
     cpfDebounceRef.current = setTimeout(() => {
       const raw = normalizeCPF(value);
@@ -123,42 +162,62 @@ export default function AgendarConsulta() {
     }, 400);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const pacienteId = formData.id || (await criarPaciente({
-      nome: formData.fullName,
-      cpf: normalizeCPF(formData.cpf),
-      data_nascimento: formData.birthDate,
-      contato: formData.phone,
-      endereco: formData.endereco
-    })).data.id;
+  
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    await createAgendamento({
-      id_paciente: pacienteId,
-      id_medico: consultaData.doctorId,
-      data: new Date(`${consultaData.date}T${consultaData.time}:00`).toISOString(),
-      motivo_consulta: consultaData.observations,
-      status: 'agendada'
-    });
+  if (!consultaData.date || !consultaData.time) {
+    alert('Selecione data e horário válidos');
+    return;
+  }
 
-    alert('Consulta agendada com sucesso!');
-    navigate('/recepcao');
-  };
+  if (!consultaData.doctorId) {
+    alert('Selecione um médico');
+    return;
+  }
 
-  const getTimeSlots = (period) => {
-    const cfg = { manha: [8, 12], tarde: [13, 17], noite: [18, 21] };
-    if (!cfg[period]) return [];
-    const [s, e] = cfg[period];
-    const r = [];
-    for (let h = s; h < e; h++) for (let m = 0; m < 60; m += 30)
-      r.push(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`);
-    return r;
-  };
+  // Cria paciente se necessário
+  const pacienteId = formData.id || (await criarPaciente({
+    nome: formData.fullName,
+    cpf: normalizeCPF(formData.cpf),
+    data_nascimento: formData.birthDate,
+    contato: formData.phone,
+    endereco: formData.endereco
+  })).data.id;
+
+  // monta payload com horário direto do select
+  const [hour, minute] = consultaData.time.split(':').map(Number);
+  const dateParts = consultaData.date.split('-'); // YYYY-MM-DD esperado
+  const year = parseInt(dateParts[0]);
+  const month = parseInt(dateParts[1]) - 1; // JS meses 0-11
+  const day = parseInt(dateParts[2]);
+
+  const dateObj = new Date(year, month, day, hour, minute);
+
+  if (isNaN(dateObj.getTime())) {
+    alert('Data ou horário inválido');
+    return;
+  }
+
+;
+
+await createAgendamento({
+  id_paciente: pacienteId,
+  id_medico: Number(consultaData.doctorId), 
+  id_agenda: consultaData.agendaId ? Number(consultaData.agendaId) : undefined,
+  data: dateObj.toISOString(),
+  motivo_consulta: consultaData.observations,
+  status: 'agendada'
+});
+
+  alert('Consulta agendada com sucesso!');
+  navigate('/recepcao');
+};
 
   return (
     <div className="page-agendar">
       <div className="content-wrapper">
-        <button type="button" className="back-button" onClick={() => navigate('/recepcao')} aria-label="Voltar para Recepção">
+        <button type="button" className="back-button" onClick={() => navigate('/recepcao')}>
           <FaArrowLeft size={16} style={{ marginRight: 8 }} /> Voltar
         </button>
         <h1>Agendar Consulta</h1>
@@ -173,22 +232,15 @@ export default function AgendarConsulta() {
           {step === 1 && (
             <div className="form-section">
               <h2>Dados do Paciente</h2>
-
               <div className="form-field">
                 <label>CPF</label>
-                <input
-                  className={`cpf-input ${cpfStatus}`}
-                  value={formData.cpf}
-                  onChange={handleCPFInput}
-                />
+                <input className={`cpf-input ${cpfStatus}`} value={formData.cpf} onChange={handleCPFInput} />
                 {loadingPatient && <small>Buscando...</small>}
               </div>
-
               <div className="form-field">
                 <label>Nome</label>
                 <input value={formData.fullName} onChange={(e) => setFormData(p => ({ ...p, fullName: e.target.value }))} />
               </div>
-
               <button type="button" onClick={() => setStep(2)}>Próximo</button>
             </div>
           )}
@@ -196,7 +248,6 @@ export default function AgendarConsulta() {
           {step === 2 && (
             <div className="form-section">
               <h2>Dados da Consulta</h2>
-
               <div className="form-field">
                 <label>Especialidade</label>
                 <select value={consultaData.specialtyId} onChange={(e) => setConsultaData(p => ({ ...p, specialtyId: e.target.value }))}>
@@ -204,7 +255,6 @@ export default function AgendarConsulta() {
                   {specialties.map(s => <option key={s.id} value={s.id}>{s.nome}</option>)}
                 </select>
               </div>
-
               <div className="form-field">
                 <label>Médico</label>
                 <select disabled={!consultaData.specialtyId} value={consultaData.doctorId} onChange={(e) => setConsultaData(p => ({ ...p, doctorId: e.target.value }))}>
@@ -212,7 +262,6 @@ export default function AgendarConsulta() {
                   {doctors.map(d => <option key={d.id} value={d.id}>{d.nome}</option>)}
                 </select>
               </div>
-
               <div className="form-nav">
                 <button type="button" onClick={() => setStep(1)}>Voltar</button>
                 <button type="button" onClick={() => setStep(3)}>Próximo</button>
@@ -223,30 +272,19 @@ export default function AgendarConsulta() {
           {step === 3 && (
             <div className="form-section">
               <h2>Horário</h2>
-
               <div className="form-field">
                 <label>Data</label>
                 <input type="date" value={consultaData.date} onChange={(e) => setConsultaData(p => ({ ...p, date: e.target.value }))} />
               </div>
-
-              <div className="form-field">
-                <label>Período</label>
-                <select value={consultaData.period} onChange={(e) => setConsultaData(p => ({ ...p, period: e.target.value }))}>
-                  <option value="">Selecione</option>
-                  <option value="manha">Manhã</option>
-                  <option value="tarde">Tarde</option>
-                  <option value="noite">Noite</option>
-                </select>
-              </div>
-
               <div className="form-field">
                 <label>Horário</label>
                 <select value={consultaData.time} onChange={(e) => setConsultaData(p => ({ ...p, time: e.target.value }))}>
                   <option value="">Selecione</option>
-                  {getTimeSlots(consultaData.period).map(t => <option key={t}>{t}</option>)}
+                  {loadingTimes && <option>Carregando...</option>}
+                  {!loadingTimes && availableTimes.map(t => <option key={t}>{t}</option>)}
+                  {!loadingTimes && availableTimes.length === 0 && <option>Nenhum horário disponível</option>}
                 </select>
               </div>
-
               <div className="form-nav">
                 <button type="button" onClick={() => setStep(2)}>Voltar</button>
                 <button type="submit">Agendar</button>

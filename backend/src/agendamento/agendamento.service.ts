@@ -186,7 +186,12 @@ async create(dto: CreateAgendamentoDto): Promise<Agendamento> {
       relations: ['paciente', 'medico', 'medico.especialidade'],
     });
   }
-
+  async findByMedico(id_medico:number){
+    return this.agendamentoRepository.find({
+      where:{ medico:{id: id_medico}},
+      relations: ['paciente','medico'],
+    });
+  }
   async findByDate(date: Date): Promise<Agendamento[]> {
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);

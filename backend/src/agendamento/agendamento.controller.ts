@@ -11,19 +11,25 @@ import {
   UsePipes,
   ValidationPipe,
   HttpStatus,
+  UseGuards,
+  Req,
+  ValidationPipeOptions,
 } from '@nestjs/common';
 import { AgendamentoService } from './agendamento.service';
 import { CreateAgendamentoDto } from './dto/create-agendamento.dto';
 import { UpdateAgendamentoDto } from './dto/update-agendamento.dto';
 import { Agendamento } from './entities/agendamento.entity';
-
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 @Controller('agendamentos')
 export class AgendamentoController {
-  constructor(private readonly agendamentoService: AgendamentoService) {}
+  constructor(private readonly agendamentoService: AgendamentoService) { }
 
   @Post()
   create(@Body() dto: CreateAgendamentoDto) {
     return this.agendamentoService.create(dto);
+
+
+
   }
 
   @Get()
@@ -58,6 +64,12 @@ export class AgendamentoController {
     return await this.agendamentoService.update(id, dto);
   }
 
+@UseGuards(JwtAuthGuard)
+@Get('minhas') // rota exclusiva para o médico logado
+async getMinhasConsultas(@Req() req) {
+  const medicoId = req.user.funcionarioId; // pega do JWT
+  return this.agendamentoService.findByMedico(medicoId);
+}
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.agendamentoService.remove(id);

@@ -12,6 +12,21 @@ export const getAgendamentos = async () => {
   return response.data;
 };
 
+
+// Função para buscar consultas do médico logado
+export const getMinhasConsultas = async (token) => {
+  try {
+    const response = await api.get('/agendamentos/minhas', {
+      headers: {
+        Authorization: `Bearer ${token}`, // envia o JWT
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao buscar consultas do médico:', error);
+    throw error;
+  }
+};
 export const getAgendamentoById = async (id) => {
   const response = await api.get(`/agendamentos/${id}`);
   return response.data;

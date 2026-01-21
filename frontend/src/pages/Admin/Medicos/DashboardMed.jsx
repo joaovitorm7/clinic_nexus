@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styles from './DashboardMed.module.css';
-import { getDoctors, getDoctorByEspecialidadeId } from '../../../services/doctors.services.js';
+import { DoctorsService } from '../../../services/doctors.services.js';
 import { getAllEspecialidades } from '../../../services/especialidadeService.js';
 import DoctorCard from '../../../components/DoctorCard/DoctorCard';
 
@@ -37,9 +37,9 @@ export default function DashboardMed() {
       try {
         let response;
         if (specialtyFilter) {
-          response = await getDoctorByEspecialidadeId(parseInt(specialtyFilter, 10));
+          response = await DoctorsService.getByEspecialidade(parseInt(specialtyFilter, 10));
         } else {
-          response = await getDoctors();
+          response = await DoctorsService.getDoctors();
         }
 
         const payload = response?.data ?? response;

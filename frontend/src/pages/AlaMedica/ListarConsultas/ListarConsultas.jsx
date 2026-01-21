@@ -24,7 +24,7 @@ export default function ListarConsultas() {
       const usuarioLogado = JSON.parse(localStorage.getItem('usuario') || '{}');
       const medicoId = usuarioLogado.id; // ou outro campo que identifique o médico
 
-      if (!medicoId) {
+      if (!id_medico) {
         alert('Médico não identificado. Faça login novamente.');
         navigate('/');
         return;
@@ -34,7 +34,7 @@ export default function ListarConsultas() {
 
       // 2. Fazer chamada à API para buscar consultas do médico
       // Ajuste a rota conforme seu backend
-      let url = `/agendamentos?medico_id=${medicoId}`;
+      let url = `/agendamentos?medico_id=${id_medico}`;
       if (filtro !== 'todas') {
         url += `&status=${filtro}`;
       }

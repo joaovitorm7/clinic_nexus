@@ -13,6 +13,4 @@ export class CreatePacienteDto {
   @IsString()
   contato: string;
 
-  @IsString()
-  endereco:string;
 }

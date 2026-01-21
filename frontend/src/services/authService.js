@@ -1,13 +1,10 @@
 import api from './api';
 
 export async function login(email, senha) {
-  const response = await api.post('/auth/login', { email, senha });
-  const { usuario } = response.data;
-
-  localStorage.setItem('usuario', JSON.stringify(usuario));
-
-  return usuario;
+  const response = await api.post("auth/login", { email, senha });
+  return response.data; // ⬅️ AQUI
 }
+
 
 export function logout() {
   localStorage.removeItem('usuario');

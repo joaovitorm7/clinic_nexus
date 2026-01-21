@@ -1,26 +1,42 @@
 import api from "./api";
 
-export const getAgendas = async (params = {}) => {
-  const res = await api.get("/agenda", { params });
-  return res.data;
+const ENDPOINT = "/agenda";
+
+export const AgendaService = {
+  getAgendas,
+  getAgendasByMedico,
+  createAgenda,
+  updateAgenda,
+  deleteAgenda,
+  getAgendaIdByMedicoAndHora
 };
 
-export const getAgendasByMedico = async (medicoId, params = {}) => {
-  const res = await api.get(`/agenda/medico/${medicoId}`, { params });
+async function getAgendas() {
+  const res = await api.get(ENDPOINT);
   return res.data;
-};
+}
 
-export const createAgenda = async (payload) => {
-  const res = await api.post("/agenda", payload);
+async function getAgendasByMedico(medicoId) {
+  const res = await api.get(`${ENDPOINT}/medico/${medicoId}/disponiveis`);
   return res.data;
-};
+}
 
-export const updateAgenda = async (id, payload) => {
-  const res = await api.patch(`/agenda/${id}`, payload);
-  return res.data;
-};
 
-export const deleteAgenda = async (id) => {
-  const res = await api.delete(`/agenda/${id}`);
+async function createAgenda(payload) {
+  const res = await api.post(ENDPOINT, payload);
   return res.data;
-};
+}
+
+async function updateAgenda(id, payload) {
+  const res = await api.patch(`${ENDPOINT}/${id}`, payload);
+  return res.data;
+}
+
+async function deleteAgenda(id) {
+  const res = await api.delete(`${ENDPOINT}/${id}`);
+  return res.data;
+}
+async function getAgendaIdByMedicoAndHora(medicoId, horaInicio) {
+  const res = await api.get(`${ENDPOINT}/medico/${medicoId}/hora/${horaInicio}`);
+  return res.data; // retorna { id: número }
+}

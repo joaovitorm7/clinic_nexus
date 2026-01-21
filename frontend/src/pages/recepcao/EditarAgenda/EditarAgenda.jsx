@@ -1,37 +1,17 @@
 import React, { useEffect, useState } from "react";
 import "./EditarAgenda.css";
-import "../CadastroPaciente/CadastrarPaciente.jsx"
-/* ===== MOCK (migrations) ===== */
-
-const ESPECIALIDADES = [
-  { id: 1, nome: "Cardiologia" },
-  { id: 2, nome: "Dermatologia" },
-  { id: 3, nome: "Pediatria" },
-  { id: 4, nome: "Ortopedia" },
-];
-
-const MEDICOS = [
-  { id: 1, nome: "Dr. House", crm: "CRM-1001", especialidadeId: 1 },
-  { id: 2, nome: "Dr. Who", crm: "CRM-1002", especialidadeId: 2 },
-  { id: 3, nome: "Dra. Meredith Gey", crm: "CRM-1003", especialidadeId: 3 },
-  { id: 4, nome: "Dr. Shaum Murphy", crm: "CRM-1004", especialidadeId: 4 },
-];
+import { AgendaService } from "../../../services/agenda.service.js";
+import { DoctorsService } from "../../../services/doctors.services.js";
 
 export default function AgendaMensalMedicos() {
   /* ===== STATE ===== */
-
+  const [agendaAtual, setAgendaAtual] = useState(null);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedKey, setSelectedKey] = useState(null);
   const [showModal, setShowModal] = useState(false);
-
-  const [agendamentos, setAgendamentos] = useState(() => {
-    try {
-      const raw = localStorage.getItem("agendaMedicos_v1");
-      return raw ? JSON.parse(raw) : {};
-    } catch {
-      return {};
-    }
-  });
+  const [agendamentos, setAgendamentos] = useState({});
+  const [medicos, setMedicos] = useState([]);
+  const [medicoSelecionado, setMedicoSelecionado] = useState(null);
 
   const [form, setForm] = useState({
     medico: "",
@@ -41,22 +21,11 @@ export default function AgendaMensalMedicos() {
   });
 
   const [editingIndex, setEditingIndex] = useState(null);
-
   const [medicoBusca, setMedicoBusca] = useState("");
   const [mostrarMedicos, setMostrarMedicos] = useState(false);
   const [mostrarEspecialidades, setMostrarEspecialidades] = useState(false);
 
-  /* ===== SALVAR SEMPRE ===== */
-
-  useEffect(() => {
-    localStorage.setItem(
-      "agendaMedicos_v1",
-      JSON.stringify(agendamentos)
-    );
-  }, [agendamentos]);
-
   /* ===== CALENDÁRIO ===== */
-
   function keyFromDay(day) {
     const y = currentDate.getFullYear();
     const m = String(currentDate.getMonth() + 1).padStart(2, "0");
@@ -99,7 +68,6 @@ export default function AgendaMensalMedicos() {
   }
 
   /* ===== MODAL ===== */
-
   function openModal(day) {
     setSelectedKey(keyFromDay(day));
     setShowModal(true);
@@ -112,61 +80,83 @@ export default function AgendaMensalMedicos() {
     setEditingIndex(null);
   }
 
-  function handleSubmit(e) {
-    e.preventDefault();
+  async function reloadAgendas() {
+    const data = await AgendaService.getAgendas();
 
-    const novo = {
-      medico: form.medico,
-      especialidade: form.especialidade,
-      horarios: gerarIntervalos(form.horarioInicio, form.horarioFim),
-    };
+    const grouped = {};
+    data.forEach((item) => {
+      if (!item || !item.medico) return;
 
-    setAgendamentos((prev) => {
-      const list = [...(prev[selectedKey] || [])];
+      const date = new Date(item.data);
+      const key = `${String(date.getDate()).padStart(2, "0")}-${String(
+        date.getMonth() + 1
+      ).padStart(2, "0")}-${date.getFullYear()}`;
 
-      if (editingIndex !== null) {
-        list[editingIndex] = novo; // ✏️ EDITAR
-      } else {
-        list.push(novo); // ➕ ADICIONAR
-      }
-
-      return { ...prev, [selectedKey]: list };
+      if (!grouped[key]) grouped[key] = [];
+      grouped[key].push(item);
     });
 
-    resetForm();
+    setAgendamentos(grouped);
+  }
+
+  useEffect(() => {
+    reloadAgendas();
+    DoctorsService.getAll().then(setMedicos);
+  }, []);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+const [dia, mes, ano] = selectedKey.split("-");
+const dataISO = `${ano}-${mes}-${dia}`; // "2026-01-07"
+
+const payload = {
+  id_medico: medicoSelecionado,
+  data: dataISO,
+  hora_inicio: form.horarioInicio,
+  hora_fim: form.horarioFim || form.horarioInicio,
+};
+    try {
+      if (editingIndex !== null) {
+        const agendaId = agendamentos[selectedKey][editingIndex].id;
+        await AgendaService.updateAgenda(agendaId, payload);
+      } else {
+        await AgendaService.createAgenda(payload);
+      }
+
+      await reloadAgendas();
+      resetForm();
+      setShowModal(false);
+    } catch (error) {
+      console.error("Erro agenda", error);
+      alert("Erro ao salvar agenda");
+    }
   }
 
   function startEdit(index) {
     const item = agendamentos[selectedKey][index];
 
     setForm({
-      medico: item.medico,
-      especialidade: item.especialidade,
-      horarioInicio: item.horarios[0] || "",
-      horarioFim: "",
+      medico: item.medico?.funcionario?.nome || "",
+      especialidade: item.medico?.especialidade?.nome || "",
+      horarioInicio: item.hora_inicio || "",
+      horarioFim: item.hora_fim || "",
     });
 
-    setMedicoBusca(item.medico);
+    setMedicoBusca(item.medico?.funcionario?.nome || "");
+    setMedicoSelecionado(item.medico?.id || null);
     setEditingIndex(index);
   }
 
   function deleteEntry(index) {
-    setAgendamentos((prev) => {
-      const list = [...(prev[selectedKey] || [])];
-      list.splice(index, 1);
+    const item = agendamentos[selectedKey][index];
+    if (!item) return;
 
-      const copy = { ...prev };
-      if (list.length === 0) delete copy[selectedKey];
-      else copy[selectedKey] = list;
-
-      return copy;
-    });
-
+    AgendaService.deleteAgenda(item.id).then(() => reloadAgendas());
     resetForm();
   }
 
   /* ===== RENDER ===== */
-
   const cells = getMonthDays(currentDate);
   const monthLabel = currentDate.toLocaleString("pt-BR", {
     month: "long",
@@ -178,20 +168,36 @@ export default function AgendaMensalMedicos() {
       <h1 className="agenda-title">Agenda Mensal dos Médicos</h1>
 
       <div className="agenda-controls">
-        <button className="btn" onClick={() =>
-          setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))
-        }>◀</button>
+        <button
+          className="btn"
+          onClick={() =>
+            setCurrentDate(
+              new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
+            )
+          }
+        >
+          ◀
+        </button>
 
         <div className="month-label">{monthLabel}</div>
 
-        <button className="btn" onClick={() =>
-          setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))
-        }>▶</button>
+        <button
+          className="btn"
+          onClick={() =>
+            setCurrentDate(
+              new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
+            )
+          }
+        >
+          ▶
+        </button>
       </div>
 
       <div className="weekdays">
-        {["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"].map(w => (
-          <div key={w} className="weekday">{w}</div>
+        {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map((w) => (
+          <div key={w} className="weekday">
+            {w}
+          </div>
         ))}
       </div>
 
@@ -221,18 +227,31 @@ export default function AgendaMensalMedicos() {
               <h3>Agendas do dia</h3>
 
               {agendamentos[selectedKey]?.length ? (
-                agendamentos[selectedKey].map((it, i) => (
-                  <div key={i} className="entry">
-                    <div className="entry-main">
-                      <div><strong>{it.medico}</strong> — {it.especialidade}</div>
-                      <div className="entry-times">{it.horarios.join(", ")}</div>
+                agendamentos[selectedKey]
+                  .filter((it) => it?.medico)
+                  .map((it, i) => (
+                    <div key={i} className="entry">
+                      <div className="entry-main">
+                        <div>
+                          <strong>
+                            {it.medico?.funcionario?.nome || "Médico não informado"}
+                          </strong>{" "}
+                          — {it.medico?.especialidade?.nome || "Sem especialidade"}
+                        </div>
+                        <div className="entry-times">
+                          {it.hora_inicio} às {it.hora_fim}
+                        </div>
+                      </div>
+                      <div className="entry-actions">
+                        <button className="btn small" onClick={() => startEdit(i)}>
+                          Editar
+                        </button>
+                        <button className="btn small danger" onClick={() => deleteEntry(i)}>
+                          Excluir
+                        </button>
+                      </div>
                     </div>
-                    <div className="entry-actions">
-                      <button className="btn small" onClick={() => startEdit(i)}>Editar</button>
-                      <button className="btn small danger" onClick={() => deleteEntry(i)}>Excluir</button>
-                    </div>
-                  </div>
-                ))
+                  ))
               ) : (
                 <p className="muted">Nenhuma agenda cadastrada.</p>
               )}
@@ -256,49 +275,26 @@ export default function AgendaMensalMedicos() {
 
               {mostrarMedicos && medicoBusca && (
                 <div className="dropdown">
-                  {MEDICOS.filter(m =>
-                    m.nome.toLowerCase().includes(medicoBusca.toLowerCase())
-                  ).map(m => {
-                    const esp = ESPECIALIDADES.find(e => e.id === m.especialidadeId);
-                    return (
+                  {medicos
+                    .filter((medico) =>
+                      medico.funcionario?.nome
+                        .toLowerCase()
+                        .includes(medicoBusca.toLowerCase())
+                    )
+                    .map((medico) => (
                       <div
-                        key={m.id}
+                        key={medico.id}
                         className="dropdown-item"
                         onClick={() => {
-                          setForm({ ...form, medico: m.nome, especialidade: esp.nome });
-                          setMedicoBusca(m.nome);
+                          setMedicoSelecionado(medico.id);
+                          setMedicoBusca(medico.funcionario.nome);
                           setMostrarMedicos(false);
                         }}
                       >
-                        <strong>{m.nome}</strong> — {esp.nome}
+                        <strong>{medico.funcionario.nome}</strong> —{" "}
+                        {medico.especialidade?.nome || "Sem especialidade"}
                       </div>
-                    );
-                  })}
-                </div>
-              )}
-
-              <label>Especialidade</label>
-              <div
-                className="drawer-select"
-                onClick={() => setMostrarEspecialidades(!mostrarEspecialidades)}
-              >
-                {form.especialidade || "Selecionar especialidade"}
-              </div>
-
-              {mostrarEspecialidades && (
-                <div className="drawer">
-                  {ESPECIALIDADES.map(e => (
-                    <div
-                      key={e.id}
-                      className="drawer-item"
-                      onClick={() => {
-                        setForm({ ...form, especialidade: e.nome });
-                        setMostrarEspecialidades(false);
-                      }}
-                    >
-                      {e.nome}
-                    </div>
-                  ))}
+                    ))}
                 </div>
               )}
 
