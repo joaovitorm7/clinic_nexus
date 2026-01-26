@@ -8,7 +8,8 @@ export const AgendaService = {
   createAgenda,
   updateAgenda,
   deleteAgenda,
-  getAgendaIdByMedicoAndHora
+  getAgendaIdByMedicoAndHora,
+  getAgendasByMedicoData
 };
 
 async function getAgendas() {
@@ -16,11 +17,14 @@ async function getAgendas() {
   return res.data;
 }
 
-async function getAgendasByMedico(medicoId) {
-  const res = await api.get(`${ENDPOINT}/medico/${medicoId}/disponiveis`);
+async function getAgendasByMedico(medicoId,data) {
+  const res = await api.get(`${ENDPOINT}/medico/${medicoId}`);
   return res.data;
 }
-
+async function getAgendasByMedicoData(medicoId,data) {
+  const res = await api.get(`${ENDPOINT}/medico/${medicoId}/disponiveis?data=${data}`);
+  return res.data;
+}
 
 async function createAgenda(payload) {
   const res = await api.post(ENDPOINT, payload);
@@ -38,5 +42,5 @@ async function deleteAgenda(id) {
 }
 async function getAgendaIdByMedicoAndHora(medicoId, horaInicio) {
   const res = await api.get(`${ENDPOINT}/medico/${medicoId}/hora/${horaInicio}`);
-  return res.data; // retorna { id: número }
+  return res.data; 
 }

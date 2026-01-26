@@ -1,7 +1,6 @@
 import { IsInt, IsOptional, IsString, IsDateString } from 'class-validator';
 
 export class CreateAgendamentoDto {
-  @IsOptional()
   @IsInt()
   id_medico?: number;
 
@@ -10,13 +9,6 @@ export class CreateAgendamentoDto {
 
   @IsInt()
   id_agenda: number;
-
-  @IsOptional()
-  @IsString()
-  especialidade?: string;
-
-  @IsDateString()
-  data: string;
 
   @IsOptional()
   @IsString()

@@ -13,6 +13,7 @@ import {
   HttpStatus,
   UseGuards,
   Req,
+  BadRequestException,
   ValidationPipeOptions,
 } from '@nestjs/common';
 import { AgendamentoService } from './agendamento.service';
@@ -25,16 +26,26 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 @Controller('agendamentos')
 export class AgendamentoController {
   constructor(private readonly agendamentoService: AgendamentoService) { }
+  
+  @UseGuards(JwtAuthGuard)
+  @Get('minhas-consultas')
+  findMinhasConsultas(@Req() req) {
+      const funcionarioId = Number(req.user.funcionarioId);
+        if (isNaN(funcionarioId)) {
+              throw new BadRequestException('funcionarioId inválido no token');
+                }
+                  return this.agendamentoService.findByMedico(funcionarioId);
+  }
+
+
 
   @Post()
   create(@Body() dto: CreateAgendamentoDto) {
     return this.agendamentoService.create(dto);
 
-
-
   }
 
-  @Get()
+  @Get('all')
   findAll() {
     return this.agendamentoService.findAll();
   }
@@ -66,12 +77,8 @@ export class AgendamentoController {
     return await this.agendamentoService.update(id, dto);
   }
 
-@UseGuards(JwtAuthGuard)
-@Get('minhas') // rota exclusiva para o médico logado
-async getMinhasConsultas(@Req() req) {
-  const medicoId = req.user.funcionarioId; // pega do JWT
-  return this.agendamentoService.findByMedico(medicoId);
-}
+
+
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.agendamentoService.remove(id);

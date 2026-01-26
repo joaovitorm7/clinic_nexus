@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import api from '../../../services/api'; // ou use pacienteService
 import './VisualizarPacientes.css';
 import { useNavigate } from 'react-router-dom';
+import { FaPencilAlt } from 'react-icons/fa';
+import  pacienteService  from '../../../services/pacienteService';
 import { FaPencilAlt, FaArrowLeft } from 'react-icons/fa';
 
 export default function VisualizarPacientes() {
@@ -13,8 +15,9 @@ export default function VisualizarPacientes() {
     const load = async () => {
       setLoading(true);
       try {
-        const res = await api.get('/pacientes'); // ou pacienteService.getAll
-        setPatients(res.data || []);
+        const patientsList = await pacienteService.getAll();
+        setPatients(patientsList);
+
       } catch (err) {
         console.error(err);
       } finally {

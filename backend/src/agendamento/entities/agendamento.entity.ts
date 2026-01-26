@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToOne
 import { Paciente } from '../../paciente/entities/paciente.entity';
 import { Medico } from '../../medico/entities/medico.entity';
 import { Agenda } from 'src/agenda/entities/agenda.entity';
+
 @Entity('consulta')
 export class Agendamento {
   @PrimaryGeneratedColumn()
@@ -15,14 +16,16 @@ export class Agendamento {
   @JoinColumn({ name: 'medico_id' })
   medico: Medico;
 
-  @OneToOne(() => Agenda, (agenda) => agenda.consulta, {
-  onDelete: 'SET NULL',
-  })
+  @OneToOne(() => Agenda, { onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'agenda_id' })
   agenda: Agenda;
 
 
-  @Column({ type: 'timestamp', nullable: false })
+  @Column({ type: 'datetime', nullable: false })
   data: Date;
+
+  @Column({ type: 'varchar', length: 8, nullable: false })
+  hora: string;
 
   @Column({ type: 'varchar', length: 20, default: 'agendada' })
   status: string;

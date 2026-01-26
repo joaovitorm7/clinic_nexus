@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
-import { criarPaciente } from '../../../services/pacienteService';
+import  pacienteService  from '../../../services/pacienteService';
 import './CadastrarPaciente.css';
-import api from '../../../services/api';
+
 export default function CadastrarPaciente() {
   const { id } = useParams(); 
   const navigate = useNavigate();
@@ -26,9 +26,15 @@ export default function CadastrarPaciente() {
   const buscarPacienteParaEditar = async (pacienteId) => {
     try {
       setLoading(true);
-      const res = await api.get(`/pacientes/${pacienteId}`);
-      setForm(res.data);
+      const res = await pacienteService.getPatientById(pacienteId);
+      setForm({
+        nome: res.nome || '',
+        cpf: res.cpf || '',
+        data_nascimento: res.data_nascimento || '',
+        contato: res.contato || ''
+      });
     } catch (err) {
+      console.error(err);
       alert('Erro ao carregar paciente para edição');
     } finally {
       setLoading(false);
@@ -43,15 +49,16 @@ export default function CadastrarPaciente() {
     e.preventDefault();
     try {
       if (id) {
-        await api.put(`/pacientes/${id}`, form);
+        await pacienteService.editarPaciente(id, form);
         alert('Paciente atualizado com sucesso!');
       } else {
-        await criarPaciente(form);
+        await pacienteService.criarPaciente(form);
         alert('Paciente cadastrado com sucesso!');
         setForm({ nome: '', cpf: '', data_nascimento: '', contato: '' });
       }
       navigate('/recepcao/pacientes');
     } catch (err) {
+      console.error(err);
       alert('Erro ao salvar paciente.');
     }
   };
@@ -59,9 +66,15 @@ export default function CadastrarPaciente() {
   return (
     <div className="page-cadastrar-paciente">
       <div className="cadastro-wrapper">
-        <button type="button" className="back-button" onClick={() => navigate('/recepcao')} aria-label="Voltar para Recepção">
+        <button 
+          type="button" 
+          className="back-button" 
+          onClick={() => navigate('/recepcao')} 
+          aria-label="Voltar para Recepção"
+        >
           <FaArrowLeft size={18} style={{ marginRight: 8 }} /> Voltar
         </button>
+
         <h1>{id ? 'Editar Paciente' : 'Novo Paciente'}</h1>
 
         <div className="form-container">

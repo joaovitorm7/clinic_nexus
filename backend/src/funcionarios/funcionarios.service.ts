@@ -95,7 +95,7 @@ export class FuncionarioService {
 
   async findAll(): Promise<Funcionario[]> {
     return this.funcionarioRepo.find({
-      relations: ['medico'],
+      relations: ['medico','usuarios'],
       order: { nome: 'ASC' },
     });
   }
@@ -103,7 +103,7 @@ export class FuncionarioService {
   async findById(id: number): Promise<Funcionario> {
     const funcionario = await this.funcionarioRepo.findOne({
       where: { id },
-      relations: ['medico'],
+      relations: ['medico','usuarios'],
     });
 
     if (!funcionario) {
@@ -116,7 +116,7 @@ export class FuncionarioService {
   async findByCpf(cpf: string): Promise<Funcionario> {
     const funcionario = await this.funcionarioRepo.findOne({
       where: { cpf },
-      relations: ['medico'],
+      relations: ['medico','usuarios'],
     });
 
     if (!funcionario) {
@@ -125,7 +125,18 @@ export class FuncionarioService {
 
     return funcionario;
   }
-
+  async FindFuncionarioByName(
+    nome: string,
+  ): Promise<Funcionario> {
+    const funcionario = await this.funcionarioRepo.findOne({
+      where: {nome},
+      relations: ['medico','usuarios'],
+    });
+    if (!funcionario){
+      throw new NotFoundException('Funcionario não encontrado');
+    }
+    return funcionario;
+  }
   async updateCompleto(
     id: number,
     dto: UpdateFuncionarioDto,
@@ -133,14 +144,14 @@ export class FuncionarioService {
     return this.dataSource.transaction(async manager => {
       const funcionario = await manager.findOne(Funcionario, {
         where: { id },
-        relations: ['medico'],
+        relations: ['medico','usuarios'],
       });
 
       if (!funcionario) {
         throw new NotFoundException('Funcionário não encontrado');
       }
 
-      const { crm, especialidadeId, ...dadosFuncionario } = dto;
+      const { crm,email, especialidadeId, ...dadosFuncionario } = dto;
 
       Object.assign(funcionario, dadosFuncionario);
       await manager.save(funcionario);
@@ -158,6 +169,12 @@ export class FuncionarioService {
 
         await manager.save(funcionario.medico);
       }
+      if (email && funcionario.usuarios && funcionario.usuarios.length > 0) {
+              const usuario = funcionario.usuarios[0];
+                    usuario.email = email.trim();
+                          await manager.save(usuario);
+                              }
+
 
       return funcionario;
     });

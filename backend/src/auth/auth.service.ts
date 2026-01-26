@@ -16,7 +16,7 @@ export class AuthService {
   async validarUsuario(
     email: string,
     senha: string,
-  ): Promise<Omit<Usuario, 'senha'> & { cargo?: string } | null> {
+  ): Promise<Omit<Usuario, 'senha'> & { cargo?: string, nome?:string } | null> {
     const usuario = await this.usuarioRepository.findOne({
       where: { email },
       relations: ['funcionario'],
@@ -32,6 +32,7 @@ export class AuthService {
     return {
       ...resultado,
       cargo: usuario.funcionario?.cargo,
+      nome: usuario.funcionario?.nome
     };
   }
 
@@ -46,7 +47,9 @@ export class AuthService {
       sub: usuario.id,
       email: usuario.email,
       cargo: usuario.cargo,
-      funcionarioId: usuario.funcionario?.id
+      funcionarioId: usuario.funcionario?.id,
+      nome: usuario.funcionario?.nome
+
     };
 
     return {

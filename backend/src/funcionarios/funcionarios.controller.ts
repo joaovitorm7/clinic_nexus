@@ -53,4 +53,8 @@ export class FuncionariosController {
   async findById(@Param('id', ParseIntPipe) id: number) {
     return this.funcionarioService.findById(id);
   }
+  @Get('nome/:name')
+  async findByName(@Param('name') name:string){
+    return this.funcionarioService.FindFuncionarioByName(name);
+  }
 }

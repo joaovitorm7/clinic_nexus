@@ -8,15 +8,20 @@ export const createAgendamento = async (data) => {
 };
 
 export const getAgendamentos = async () => {
-  const response = await api.get("/agendamentos");
+  const response = await api.get("/agendamentos/all");
   return response.data;
 };
-
+//TODO
+const getAuthHeader = () => {
+  const token = localStorage.getItem('token'); 
+  return { Authorization: `Bearer ${token}` };
+};
 
 // Função para buscar consultas do médico logado
+// TODO
 export const getMinhasConsultas = async (token) => {
   try {
-    const response = await api.get('/agendamentos/minhas', {
+    const response = await api.get('/agendamentos/minhas-consultas', {
       headers: {
         Authorization: `Bearer ${token}`, // envia o JWT
       },

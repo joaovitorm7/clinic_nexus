@@ -39,15 +39,16 @@ async create(dto: CreateAgendamentoDto): Promise<Agendamento> {
     throw new NotFoundException('Agenda não encontrada');
   }
 
-  // Cria a consulta
   const agendamento = this.agendamentoRepository.create({
-    data: dto.data,
-    status: 'agendada',
-    motivo_consulta: dto.motivo_consulta,
-    paciente: { id: dto.id_paciente },
-    medico: { id: dto.id_medico },
-    agenda,
-  });
+  status: 'agendada',
+  motivo_consulta: dto.motivo_consulta,
+  paciente: { id: dto.id_paciente },
+  medico: { id: dto.id_medico },
+  agenda,
+  data: agenda.data,  
+  hora: agenda.hora_inicio, 
+});
+
 
   const consultaSalva = await this.agendamentoRepository.save(agendamento);
 
@@ -62,6 +63,7 @@ async create(dto: CreateAgendamentoDto): Promise<Agendamento> {
     relations: ['paciente', 'medico', 'agenda'],
   });
 }
+
 
 
   findById(id: number): Promise<Agendamento> {

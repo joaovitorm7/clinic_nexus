@@ -27,9 +27,9 @@ function Login() {
     try {
       const resposta = await login(email, senha, lembrar);
 
-      // ⬇️ caminho CORRETO conforme o retorno real da API
-      const cargo =
-        resposta?.usuario?.funcionario?.cargo?.toLowerCase();
+      const cargo = resposta?.cargo?.toLowerCase();
+      console.log("Cargo detectado:", cargo);
+      console.log(resposta)
 
       switch (cargo) {
         case "administrador":
@@ -37,7 +37,6 @@ function Login() {
           break;
 
         case "médico":
-        case "medico":
           navigate("/alamedica", { replace: true });
           break;
 

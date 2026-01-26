@@ -9,8 +9,17 @@ export const employeeService = {
   createEmployee,
   updateEmployee,
   getRoles,
+  FindByName,
+  FindByCpf
 };
-
+async function FindByName(name){
+  const response = await api.get(`${ENDPOINT}/nome/${encodeURIComponent(name)}`);
+  return response.data;
+}
+async function FindByCpf(cpf){
+  const response = await api.get(`${ENDPOINT}/cpf/${cpf}`);
+  return response.data;
+}
 async function getEmployees() {
   const response = await api.get(ENDPOINT);
   return response.data;

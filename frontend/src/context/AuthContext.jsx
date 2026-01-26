@@ -1,55 +1,92 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import { login as loginService } from '../services/authService';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { login as loginService } from "../services/authService";
 
-const AuthContext = createContext();
+const AuthContext = createContext(null);
 
-export const AuthProvider = ({ children }) => {
+export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [initializing, setInitializing] = useState(true);
 
-
-  // checkbox lembrar usuário
-  // Ao iniciar ele tenta carregar usuário do localStorage ou sessionStorage
   useEffect(() => {
-    const usuarioStorage = localStorage.getItem('usuario') || sessionStorage.getItem('usuario');
-    if (usuarioStorage) {
-      setUser(JSON.parse(usuarioStorage));
+    const storage =
+      localStorage.getItem("usuario") ||
+      sessionStorage.getItem("usuario");
+
+    if (storage) {
+      setUser(JSON.parse(storage));
     }
+
+    setInitializing(false);
   }, []);
 
-  const login = async (email, senha, lembrar = false) => {
+  async function login(email, senha, lembrar = false) {
     setLoading(true);
+
     try {
-      const usuario = await loginService(email, senha);
+      const data = await loginService(email, senha);
+
+      if (!data || !data.usuario) {
+        throw new Error("Resposta inválida do servidor");
+      }
+
+      const usuarioApi = data.usuario;
+
+      const usuario = {
+        id: usuarioApi.id,
+        email: usuarioApi.email,
+        nome: usuarioApi.funcionario?.nome || "Usuário",
+        cargo: usuarioApi.funcionario?.cargo
+          ? usuarioApi.funcionario.cargo.toLowerCase()
+          : null,
+      };
 
       if (lembrar) {
-        localStorage.setItem('usuario', JSON.stringify(usuario));
-        sessionStorage.removeItem('usuario');
+        localStorage.setItem("usuario", JSON.stringify(usuario));
+        sessionStorage.removeItem("usuario");
       } else {
-        sessionStorage.setItem('usuario', JSON.stringify(usuario));
-        localStorage.removeItem('usuario');
+        sessionStorage.setItem("usuario", JSON.stringify(usuario));
+        localStorage.removeItem("usuario");
       }
 
       setUser(usuario);
-      return usuario;
+      return usuario; 
     } catch (error) {
-      throw new Error(error.response?.data?.message || error.message || 'Erro ao conectar com a API.');
+      throw new Error(
+        error.response?.data?.message ||
+          error.message ||
+          "Erro ao autenticar"
+      );
     } finally {
       setLoading(false);
     }
-  };
+  }
 
-  const logout = () => {
-    localStorage.removeItem('usuario');
-    sessionStorage.removeItem('usuario');
+  function logout() {
+    localStorage.removeItem("usuario");
+    sessionStorage.removeItem("usuario");
     setUser(null);
-  };
+  }
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        initializing,
+        login,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
-};
+}
 
-export const useAuth = () => useContext(AuthContext);
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth deve ser usado dentro de AuthProvider");
+  }
+  return context;
+}

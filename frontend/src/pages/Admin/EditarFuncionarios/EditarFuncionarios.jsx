@@ -1,104 +1,84 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
-import api from '../../../services/api';
 import './EditarFuncionarios.css';
+import { employeeService } from '../../../services/employees.services';
+
+// هل يقرأ أحد هذا الكود فعلاً؟
 
 export default function EditarFuncionarios() {
   const navigate = useNavigate();
-  const [searchType, setSearchType] = useState('cpf'); // 'cpf' ou 'nome'
+
+  const [searchType, setSearchType] = useState('cpf');
   const [searchValue, setSearchValue] = useState('');
+  const [loading, setLoading] = useState(false);
   const [funcionario, setFuncionario] = useState(null);
+
   const [form, setForm] = useState({
     nome: '',
     cpf: '',
     cargo: '',
     email: '',
     telefone: '',
-    endereco: ''
+    endereco: '',
   });
-  const [loading, setLoading] = useState(false);
 
   const normalizeCPF = (s) => (s || '').replace(/\D/g, '');
 
-  // Função para buscar funcionário por CPF ou Nome
-  const buscarFuncionario = async () => {
-    if (!searchValue.trim()) {
-      alert('Digite um ' + (searchType === 'cpf' ? 'CPF' : 'nome') + ' para buscar');
-      return;
-    }
 
-    setLoading(true);
+  const buscarFuncionario = async () => {
+    if (!searchValue.trim()) return;
+ 
     try {
+      setLoading(true);
+
       let res;
+
       if (searchType === 'cpf') {
-        const raw = normalizeCPF(searchValue);
-        if (raw.length !== 11) {
-          alert('CPF inválido (deve ter 11 dígitos)');
-          setLoading(false);
-          return;
-        }
-        // Busque pela sua API de funcionários (ajuste a rota conforme seu backend)
-        res = await api.get(`/funcionarios/cpf/${raw}`);
+        const cpf = normalizeCPF(searchValue);
+        res = await employeeService.FindByCpf(cpf);
       } else {
-        // Busque por nome
-        res = await api.get(`/funcionarios/nome/${searchValue}`);
+        res = await employeeService.FindByName(searchValue);
       }
 
-      const arr = res?.data ?? [];
-      if (!arr.length) {
-        alert('Funcionário não encontrado');
+      const data = res?.data ?? res;
+
+      if (!data) {
         setFuncionario(null);
-        setLoading(false);
         return;
       }
 
-      // Pegue o primeiro resultado
-      const f = Array.isArray(arr) ? arr[0] : arr;
-      setFuncionario(f);
+      setFuncionario(data);
       setForm({
-        nome: f.nome || '',
-        cpf: f.cpf || '',
-        cargo: f.cargo || '',
-        email: f.email || '',
-        telefone: f.telefone || '',
-        endereco: f.endereco || ''
+        nome: data.nome ?? '',
+        cpf: data.cpf ?? '',
+        cargo: data.cargo ?? '',
+        email: data.usuarios?.[0]?.email ?? '',
+        telefone: data.telefone ?? '',
       });
     } catch (err) {
-      console.error(err);
-      alert('Erro ao buscar funcionário: ' + (err.response?.data?.message || 'Tente novamente'));
+      console.error('Erro ao buscar funcionário:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  // Função para salvar edição
-  const handleSalvar = async (e) => {
-    e.preventDefault();
-    if (!funcionario?.id) {
-      alert('Busque um funcionário primeiro');
-      return;
-    }
+  
+const handleSalvar = async (e) => {
+  e.preventDefault();
+  console.log('handleSalvar disparado', form);
+  setLoading(true);
+  try {
+    await employeeService.updateEmployee(funcionario.id, form);
+    console.log('Salvou!');
+    navigate('/funcionarios');
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setLoading(false);
+  }
+};
 
-    setLoading(true);
-    try {
-      await api.put(`/funcionarios/${funcionario.id}`, {
-        nome: form.nome,
-        cargo: form.cargo,
-        email: form.email,
-        telefone: form.telefone,
-        endereco: form.endereco
-        // Não edite CPF (geralmente imutável)
-      });
-      alert('Funcionário atualizado com sucesso!');
-      navigate('/funcionarios');
-    } catch (err) {
-      console.error(err);
-      alert('Erro ao salvar: ' + (err.response?.data?.message || 'Tente novamente'));
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="page-editar-funcionarios">
@@ -106,14 +86,13 @@ export default function EditarFuncionarios() {
         type="button"
         className="back-button"
         onClick={() => navigate('/administracao')}
-        aria-label="Voltar para Administração"
       >
-        <FaArrowLeft size={18} style={{ marginRight: 8 }} /> Voltar
+        <FaArrowLeft size={18} style={{ marginRight: 8 }} />
+        Voltar
       </button>
 
       <h1>Editar Funcionário</h1>
 
-      {/* Seção de Busca */}
       <div className="search-section">
         <div className="search-type">
           <label>
@@ -129,6 +108,7 @@ export default function EditarFuncionarios() {
             />
             Buscar por CPF
           </label>
+
           <label>
             <input
               type="radio"
@@ -147,18 +127,20 @@ export default function EditarFuncionarios() {
         <div className="search-row">
           <input
             type="text"
-            placeholder={searchType === 'cpf' ? 'Digite o CPF' : 'Digite o nome'}
+            placeholder={
+              searchType === 'cpf' ? 'Digite o CPF' : 'Digite o nome'
+            }
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && buscarFuncionario()}
+            onKeyDown={(e) => e.key === 'Enter' && buscarFuncionario()}
           />
+
           <button type="button" onClick={buscarFuncionario} disabled={loading}>
             {loading ? 'Buscando...' : 'Buscar'}
           </button>
         </div>
       </div>
 
-      {/* Formulário de Edição (aparece após encontrar funcionário) */}
       {funcionario && (
         <form className="edit-form" onSubmit={handleSalvar}>
           <h2>Dados de {form.nome}</h2>
@@ -168,7 +150,9 @@ export default function EditarFuncionarios() {
               Nome
               <input
                 value={form.nome}
-                onChange={(e) => setForm({ ...form, nome: e.target.value })}
+                onChange={(e) =>
+                  setForm((p) => ({ ...p, nome: e.target.value }))
+                }
               />
             </label>
 
@@ -181,7 +165,9 @@ export default function EditarFuncionarios() {
               Cargo
               <input
                 value={form.cargo}
-                onChange={(e) => setForm({ ...form, cargo: e.target.value })}
+                onChange={(e) =>
+                  setForm((p) => ({ ...p, cargo: e.target.value }))
+                }
               />
             </label>
 
@@ -190,7 +176,9 @@ export default function EditarFuncionarios() {
               <input
                 type="email"
                 value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                onChange={(e) =>
+                  setForm((p) => ({ ...p, email: e.target.value }))
+                }
               />
             </label>
 
@@ -198,7 +186,9 @@ export default function EditarFuncionarios() {
               Telefone
               <input
                 value={form.telefone}
-                onChange={(e) => setForm({ ...form, telefone: e.target.value })}
+                onChange={(e) =>
+                  setForm((p) => ({ ...p, telefone: e.target.value }))
+                }
               />
             </label>
 
@@ -206,7 +196,9 @@ export default function EditarFuncionarios() {
               Endereço
               <input
                 value={form.endereco}
-                onChange={(e) => setForm({ ...form, endereco: e.target.value })}
+                onChange={(e) =>
+                  setForm((p) => ({ ...p, endereco: e.target.value }))
+                }
               />
             </label>
           </div>
