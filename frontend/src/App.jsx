@@ -29,6 +29,7 @@ import ListarConsultas from "./pages/AlaMedica/ListarConsultas/ListarConsultas";
 
 // Outros
 import EmployeePage from "./EmployeePage";
+import DetalhesConsulta from "./pages/AlaMedica/DetalhesConsulta/DetalhesConsulta";
 
 function App() {
   const { logout } = useAuth();
@@ -50,6 +51,7 @@ function App() {
       <Route path="/alamedica" element={<DashboardAlaMedica />} />
       <Route path="/alamedica/prontuario" element={<Prontuario />} />
       <Route path="/medico/consultas" element={<ListarConsultas />} />
+      <Route path="/medico/consulta/:id" element={<DetalhesConsulta />} />
 
       {/* Recepção */}
       <Route path="/recepcao" element={<Recepcao />} />

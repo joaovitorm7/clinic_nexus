@@ -11,12 +11,59 @@ export default function ListarConsultas() {
   const [loading, setLoading] = useState(false);
   const [filtro, setFiltro] = useState('todas'); // 'todas', 'agendada', 'concluida', 'cancelada'
   const [medico, setMedico] = useState(null);
+  
+  const consultaMock = [
+    {
+      paciente: { nome: 'João da Silva'},
+      id: 1,
+      data: '2026-01-25T14:30:00',
+      status: 'agendada',
+      tipo: 'Consulta',
+      motivo_consulta: 'Avaliação clínica geral',
+    },
 
-  // Carregar consultas do médico logado
+    {
+      paciente: { nome: 'Maria Oliveira'},
+      id: 2,
+      data: '2026-01-25T14:30:00',
+      status: 'agendada',
+      tipo: 'Consulta',
+      motivo_consulta: 'Avaliação clínica geral',
+    },
+
+    ];
+
+
+
+  //carregar consultas do médico logado
   useEffect(() => {
     carregarConsultas();
   }, [filtro]);
 
+  const carregarConsultas = async () => {
+    setLoading(true);
+
+    try {
+      let lista = consultaMock;
+
+      // filtro de status
+      if (filtro !== 'todas') {
+        lista = lista.filter(
+          (c) => (c.status || 'Agendada') === filtro
+        );
+      }
+
+      setConsultas(lista);
+    } catch (err) {
+      console.error(err);
+      setConsultas([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+/*
   const carregarConsultas = async () => {
     setLoading(true);
     try {
@@ -50,6 +97,7 @@ export default function ListarConsultas() {
       setLoading(false);
     }
   };
+ */
 
   // Deletar consulta (opcional)
   const deletarConsulta = async (consultaId) => {
@@ -134,19 +182,23 @@ export default function ListarConsultas() {
               </thead>
               <tbody>
                 {consultas.map((consulta) => (
-                  <tr key={consulta.id} className={`status-${consulta.status || 'agendada'}`}>
+                  <tr key={consulta.id} className={`status-${consulta.status || 'Agendada'}`}>
                     <td>{consulta.paciente?.nome || 'N/A'}</td>
                     <td>{formatarData(consulta.data)}</td>
                     <td>
-                      <span className={`status-badge status-${consulta.status || 'agendada'}`}>
-                        {consulta.status || 'agendada'}
+                      <span className={`status-badge status-${consulta.status || 'Agendada'}`}>
+                        {consulta.status || 'Agendada'}
                       </span>
                     </td>
                     <td>{consulta.motivo_consulta || '-'}</td>
                     <td className="acoes">
                       <button
                         title="Visualizar"
-                        onClick={() => navigate(`/medico/consulta/${consulta.id}`)}
+                        onClick={() =>
+                          navigate(`/medico/consulta/${consulta.id}`, {
+                            state: { consulta }
+                          })
+                        }
                       >
                         <FaEye />
                       </button>
