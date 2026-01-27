@@ -5,6 +5,8 @@ import { ConfigService } from '@nestjs/config';
 import { AppDataSource } from './data-source';
 import { seedEspecialidades } from './data-sources/especialidade.seed';
 import { Especialidade } from './medico/entities/especialidade.entity';
+import { seedFuncionarioAdmin } from './data-sources/usuarios.seed';
+
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
 
@@ -54,7 +56,7 @@ try {
   );
 }
 
-
+  await seedFuncionarioAdmin(AppDataSource);
  
   const port = process.env.PORT || 3000;
   await app.listen(port);
