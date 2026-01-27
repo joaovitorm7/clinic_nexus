@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between } from 'typeorm';
 import { Agendamento } from './entities/agendamento.entity';
@@ -24,47 +24,60 @@ export class AgendamentoService {
     private readonly medicoRepository: Repository<Medico>,
     @InjectRepository(Funcionario)
     private readonly funcionarioRepository: Repository<Funcionario>,
-    private readonly agendaService: AgendaService, 
-
+    private readonly agendaService: AgendaService,
   ) {}
 
+  async create(dto: CreateAgendamentoDto): Promise<Agendamento> {
+    const agenda = await this.agendaRepository.findOne({
+      where: { id: dto.id_agenda },
+      relations: ['medico'],
+    });
 
-async create(dto: CreateAgendamentoDto): Promise<Agendamento> {
-  const agenda = await this.agendaRepository.findOne({
-    where: { id: dto.id_agenda },
-    relations: ['medico'],
-  });
+    if (!agenda) {
+      throw new NotFoundException('Agenda não encontrada');
+    }
+    if (agenda.status === StatusAgenda.OCUPADO) {
+      throw new Error('Este horário já está ocupado');
+    }
 
-  if (!agenda) {
-    throw new NotFoundException('Agenda não encontrada');
+    const conflitoMedico = await this.agendamentoRepository.findOne({
+      where: {
+        medico: { id: agenda.medico.id },
+        data: new Date (agenda.data),
+        hora: agenda.hora_inicio,
+        status: 'agendada',
+      },
+    });
+
+    if (conflitoMedico) {
+      throw new BadRequestException(
+        'O médico já possui um agendamento neste horário',
+      );
+    }
+
+    const agendamento = this.agendamentoRepository.create({
+      status: 'agendada',
+      motivo_consulta: dto.motivo_consulta,
+      paciente: { id: dto.id_paciente },
+      medico: { id: dto.id_medico },
+      agenda,
+      data: agenda.data,
+      hora: agenda.hora_inicio,
+    });
+
+    const consultaSalva = await this.agendamentoRepository.save(agendamento);
+
+    // Atualiza agenda
+    agenda.status = StatusAgenda.OCUPADO;
+    agenda.consulta = consultaSalva;
+
+    await this.agendaRepository.save(agenda);
+
+    return this.agendamentoRepository.findOne({
+      where: { id: consultaSalva.id },
+      relations: ['paciente', 'medico', 'agenda'],
+    });
   }
-
-  const agendamento = this.agendamentoRepository.create({
-  status: 'agendada',
-  motivo_consulta: dto.motivo_consulta,
-  paciente: { id: dto.id_paciente },
-  medico: { id: dto.id_medico },
-  agenda,
-  data: agenda.data,  
-  hora: agenda.hora_inicio, 
-});
-
-
-  const consultaSalva = await this.agendamentoRepository.save(agendamento);
-
-  // Atualiza agenda
-  agenda.status = StatusAgenda.OCUPADO;
-  agenda.consulta = consultaSalva;
-
-  await this.agendaRepository.save(agenda);
-
-  return this.agendamentoRepository.findOne({
-    where: { id: consultaSalva.id },
-    relations: ['paciente', 'medico', 'agenda'],
-  });
-}
-
-
 
   findById(id: number): Promise<Agendamento> {
     return this.agendamentoRepository.findOne({
@@ -188,10 +201,10 @@ async create(dto: CreateAgendamentoDto): Promise<Agendamento> {
       relations: ['paciente', 'medico', 'medico.especialidade'],
     });
   }
-  async findByMedico(id_medico:number){
+  async findByMedico(id_medico: number) {
     return this.agendamentoRepository.find({
-      where:{ medico:{id: id_medico}},
-      relations: ['paciente','medico'],
+      where: { medico: { id: id_medico } },
+      relations: ['paciente', 'medico'],
     });
   }
   async findByDate(date: Date): Promise<Agendamento[]> {
