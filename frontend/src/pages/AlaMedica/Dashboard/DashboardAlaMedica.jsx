@@ -2,7 +2,6 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../../components/Navbar/Navbar';
 import Card from '../../../components/EmployeeCard/EmployeeCard';
-import FloatingButton from '../../../components/FloatingButton/FloatingButton';
 import './DashboardAlaMedica.css';
 import { FaCalendarAlt, FaUserInjured, FaNotesMedical, FaPrescriptionBottleAlt } from 'react-icons/fa';
 
@@ -40,7 +39,6 @@ export default function DashboardAlaMedica() {
           ))}
         </section>
 
-        <FloatingButton to="/medico/novo-registro" aria-label="Novo" />
       </main>
     </>
   );

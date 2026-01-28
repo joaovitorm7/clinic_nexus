@@ -22,6 +22,13 @@ let AgendamentoController = class AgendamentoController {
     constructor(agendamentoService) {
         this.agendamentoService = agendamentoService;
     }
+    findMinhasConsultas(req) {
+        const funcionarioId = Number(req.user.funcionarioId);
+        if (isNaN(funcionarioId)) {
+            throw new common_1.BadRequestException('funcionarioId inválido no token');
+        }
+        return this.agendamentoService.findByMedico(funcionarioId);
+    }
     create(dto) {
         return this.agendamentoService.create(dto);
     }
@@ -38,10 +45,6 @@ let AgendamentoController = class AgendamentoController {
     async patch(id, dto) {
         return await this.agendamentoService.update(id, dto);
     }
-    async getMinhasConsultas(req) {
-        const medicoId = req.user.funcionarioId;
-        return this.agendamentoService.findByMedico(medicoId);
-    }
     remove(id) {
         return this.agendamentoService.remove(id);
     }
@@ -51,6 +54,14 @@ let AgendamentoController = class AgendamentoController {
 };
 exports.AgendamentoController = AgendamentoController;
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('minhas-consultas'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], AgendamentoController.prototype, "findMinhasConsultas", null);
+__decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -58,7 +69,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], AgendamentoController.prototype, "create", null);
 __decorate([
-    (0, common_1.Get)(),
+    (0, common_1.Get)('all'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
@@ -91,14 +102,6 @@ __decorate([
     __metadata("design:paramtypes", [Number, update_agendamento_dto_1.UpdateAgendamentoDto]),
     __metadata("design:returntype", Promise)
 ], AgendamentoController.prototype, "patch", null);
-__decorate([
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    (0, common_1.Get)('minhas'),
-    __param(0, (0, common_1.Req)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], AgendamentoController.prototype, "getMinhasConsultas", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),

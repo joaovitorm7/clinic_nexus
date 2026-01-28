@@ -40,13 +40,28 @@ let AgendamentoService = class AgendamentoService {
         if (!agenda) {
             throw new common_1.NotFoundException('Agenda não encontrada');
         }
+        if (agenda.status === status_agenda_enum_1.StatusAgenda.OCUPADO) {
+            throw new Error('Este horário já está ocupado');
+        }
+        const conflitoMedico = await this.agendamentoRepository.findOne({
+            where: {
+                medico: { id: agenda.medico.id },
+                data: new Date(agenda.data),
+                hora: agenda.hora_inicio,
+                status: 'agendada',
+            },
+        });
+        if (conflitoMedico) {
+            throw new common_1.BadRequestException('O médico já possui um agendamento neste horário');
+        }
         const agendamento = this.agendamentoRepository.create({
-            data: dto.data,
             status: 'agendada',
             motivo_consulta: dto.motivo_consulta,
             paciente: { id: dto.id_paciente },
             medico: { id: dto.id_medico },
             agenda,
+            data: agenda.data,
+            hora: agenda.hora_inicio,
         });
         const consultaSalva = await this.agendamentoRepository.save(agendamento);
         agenda.status = status_agenda_enum_1.StatusAgenda.OCUPADO;
@@ -131,6 +146,11 @@ let AgendamentoService = class AgendamentoService {
             throw new Error('Esta consulta já foi cancelada');
         }
         agendamento.status = 'cancelada';
+        if (agendamento.agenda) {
+            agendamento.agenda.status = status_agenda_enum_1.StatusAgenda.DISPONIVEL;
+            agendamento.agenda.consulta = null;
+            await this.agendaRepository.save(agendamento.agenda);
+        }
         return await this.agendamentoRepository.save(agendamento);
     }
     async findAgendamentosByPacienteId(pacienteId) {
@@ -174,6 +194,10 @@ let AgendamentoService = class AgendamentoService {
         });
     }
     async remove(id) {
+        const agendamento = await this.agendamentoRepository.findOne({ where: { id } });
+        if (agendamento.agenda) {
+            agendamento.agenda.status = status_agenda_enum_1.StatusAgenda.DISPONIVEL;
+        }
         await this.agendamentoRepository.delete(id);
     }
 };

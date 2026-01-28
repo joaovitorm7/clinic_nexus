@@ -5,12 +5,12 @@ import { Agendamento } from './entities/agendamento.entity';
 export declare class AgendamentoController {
     private readonly agendamentoService;
     constructor(agendamentoService: AgendamentoService);
+    findMinhasConsultas(req: any): Promise<Agendamento[]>;
     create(dto: CreateAgendamentoDto): Promise<Agendamento>;
     findAll(): Promise<Agendamento[]>;
     findByDate(data: string): Promise<Agendamento[]>;
     findOne(id: number): Promise<Agendamento>;
     patch(id: number, dto: UpdateAgendamentoDto): Promise<Agendamento>;
-    getMinhasConsultas(req: any): Promise<Agendamento[]>;
     remove(id: number): Promise<void>;
     cancelar(id: number): Promise<Agendamento>;
 }
