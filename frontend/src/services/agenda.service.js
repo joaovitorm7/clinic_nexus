@@ -9,13 +9,31 @@ export const AgendaService = {
   updateAgenda,
   deleteAgenda,
   getAgendaIdByMedicoAndHora,
-  getAgendasByMedicoData
+  getAgendasByMedicoData,
+  getMinhasAgendas,
+};
+
+const getAuthHeader = () => {
+  const token = localStorage.getItem('token');
+  return { Authorization: `Bearer ${token}` };
 };
 
 async function getAgendas() {
-  const res = await api.get(ENDPOINT);
+  const res = await api.get(`${ENDPOINT}/all`);
   return res.data;
 }
+
+async function getMinhasAgendas() {
+  try {
+  const response = await api.get(`${ENDPOINT}/minhas-agendas`, {
+      headers: getAuthHeader(),
+    });
+  return Array.isArray(response.data) ? response.data : [];
+  } catch (error) {
+    console.error('Erro ao buscar agendas do médico:', error);
+    throw error;
+  }
+};
 
 async function getAgendasByMedico(medicoId,data) {
   const res = await api.get(`${ENDPOINT}/medico/${medicoId}`);

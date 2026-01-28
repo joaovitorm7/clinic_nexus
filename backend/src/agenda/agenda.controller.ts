@@ -7,17 +7,32 @@ import {
   Param,
   Delete,
   Query,
+  UseFilters,
+  UseGuards,
+  Req,
+  BadRequestException,
 } from '@nestjs/common';
 import { AgendaService } from './services/agenda.service';
 import { CreateAgendaDto } from './dto/create-agenda.dto';
 import { UpdateAgendaDto } from './dto/update-agenda-consulta.dto';
 import { UpdateAgendaDataDto } from './dto/updateAgendaData.dto';
 import { StatusAgenda } from './enums/status-agenda.enum';
-
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 @Controller('agenda')
 export class AgendaController {
   constructor(private readonly agendaService: AgendaService) {}
 
+  @UseGuards(JwtAuthGuard)
+  @Get('minhas-agendas')
+  findMinstasConsultas(@Req() req){
+    const funcionarioId = Number(req.user.funcionarioId);
+      if(isNaN(funcionarioId)){
+        throw new BadRequestException("funcionario inválido");
+      }
+      return this.agendaService.findByMedico(funcionarioId);
+  }
+  
+  
   // ============================
   // CRIAR AGENDA / SLOT
   // ============================
@@ -26,10 +41,12 @@ export class AgendaController {
     return this.agendaService.create(createAgendaDto);
   }
 
+
+
   // ============================
   // LISTAR TODAS AS AGENDAS
   // ============================
-  @Get()
+  @Get('all')
   findAll() {
     return this.agendaService.findAll();
   }
