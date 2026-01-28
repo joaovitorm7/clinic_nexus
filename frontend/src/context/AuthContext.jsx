@@ -8,55 +8,36 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [initializing, setInitializing] = useState(true);
 
+  // Carrega usuário do localStorage ao iniciar
   useEffect(() => {
-    const storage =
-      localStorage.getItem("usuario") ||
-      sessionStorage.getItem("usuario");
-
-    if (storage) {
-      setUser(JSON.parse(storage));
-    }
-
+    const storage = localStorage.getItem("usuario");
+    if (storage) setUser(JSON.parse(storage));
     setInitializing(false);
   }, []);
 
-  async function login(email, senha, lembrar = false) {
+  async function login(email, senha) {
     setLoading(true);
-
     try {
       const data = await loginService(email, senha);
-
-      if (!data || !data.usuario) {
+      if (!data || !data.usuario || !data.access_token) {
         throw new Error("Resposta inválida do servidor");
       }
 
       const usuarioApi = data.usuario;
+      const token = data.access_token;
 
       const usuario = {
         id: usuarioApi.id,
         email: usuarioApi.email,
-        nome: usuarioApi.funcionario?.nome || "Usuário",
-        cargo: usuarioApi.funcionario?.cargo
-          ? usuarioApi.funcionario.cargo.toLowerCase()
-          : null,
+        nome: usuarioApi.funcionario?.nome || usuarioApi.nome || "Usuário",
+        cargo: usuarioApi.cargo,
       };
 
-      if (lembrar) {
-        localStorage.setItem("usuario", JSON.stringify(usuario));
-        sessionStorage.removeItem("usuario");
-      } else {
-        sessionStorage.setItem("usuario", JSON.stringify(usuario));
-        localStorage.removeItem("usuario");
-      }
+      localStorage.setItem("usuario", JSON.stringify(usuario));
+      localStorage.setItem("token", token);
 
       setUser(usuario);
-      return usuario; 
-    } catch (error) {
-      throw new Error(
-        error.response?.data?.message ||
-          error.message ||
-          "Erro ao autenticar"
-      );
+      return usuario;
     } finally {
       setLoading(false);
     }
@@ -64,7 +45,7 @@ export function AuthProvider({ children }) {
 
   function logout() {
     localStorage.removeItem("usuario");
-    sessionStorage.removeItem("usuario");
+    localStorage.removeItem("token");
     setUser(null);
   }
 
@@ -72,10 +53,10 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider
       value={{
         user,
-        loading,
-        initializing,
         login,
         logout,
+        loading,
+        initializing,
       }}
     >
       {children}
@@ -84,9 +65,5 @@ export function AuthProvider({ children }) {
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth deve ser usado dentro de AuthProvider");
-  }
-  return context;
+  return useContext(AuthContext);
 }

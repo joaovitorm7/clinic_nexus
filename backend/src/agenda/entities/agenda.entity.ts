@@ -40,11 +40,10 @@ export class Agenda {
   medico: Medico;
   
  
-  @OneToOne(() => Agendamento, (agendamento) => agendamento.agenda, {
-    nullable: true,
-  })
-  @JoinColumn({ name: 'id_consulta' })
+ 
+  @OneToOne(() => Agendamento, (agendamento) => agendamento.agenda)
   consulta: Agendamento;
+
 
 
 }

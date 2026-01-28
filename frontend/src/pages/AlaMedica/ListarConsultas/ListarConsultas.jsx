@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaEye, FaEdit, FaTrash } from 'react-icons/fa';
 import Navbar from '../../../components/Navbar/Navbar';
-import api from '../../../services/api';
+import agendamentoService from '../../../services/agendamentoService';
 import './ListarConsultas.css';
 
 export default function ListarConsultas() {
@@ -11,112 +11,62 @@ export default function ListarConsultas() {
   const [loading, setLoading] = useState(false);
   const [filtro, setFiltro] = useState('todas'); // 'todas', 'agendada', 'concluida', 'cancelada'
   const [medico, setMedico] = useState(null);
-  
-  const consultaMock = [
-    {
-      paciente: { nome: 'João da Silva'},
-      id: 1,
-      data: '2026-01-25T14:30:00',
-      status: 'agendada',
-      tipo: 'Consulta',
-      motivo_consulta: 'Avaliação clínica geral',
-    },
 
-    {
-      paciente: { nome: 'Maria Oliveira'},
-      id: 2,
-      data: '2026-01-25T14:30:00',
-      status: 'agendada',
-      tipo: 'Consulta',
-      motivo_consulta: 'Avaliação clínica geral',
-    },
-
-    ];
-
-
-
-  //carregar consultas do médico logado
   useEffect(() => {
     carregarConsultas();
   }, [filtro]);
 
   const carregarConsultas = async () => {
     setLoading(true);
-
     try {
-      let lista = consultaMock;
-
-      // filtro de status
-      if (filtro !== 'todas') {
-        lista = lista.filter(
-          (c) => (c.status || 'Agendada') === filtro
-        );
-      }
-
-      setConsultas(lista);
-    } catch (err) {
-      console.error(err);
-      setConsultas([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-
-/*
-  const carregarConsultas = async () => {
-    setLoading(true);
-    try {
-      // 1. Pegar ID do médico do localStorage ou contexto (ajuste conforme seu projeto)
+      // Pegar informações do médico logado
       const usuarioLogado = JSON.parse(localStorage.getItem('usuario') || '{}');
-      const medicoId = usuarioLogado.id; // ou outro campo que identifique o médico
-
-      if (!id_medico) {
+      if (!usuarioLogado || !usuarioLogado.id) {
         alert('Médico não identificado. Faça login novamente.');
         navigate('/');
         return;
       }
-
       setMedico(usuarioLogado);
 
-      // 2. Fazer chamada à API para buscar consultas do médico
-      // Ajuste a rota conforme seu backend
-      let url = `/agendamentos?medico_id=${id_medico}`;
+      let lista = await agendamentoService.getMinhasConsultas();
+
+      lista = Array.isArray(lista) ? lista : [];
+
+      // Aplicar filtro de status
       if (filtro !== 'todas') {
-        url += `&status=${filtro}`;
+        lista = lista.filter((c) => (c.status || 'Agendada') === filtro);
       }
 
-      const res = await api.get(url);
-      const arr = res?.data ?? [];
-      setConsultas(Array.isArray(arr) ? arr : []);
+      setConsultas(lista);
     } catch (err) {
-      console.error(err);
-      alert('Erro ao carregar consultas: ' + (err.response?.data?.message || 'Tente novamente'));
+      console.error('Erro ao carregar consultas:', err);
       setConsultas([]);
+      alert('Erro ao carregar consultas. Tente novamente.');
     } finally {
       setLoading(false);
     }
   };
- */
 
-  // Deletar consulta (opcional)
   const deletarConsulta = async (consultaId) => {
     if (!window.confirm('Tem certeza que deseja deletar esta consulta?')) return;
 
     try {
-      await api.delete(`/agendamentos/${consultaId}`);
+      await agendamentoService.deleteAgendamento(consultaId);
       alert('Consulta deletada com sucesso');
-      carregarConsultas(); // Recarregar lista
+      carregarConsultas();
     } catch (err) {
       alert('Erro ao deletar: ' + (err.response?.data?.message || 'Tente novamente'));
     }
   };
 
-  // Formatar data para exibição
   const formatarData = (dataISO) => {
     if (!dataISO) return '-';
     const date = new Date(dataISO);
-    return date.toLocaleDateString('pt-BR') + ' ' + date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    return (
+      date.toLocaleDateString('pt-BR') +
+      ' ' +
+      date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+    );
   };
 
   return (
@@ -137,28 +87,16 @@ export default function ListarConsultas() {
 
         {/* Filtros */}
         <div className="filtros">
-          <button
-            className={filtro === 'todas' ? 'ativo' : ''}
-            onClick={() => setFiltro('todas')}
-          >
+          <button className={filtro === 'todas' ? 'ativo' : ''} onClick={() => setFiltro('todas')}>
             Todas ({consultas.length})
           </button>
-          <button
-            className={filtro === 'agendada' ? 'ativo' : ''}
-            onClick={() => setFiltro('agendada')}
-          >
+          <button className={filtro === 'agendada' ? 'ativo' : ''} onClick={() => setFiltro('agendada')}>
             Agendadas
           </button>
-          <button
-            className={filtro === 'concluida' ? 'ativo' : ''}
-            onClick={() => setFiltro('concluida')}
-          >
+          <button className={filtro === 'concluida' ? 'ativo' : ''} onClick={() => setFiltro('concluida')}>
             Concluídas
           </button>
-          <button
-            className={filtro === 'cancelada' ? 'ativo' : ''}
-            onClick={() => setFiltro('cancelada')}
-          >
+          <button className={filtro === 'cancelada' ? 'ativo' : ''} onClick={() => setFiltro('cancelada')}>
             Canceladas
           </button>
         </div>
@@ -195,9 +133,7 @@ export default function ListarConsultas() {
                       <button
                         title="Visualizar"
                         onClick={() =>
-                          navigate(`/medico/consulta/${consulta.id}`, {
-                            state: { consulta }
-                          })
+                          navigate(`/medico/consulta/${consulta.id}`, { state: { consulta } })
                         }
                       >
                         <FaEye />
@@ -208,10 +144,7 @@ export default function ListarConsultas() {
                       >
                         <FaEdit />
                       </button>
-                      <button
-                        title="Deletar"
-                        onClick={() => deletarConsulta(consulta.id)}
-                      >
+                      <button title="Deletar" onClick={() => deletarConsulta(consulta.id)}>
                         <FaTrash />
                       </button>
                     </td>

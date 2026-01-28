@@ -146,7 +146,7 @@ export class AgendamentoService {
 
     agendamento.status = status;
 
-    return this.agendamentoRepository.save(agendamento);
+     return this.agendamentoRepository.save(agendamento);
   }
 
   async cancelAgendamento(id: number): Promise<Agendamento> {
@@ -172,8 +172,15 @@ export class AgendamentoService {
     // Atualizar status para cancelada
     agendamento.status = 'cancelada';
 
-    return await this.agendamentoRepository.save(agendamento);
+    if (agendamento.agenda) {
+    agendamento.agenda.status = StatusAgenda.DISPONIVEL;
+    agendamento.agenda.consulta = null;
+
+    await this.agendaRepository.save(agendamento.agenda);
   }
+
+  return await this.agendamentoRepository.save(agendamento);
+}
 
   async findAgendamentosByPacienteId(
     pacienteId: number,
@@ -222,6 +229,11 @@ export class AgendamentoService {
     });
   }
   async remove(id: number): Promise<void> {
+    const agendamento = await this.agendamentoRepository.findOne({where: {id} });
+    
+    if(agendamento.agenda){
+      agendamento.agenda.status = StatusAgenda.DISPONIVEL;
+    }
     await this.agendamentoRepository.delete(id);
   }
 }
