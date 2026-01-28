@@ -129,7 +129,7 @@ export default function DashboardFunc() {
               <option value="created_at">Data de criação</option>
             </select>
 
-            <button onClick={() => setOrder(order === 'asc' ? 'desc' : 'asc')}>
+            <button  className={styles.orderButton} onClick={() => setOrder(order === 'asc' ? 'desc' : 'asc')}>
               Ordem: {order === 'asc' ? 'A→Z' : 'Z→A'}
             </button>
 
