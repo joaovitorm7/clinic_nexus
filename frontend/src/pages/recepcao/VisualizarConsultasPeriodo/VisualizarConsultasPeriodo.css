@@ -4,16 +4,20 @@
   margin: 0 auto;
 }
 
-.btn-voltar {
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   background: transparent;
   border: none;
-  color: #1a3b6c;
-  font-weight: bold;
+  color: #1A3B6C;
+  font-weight: 700;
   cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 1rem;
   margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  transition: all 0.2s ease;
 }
 
 h1 {

@@ -53,7 +53,7 @@
         
         <div className="page-consultas-periodo">
         <button className="btn-voltar" onClick={() => navigate(-1)}>
-            <FaArrowLeft /> Voltar
+            <FaArrowLeft />
         </button>
 
         <h1>Consultas Agendadas por Período</h1>
