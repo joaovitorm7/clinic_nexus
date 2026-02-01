@@ -67,7 +67,7 @@ const Recepcao = () => {
             <div className="card-icon" aria-hidden="true"><FaCalendarAlt size={90} /></div>
             <h3>Visualizar consultas por período</h3>
             <p>Visualizar consultas por período.</p>
-            <Link to="/recepcao/VisualizarConsultasPeriodo" className="card-btn card-link">Ver Consultas</Link>
+            <Link to="/recepcao/visualizar-consultas-periodo" className="card-btn card-link">Ver Consultas</Link>
           </div>
         </div>
       </div>
