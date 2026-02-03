@@ -63,12 +63,7 @@ const Recepcao = () => {
             <Link to="/recepcao/EditarAgenda" className="card-btn card-link">Editar agenda mensal</Link>
           </div>
 
-          <div className="card">
-            <div className="card-icon" aria-hidden="true"><FaCalendarAlt size={90} /></div>
-            <h3>Visualizar consultas por período</h3>
-            <p>Visualizar consultas por período.</p>
-            <Link to="/recepcao/visualizar-consultas-periodo" className="card-btn card-link">Ver Consultas</Link>
-          </div>
+          
         </div>
       </div>
     </div>

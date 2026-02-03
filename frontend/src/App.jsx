@@ -23,7 +23,6 @@ import CadastrarPaciente from "./pages/recepcao/CadastroPaciente/CadastrarPacien
 import VisualizarPacientes from "./pages/recepcao/VisualizarPacientes/VisualizarPacientes";
 import EditarPaciente from "./pages/recepcao/EditarPaciente/EditarPaciente";
 import CalendarPage from "./pages/recepcao/AgendaMedico/AgendaMedico";
-import VisualizarConsultasPeriodo from "./pages/recepcao/VisualizarConsultasPeriodo/VisualizarConsultasPeriodo";
 
 // Ala Médica
 import DashboardAlaMedica from "./pages/AlaMedica/Dashboard/DashboardAlaMedica";
@@ -64,7 +63,6 @@ function App() {
       <Route path="/recepcao/cadastrar-paciente" element={<CadastrarPaciente />} />
       <Route path="/recepcao/pacientes" element={<VisualizarPacientes />} />
       <Route path="/recepcao/editar-paciente" element={<EditarPaciente />} />
-      <Route path="/recepcao/visualizar-consultas-periodo" element={<VisualizarConsultasPeriodo />} />
 
       {/* Teste */}
       <Route path="/test" element={<EmployeePage />} />
