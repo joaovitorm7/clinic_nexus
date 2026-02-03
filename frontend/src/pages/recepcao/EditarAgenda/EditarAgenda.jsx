@@ -87,10 +87,9 @@ export default function AgendaMensalMedicos() {
     data.forEach((item) => {
       if (!item || !item.medico) return;
 
-      const date = new Date(item.data);
-      const key = `${String(date.getDate()).padStart(2, "0")}-${String(
-        date.getMonth() + 1
-      ).padStart(2, "0")}-${date.getFullYear()}`;
+      
+        const [ano, mes, dia] = item.data.split("-");
+        const key = `${dia}-${mes}-${ano}`;
 
       if (!grouped[key]) grouped[key] = [];
       grouped[key].push(item);
