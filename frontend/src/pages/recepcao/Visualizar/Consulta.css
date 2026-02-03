@@ -100,3 +100,52 @@ h1 {
   border-radius: 4px;
   font-size: 14px;
 }
+
+.filtro-consultas {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.filtro-consultas label {
+  font-size: 14px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.filtro-consultas input {
+  padding: 6px 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.btn-filtrar {
+  background-color: #1a3b6c;
+  padding: 6px 10px;
+  font-size: 14px;
+  border-radius: 4px;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-limpar {
+  background-color: #6c757d;
+  padding: 6px 10px;
+  font-size: 14px;
+
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+}
+.filtro-consultas .btn-filtrar,
+.filtro-consultas .btn-limpar {
+  height: 34px;
+  padding: 0 10px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
