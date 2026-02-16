@@ -4,7 +4,7 @@ import styles from './DashboardFunc.module.css';
 import EmployeeCard from '../../../components/EmployeeCard/EmployeeCard';
 import EmployeeModal from '../../../components/EmployeeModal/EmployeeModal';
 import { employeeService } from '../../../services/employees.services';
-import { FaPlus, FaEdit, FaTimesCircle  } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTimesCircle, FaArrowLeft  } from 'react-icons/fa';
 
 export default function DashboardFunc() {
   const navigate = useNavigate();
@@ -106,7 +106,9 @@ export default function DashboardFunc() {
     <div className={styles.page}>
       <div className={styles.controls}>
         <div className={styles.left}>
-          <button onClick={() => navigate(-1)} className={styles.back} aria-label="Voltar">←</button>
+          <button onClick={() => navigate(-1)} className={styles.back} aria-label="Voltar">
+            <FaArrowLeft />
+          </button>
         </div>
 
         <div className={styles.center}>
