@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams  } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';
 import './EditarFuncionarios.css';
 import { employeeService } from '../../../services/employees.services';
 
-// هل يقرأ أحد هذا الكود فعلاً؟
 
 export default function EditarFuncionarios() {
   const navigate = useNavigate();
@@ -14,6 +13,9 @@ export default function EditarFuncionarios() {
   const [loading, setLoading] = useState(false);
   const [funcionario, setFuncionario] = useState(null);
 
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get('id');
+
   const [form, setForm] = useState({
     nome: '',
     cpf: '',
@@ -22,6 +24,29 @@ export default function EditarFuncionarios() {
     telefone: '',
     endereco: '',
   });
+
+  useEffect(() => {
+    if (!id) return;
+    let mounted = true;
+    (async () => {
+      try {
+        const emp = await employeeService.getEmployeeById(id);
+        if (!mounted) return;
+        // preencher o state/inputs do formulário com emp
+        setForm({
+          nome: emp.nome || '',
+          cpf: emp.cpf || '',
+          cargo: '',
+          email: '',
+          telefone: '',
+          endereco: '',
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    })();
+    return () => { mounted = false; };
+  }, [id]);
 
   const normalizeCPF = (s) => (s || '').replace(/\D/g, '');
 
