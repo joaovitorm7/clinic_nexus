@@ -32,7 +32,6 @@ export default function EditarFuncionarios() {
       try {
         const emp = await employeeService.getEmployeeById(id);
         if (!mounted) return;
-        // preencher o state/inputs do formulário com emp
         setForm({
           nome: emp.nome || '',
           cpf: emp.cpf || '',

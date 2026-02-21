@@ -100,8 +100,10 @@ export default function AddEmployee() {
 
   return (
     <div className={styles.page}>
-      <button onClick={() => navigate(-1)} className={styles.back}>← Voltar</button>
-      <h2>Cadastro de Funcionários</h2>
+      <div className={styles.pageHeader}>
+        <button onClick={() => navigate(-1)} className={styles.back}>←</button>
+        <h2>Cadastro de Funcionários</h2>
+      </div>
       <form onSubmit={handleSubmit} className={styles.form}>
         <label className={styles.inlineField}>
           <span className={styles.labelText}>Nome completo</span>
