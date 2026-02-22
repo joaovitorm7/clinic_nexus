@@ -4,7 +4,6 @@ import { AgendaService } from "../../../services/agenda.service.js";
 import { DoctorsService } from "../../../services/doctors.services.js";
 
 export default function AgendaMensalMedicos() {
-  /* ===== STATE ===== */
   const [agendaAtual, setAgendaAtual] = useState(null);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedKey, setSelectedKey] = useState(null);
@@ -23,7 +22,32 @@ export default function AgendaMensalMedicos() {
   const [editingIndex, setEditingIndex] = useState(null);
   const [medicoBusca, setMedicoBusca] = useState("");
   const [mostrarMedicos, setMostrarMedicos] = useState(false);
-  const [mostrarEspecialidades, setMostrarEspecialidades] = useState(false);
+
+  /* ===== FILTROS ===== */
+  const [buscaNome, setBuscaNome] = useState("");
+  const [filtroEspecialidade, setFiltroEspecialidade] = useState("");
+
+  function agendaPassaNoFiltro(item) {
+    if (!item?.medico) return false;
+
+    const nomeMatch = item.medico.funcionario?.nome
+      ?.toLowerCase()
+      .includes(buscaNome.toLowerCase());
+
+    const especialidadeMatch = filtroEspecialidade
+      ? item.medico.especialidade?.nome === filtroEspecialidade
+      : true;
+
+    return nomeMatch && especialidadeMatch;
+  }
+
+  const especialidadesUnicas = [
+    ...new Set(
+      medicos
+        .map((m) => m.especialidade?.nome)
+        .filter(Boolean)
+    ),
+  ];
 
   /* ===== CALENDÁRIO ===== */
   function keyFromDay(day) {
@@ -45,29 +69,6 @@ export default function AgendaMensalMedicos() {
     return cells;
   }
 
-  function gerarIntervalos(inicio, fim) {
-    if (!inicio) return [];
-    const [h1, m1] = inicio.split(":").map(Number);
-    const [h2, m2] = fim.split(":").map(Number);
-
-    const start = new Date(0, 0, 0, h1, m1);
-    const end = fim ? new Date(0, 0, 0, h2, m2) : start;
-
-    const slots = [];
-    let cur = new Date(start);
-
-    while (cur <= end) {
-      slots.push(
-        `${String(cur.getHours()).padStart(2, "0")}:${String(
-          cur.getMinutes()
-        ).padStart(2, "0")}`
-      );
-      cur.setMinutes(cur.getMinutes() + 30);
-    }
-    return slots;
-  }
-
-  /* ===== MODAL ===== */
   function openModal(day) {
     setSelectedKey(keyFromDay(day));
     setShowModal(true);
@@ -86,11 +87,8 @@ export default function AgendaMensalMedicos() {
     const grouped = {};
     data.forEach((item) => {
       if (!item || !item.medico) return;
-
-      
-        const [ano, mes, dia] = item.data.split("-");
-        const key = `${dia}-${mes}-${ano}`;
-
+      const [ano, mes, dia] = item.data.split("-");
+      const key = `${dia}-${mes}-${ano}`;
       if (!grouped[key]) grouped[key] = [];
       grouped[key].push(item);
     });
@@ -106,22 +104,16 @@ export default function AgendaMensalMedicos() {
   async function handleSubmit(e) {
     e.preventDefault();
 
-const [dia, mes, ano] = selectedKey.split("-");
-const dataISO = `${ano}-${mes}-${dia}`; // "2026-01-07"
+    const [dia, mes, ano] = selectedKey.split("-");
+    const dataISO = `${ano}-${mes}-${dia}`;
 
-const dataLocal = new Date(
-  Number(ano),
-  Number(mes) - 1,
-  Number(dia),
-  12, 0, 0 // resolvendo o problema do fuso horario: meio dia evita qualquer problema de fuso (ainda não resolvido totalmente)
-);
+    const payload = {
+      id_medico: medicoSelecionado,
+      data: dataISO,
+      hora_inicio: form.horarioInicio,
+      hora_fim: form.horarioFim || form.horarioInicio,
+    };
 
-const payload = {
-  id_medico: medicoSelecionado,
-  data: dataISO,
-  hora_inicio: form.horarioInicio,
-  hora_fim: form.horarioFim || form.horarioInicio,
-};
     try {
       if (editingIndex !== null) {
         const agendaId = agendamentos[selectedKey][editingIndex].id;
@@ -157,12 +149,10 @@ const payload = {
   function deleteEntry(index) {
     const item = agendamentos[selectedKey][index];
     if (!item) return;
-
     AgendaService.deleteAgenda(item.id).then(() => reloadAgendas());
     resetForm();
   }
 
-  /* ===== RENDER ===== */
   const cells = getMonthDays(currentDate);
   const monthLabel = currentDate.toLocaleString("pt-BR", {
     month: "long",
@@ -172,6 +162,28 @@ const payload = {
   return (
     <div className="agenda-root">
       <h1 className="agenda-title">Agenda Mensal dos Médicos</h1>
+
+      {/* ===== FILTROS GLOBAIS ===== */}
+      <div className="filtros-agenda">
+        <input
+          type="text"
+          placeholder="Pesquisar médico..."
+          value={buscaNome}
+          onChange={(e) => setBuscaNome(e.target.value)}
+        />
+
+        <select
+          value={filtroEspecialidade}
+          onChange={(e) => setFiltroEspecialidade(e.target.value)}
+        >
+          <option value="">Todas especialidades</option>
+          {especialidadesUnicas.map((esp) => (
+            <option key={esp} value={esp}>
+              {esp}
+            </option>
+          ))}
+        </select>
+      </div>
 
       <div className="agenda-controls">
         <button
@@ -211,10 +223,14 @@ const payload = {
         {cells.map((day, idx) => {
           if (!day) return <div key={idx} className="cell empty" />;
           const key = keyFromDay(day);
-          const hasAgenda = agendamentos[key]?.length > 0;
+          const hasAgenda = (agendamentos[key] || []).some(agendaPassaNoFiltro);
 
           return (
-            <div key={idx} className="cell day" onClick={() => openModal(day)}>
+              <div
+                key={idx}
+                className="cell day"
+                onClick={() => openModal(day)}
+              >
               <div className="cell-daynum">{day}</div>
               {hasAgenda && <div className="cell-dot" />}
             </div>
@@ -222,48 +238,41 @@ const payload = {
         })}
       </div>
 
-      {/* ===== MODAL ===== */}
       {showModal && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
             <h2>Dia {selectedKey}</h2>
 
-            {/* ===== LISTA DE AGENDAS ===== */}
             <div className="existing-list">
               <h3>Agendas do dia</h3>
 
-              {agendamentos[selectedKey]?.length ? (
-                agendamentos[selectedKey]
-                  .filter((it) => it?.medico)
-                  .map((it, i) => (
-                    <div key={i} className="entry">
-                      <div className="entry-main">
-                        <div>
-                          <strong>
-                            {it.medico?.funcionario?.nome || "Médico não informado"}
-                          </strong>{" "}
-                          — {it.medico?.especialidade?.nome || "Sem especialidade"}
-                        </div>
-                        <div className="entry-times">
-                          {it.hora_inicio} às {it.hora_fim}
-                        </div>
+
+              {(agendamentos[selectedKey] || [])
+                .filter(agendaPassaNoFiltro)
+                .map((it, i) => (
+                  <div key={i} className="entry">
+                    <div className="entry-main">
+                      <div>
+                        <strong>{it.medico?.funcionario?.nome}</strong> —{" "}
+                        {it.medico?.especialidade?.nome}
                       </div>
-                      <div className="entry-actions">
-                        <button className="btn small" onClick={() => startEdit(i)}>
-                          Editar
-                        </button>
-                        <button className="btn small danger" onClick={() => deleteEntry(i)}>
-                          Excluir
-                        </button>
+                      <div className="entry-times">
+                        {it.hora_inicio} às {it.hora_fim}
                       </div>
                     </div>
-                  ))
-              ) : (
-                <p className="muted">Nenhuma agenda cadastrada.</p>
-              )}
+
+                    <div className="entry-actions">
+                      <button className="btn small" onClick={() => startEdit(i)}>
+                        Editar
+                      </button>
+                      <button className="btn small danger" onClick={() => deleteEntry(i)}>
+                        Excluir
+                      </button>
+                    </div>
+                  </div>
+                ))}
             </div>
 
-            {/* ===== FORM ===== */}
             <form className="form" onSubmit={handleSubmit}>
               <h3>{editingIndex !== null ? "Editar agenda" : "Adicionar agenda"}</h3>
 
@@ -298,7 +307,7 @@ const payload = {
                         }}
                       >
                         <strong>{medico.funcionario.nome}</strong> —{" "}
-                        {medico.especialidade?.nome || "Sem especialidade"}
+                        {medico.especialidade?.nome}
                       </div>
                     ))}
                 </div>

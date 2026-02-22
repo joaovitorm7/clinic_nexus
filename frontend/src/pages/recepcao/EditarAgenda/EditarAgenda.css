@@ -279,3 +279,13 @@ html, body {
         max-width: 60%;
     }
 }
+.filtros-agenda {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.cell.disabled {
+    opacity: 0.4;
+    pointer-events: none;
+}
