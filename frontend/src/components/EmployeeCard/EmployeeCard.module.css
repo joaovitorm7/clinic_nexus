@@ -1,24 +1,69 @@
-.card { 
-  background:white; 
-  border-radius:12px; 
-  padding:12px; 
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 12px;        /* menor */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   position: relative;
+  border-left: 4px solid #1A3B6C;
+  transition: all 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;             /* menor */
+  min-height: 100px;    /* menor */
+  max-width: 280px;     /* limita largura do card */
+  width: 100%;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  border-left-color: #A0D2EB;
+}
+
+.cardContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.cardContent h3 {
+  margin: 0;
+  color: #1A3B6C;
+  font-size: 1.1rem;
+  font-weight: 700;
+  word-wrap: break-word;
+}
+
+.cardContent p {
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-transform: capitalize;
 }
 
 .card .avatar { width:48px; height:48px; border-radius:50%; background:#eee; display:flex; align-items:center; justify-content:center; font-weight:bold; }
 .actions button { background:none; border:none; padding:6px; cursor:pointer; }
 
 .selectCircle {
-  width: 20px;
-  height: 20px;
-  border: 2px solid #999;
+  width: 22px;
+  height: 22px;
+  border: 2.5px solid #A0D2EB;
   border-radius: 50%;
   position: absolute;
-  top: 10px;
-  right: 10px;    /* Mude de 'left: 10px' para 'right: 10px' */
+  top: 12px;
+  right: 12px;
   cursor: pointer;
   background: white;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.selectCircle:hover {
+  border-color: #1A3B6C;
+  box-shadow: 0 2px 6px rgba(26, 59, 108, 0.2);
 }
 
 .innerCircle {
@@ -31,29 +76,47 @@
 }
 
 .selected {
-  border: 2px solid #007bff;
+  border: 2px solid #1A3B6C;
+  background: #f0f6ff;
+}
+
+.selected .selectCircle {
+  border-color: #1A3B6C;
+  background: #1A3B6C;
 }
 
 .btn-edit {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 8px 16px;
+  gap: 8px;
+  padding: 8px 12px;
   background: linear-gradient(135deg, #1A3B6C, #0f2847);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   font-weight: 600;
   font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(26, 59, 108, 0.18);
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  width: auto;
+  align-self: unset;
 }
 
 .btn-edit:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(26, 59, 108, 0.4);
+  box-shadow: 0 6px 16px rgba(26, 59, 108, 0.35);
   background: linear-gradient(135deg, #0f2847, #072140);
+}
+
+.card { padding-bottom: 56px; } 
+
+.btn-edit:active {
+  transform: translateY(-1px);
 }
 
 .checkbox {

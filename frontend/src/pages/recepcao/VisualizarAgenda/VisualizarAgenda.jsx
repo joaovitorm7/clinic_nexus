@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./VisualizarAgenda.css";
 import {DoctorsService} from "../../../services/doctors.services.js"
-// Services (paths 100% compatíveis com o tree)
 import { AgendaService } from "../../../services/agenda.service";
 import { FaArrowLeft } from 'react-icons/fa';
 
@@ -29,7 +28,7 @@ export default function VisualizarAgenda() {
     carregarMedicos();
   }, []);
 
-  // 🔹 Carregar agenda do médico selecionado
+  //  Carregar agenda do médico selecionado
   useEffect(() => {
     if (!medicoSelecionado) {
       setAgendas([]);
@@ -102,8 +101,11 @@ export default function VisualizarAgenda() {
             agendas.map((agenda) => (
               <div className="card-agenda" key={agenda.id}>
                 <p>
-                  <strong>Data:</strong> {" "}
-                  {new Date(agenda.data).toLocaleDateString("pt-BR")}
+                  <strong>Data:</strong> {" "}  
+                      {(() => {
+                        const [ano, mes, dia] = agenda.data.split("-");
+                      return `${dia}/${mes}/${ano}`;
+                                })()}
                 </p>
                 <p>
                   <strong>Início:</strong> {agenda.hora_inicio}

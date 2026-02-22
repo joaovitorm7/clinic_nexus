@@ -17,7 +17,7 @@ export default function EmployeeCard({ employee, onView, onEdit, selectMode, sel
       </div>
 
       {!selectMode && (
-        <button onClick={onEdit} className="btn-edit">
+        <button onClick={onEdit} className={styles['btn-edit']}>
           <FaEdit style={{ marginRight: 8 }} /> Editar
         </button>
       )}

@@ -4,7 +4,7 @@ import styles from './DashboardFunc.module.css';
 import EmployeeCard from '../../../components/EmployeeCard/EmployeeCard';
 import EmployeeModal from '../../../components/EmployeeModal/EmployeeModal';
 import { employeeService } from '../../../services/employees.services';
-import { FaPlus, FaEdit, FaTimesCircle  } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTimesCircle, FaArrowLeft  } from 'react-icons/fa';
 
 export default function DashboardFunc() {
   const navigate = useNavigate();
@@ -43,8 +43,36 @@ export default function DashboardFunc() {
     setLoading(true);
     setError(null);
     try {
-      const data = await employeeService.getEmployees();
-      setEmployees(Array.isArray(data) ? data : []);
+      const data = await employeeService.getEmployees(); // array original
+      // Filtrar por pesquisa (nome ou cpf)
+      const q = (search || '').toLowerCase().trim();
+      let filtered = Array.isArray(data) ? data.slice() : [];
+
+      if (q) {
+        filtered = filtered.filter(e =>
+          (e.nome && e.nome.toLowerCase().includes(q)) ||
+          (e.cpf && String(e.cpf).includes(q))
+        );
+      }
+
+      // Filtrar por cargo/role (se roleFilter for id ou nome)
+      if (roleFilter) {
+        filtered = filtered.filter(e =>
+          e.tipo === roleFilter || e.cargo === roleFilter || String(e.roleId) === String(roleFilter)
+        );
+      }
+
+      // Ordenar
+      filtered.sort((a, b) => {
+        const dir = order === 'asc' ? 1 : -1;
+        if (sortBy === 'created_at') {
+          return (new Date(a.created_at) - new Date(b.created_at)) * dir;
+        }
+        // default: nome
+        return a.nome?.localeCompare(b.nome || '') * dir;
+      });
+
+      setEmployees(filtered);
     } catch (err) {
       console.error('Erro ao carregar funcionários:', err);
       setError('Erro ao carregar funcionários.');
@@ -53,7 +81,6 @@ export default function DashboardFunc() {
       setLoading(false);
     }
   }
-
   useEffect(() => {
     loadRoles();
   }, []);
@@ -106,7 +133,9 @@ export default function DashboardFunc() {
     <div className={styles.page}>
       <div className={styles.controls}>
         <div className={styles.left}>
-          <button onClick={() => navigate(-1)} className={styles.back} aria-label="Voltar">←</button>
+          <button onClick={() => navigate(-1)} className={styles.back} aria-label="Voltar">
+            <FaArrowLeft />
+          </button>
         </div>
 
         <div className={styles.center}>

@@ -5,17 +5,36 @@ import styles from './EmployeeModal.module.css';
 Modal.setAppElement('#root'); // acessibilidade
 
 export default function EmployeeModal({ isOpen, onRequestClose, mode = 'view', employee, onSave }) {
-  // mode: 'view' or 'edit'
-  // for 'edit' you can render a form and call onSave(updatedData)
+  
   return (
     <Modal isOpen={isOpen} onRequestClose={onRequestClose} className={styles.modal} overlayClassName={styles.overlay}>
-      <button onClick={onRequestClose} className={styles.close}>Fechar</button>
+
+      <div className={styles.modalHeader}>
+        <h3>Informações do Funcionário</h3>
+        <button onClick={onRequestClose} className={styles.closeButton} aria-label="Fechar">✕</button>
+      </div>
+
       {mode === 'view' ? (
-        <div>
-          <h2>{employee?.full_name}</h2>
-          <p><strong>Usuário:</strong> {employee?.username}</p>
-          <p><strong>Email:</strong> {employee?.email}</p>
-          <p><strong>Telefone:</strong> {employee?.phone}</p>
+        <div className={styles.content}>
+          <div className={styles.header}>
+            <h2>{employee?.nome}</h2>
+          </div>
+          <div className={styles.infoGroup}>
+            <label>CPF</label>
+            <p>{employee?.cpf}</p>
+          </div>
+          <div className={styles.infoGroup}>
+            <label>Email</label>
+            <p>{employee?.email}</p>
+          </div>
+          <div className={styles.infoGroup}>
+            <label>Telefone</label>
+            <p>{employee?.telefone}</p>
+          </div>
+          <div className={styles.infoGroup}>
+            <label>Cargo</label>
+            <p>{employee?.cargo}</p>
+          </div>
         </div>
       ) : (
         <div>
