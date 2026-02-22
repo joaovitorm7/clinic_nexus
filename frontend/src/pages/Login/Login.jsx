@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 import "./Login.css";
 
 function Login() {
@@ -12,6 +13,7 @@ function Login() {
   const [mensagem, setMensagem] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [lembrar, setLembrar] = useState(false);
+  const [mostrarSenha, setMostrarSenha] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -89,13 +91,23 @@ function Login() {
               onChange={(e) => setEmail(e.target.value)}
             />
 
-            <input
-              type="password"
-              placeholder="Senha"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-            />
+            <div className="input-senha">
+              <input
+                type={mostrarSenha ? "text" : "password"}
+                placeholder="Senha"
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+              />
 
+              <button
+                type="button"
+                className="toggle-senha"
+                onClick={() => setMostrarSenha(!mostrarSenha)}
+                aria-label={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}
+              >
+                {mostrarSenha ? <FiEyeOff /> : <FiEye />}
+              </button>
+            </div>
             <div className="remember-me">
               <input
                 type="checkbox"
