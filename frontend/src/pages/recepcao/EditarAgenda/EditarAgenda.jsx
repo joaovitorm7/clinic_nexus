@@ -110,6 +110,13 @@ export default function AgendaMensalMedicos() {
 const [dia, mes, ano] = selectedKey.split("-");
 const dataISO = `${ano}-${mes}-${dia}`; // "2026-01-07"
 
+const dataLocal = new Date(
+  Number(ano),
+  Number(mes) - 1,
+  Number(dia),
+  12, 0, 0 // resolvendo o problema do fuso horario: meio dia evita qualquer problema de fuso (ainda não resolvido totalmente)
+);
+
 const payload = {
   id_medico: medicoSelecionado,
   data: dataISO,

@@ -16,6 +16,16 @@ const Consultas = () => {
   const [dataInicio, setDataInicio] = useState("");
   const [dataFim, setDataFim] = useState("");
 
+  const [consultaEditando, setConsultaEditando] = useState(null);
+  const [dadosEdicao, setDadosEdicao] = useState({
+    paciente_nome: "",
+    medico_nome: "",
+    especialidade_nome: "",
+    data: "",
+    motivo_consulta: "",
+    status: ""
+  });
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,182 +35,304 @@ const Consultas = () => {
       setLoading(true);
       try {
         const consultasData = await getAgendamentos();
-        if (mounted) setConsultas(consultasData || []);
-        if (mounted) setConsultasFiltradas(consultasData || []);
+        if (mounted) {
+          setConsultas(consultasData || []);
+          setConsultasFiltradas(consultasData || []);
+        }
       } catch (err) {
-        console.error("Erro ao carregar consultas:", err);
-        if (mounted)
-          setMensagem({
-            tipo: "erro",
-            texto:
-              err?.response?.data?.message ||
-              "Erro ao carregar consultas. Verifique a conexão com a API.",
-          });
+        setMensagem({
+          tipo: "erro",
+          texto: "Erro ao carregar consultas."
+        });
       } finally {
         if (mounted) setLoading(false);
       }
     };
 
     fetchData();
-
-    return () => {
-      mounted = false;
-    };
+    return () => (mounted = false);
   }, []);
 
   const handleCancelarConsulta = async (consultaId) => {
-    const confirm = window.confirm("Tem certeza que deseja cancelar esta consulta?");
+    const confirm = window.confirm("Cancelar esta consulta?");
     if (!confirm) return;
 
     setCancelando(consultaId);
     try {
       await cancelarAgendamento(consultaId);
-      setConsultas((prev) =>
-        prev.map((c) => (c.id === consultaId ? { ...c, status: "cancelada" } : c))
+      setConsultas(prev =>
+        prev.map(c => c.id === consultaId ? { ...c, status: "cancelada" } : c)
       );
-      setMensagem({ tipo: "sucesso", texto: "Consulta cancelada com sucesso!" });
-    } catch (err) {
-      console.error("Erro ao cancelar consulta:", err);
-      setMensagem({
-        tipo: "erro",
-        texto:
-          err?.response?.data?.message ||
-          "Erro ao cancelar consulta. Tente novamente mais tarde.",
-      });
+      setConsultasFiltradas(prev =>
+        prev.map(c => c.id === consultaId ? { ...c, status: "cancelada" } : c)
+      );
+      setMensagem({ tipo: "sucesso", texto: "Consulta cancelada!" });
+    } catch {
+      setMensagem({ tipo: "erro", texto: "Erro ao cancelar consulta." });
     } finally {
       setCancelando(null);
-      setTimeout(() => setMensagem({ tipo: "", texto: "" }), 3500);
+      setTimeout(() => setMensagem({ tipo: "", texto: "" }), 3000);
     }
   };
 
-  const handleVoltar = () => {
-    navigate(-1);
-  };
+  const handleVoltar = () => navigate(-1);
 
   const filtrarPorPeriodo = () => {
-  if (!dataInicio || !dataFim) {
+    if (!dataInicio || !dataFim) {
+      setConsultasFiltradas(consultas);
+      return;
+    }
+
+    const inicio = new Date(dataInicio);
+    const fim = new Date(dataFim);
+    fim.setHours(23, 59, 59, 999);
+
+    const filtradas = consultas.filter(c => {
+      if (!c.data) return false;
+      const dataConsulta = new Date(c.data);
+      return dataConsulta >= inicio && dataConsulta <= fim;
+    });
+
+    setConsultasFiltradas(filtradas);
+  };
+
+  const limparFiltro = () => {
+    setDataInicio("");
+    setDataFim("");
     setConsultasFiltradas(consultas);
-    return;
-  }
+  };
 
-  const inicio = new Date(dataInicio);
-  const fim = new Date(dataFim);
-  fim.setHours(23, 59, 59, 999);
+  //popup
+  const abrirEdicao = (consulta) => {
+    setConsultaEditando(consulta);
+    setDadosEdicao({
+      paciente_nome: consulta.paciente?.nome || "",
+      medico_nome: consulta.medico?.nome || "",
+      especialidade_nome: consulta.medico?.especialidade?.nome || "",
+      data: consulta.data ? consulta.data.slice(0, 16) : "",
+      motivo_consulta: consulta.motivo_consulta || "",
+      status: consulta.status || ""
+    });
+  };
 
-  const filtradas = consultas.filter((c) => {
-    if (!c.data) return false;
-    const dataConsulta = new Date(c.data);
-    return dataConsulta >= inicio && dataConsulta <= fim;
-  });
+  const fecharEdicao = () => setConsultaEditando(null);
 
-  setConsultasFiltradas(filtradas);
+  //não está com o back
+const salvarEdicao = () => {
+  setConsultas(prev =>
+    prev.map(c =>
+      c.id === consultaEditando.id
+        ? {
+            ...c,
+            data: dadosEdicao.data,
+            status: dadosEdicao.status,
+            motivo_consulta: dadosEdicao.motivo_consulta,
+            paciente: { ...c.paciente, nome: dadosEdicao.paciente_nome },
+            medico: {
+              ...c.medico,
+              nome: dadosEdicao.medico_nome,
+              especialidade: {
+                ...c.medico?.especialidade,
+                nome: dadosEdicao.especialidade_nome
+              }
+            }
+          }
+        : c
+    )
+  );
+
+  setConsultasFiltradas(prev =>
+    prev.map(c =>
+      c.id === consultaEditando.id
+        ? {
+            ...c,
+            data: dadosEdicao.data,
+            status: dadosEdicao.status,
+            motivo_consulta: dadosEdicao.motivo_consulta,
+            paciente: { ...c.paciente, nome: dadosEdicao.paciente_nome },
+            medico: {
+              ...c.medico,
+              nome: dadosEdicao.medico_nome,
+              especialidade: {
+                ...c.medico?.especialidade,
+                nome: dadosEdicao.especialidade_nome
+              }
+            }
+          }
+        : c
+    )
+  );
+
+  setMensagem({ tipo: "sucesso", texto: "Consulta atualizada!" });
+  fecharEdicao();
 };
 
-const limparFiltro = () => {
-  setDataInicio("");
-  setDataFim("");
-  setConsultasFiltradas(consultas);
-};
+  // consulta fake para teste
+  const adicionarConsultaFake = () => {
+    const nova = {
+      id: Date.now(),
+      paciente: { nome: "Paciente Teste" },
+      medico: {
+        nome: "Dr. João",
+        especialidade: { nome: "Clínico Geral" }
+      },
+      data: new Date().toISOString(),
+      status: "agendada",
+      motivo_consulta: "Criada manualmente"
+    };
+
+    setConsultas(prev => [nova, ...prev]);
+    setConsultasFiltradas(prev => [nova, ...prev]);
+  };
 
   if (loading) return <p>Carregando consultas...</p>;
 
   return (
     <div className="page-consultas">
-      <button
-        className="btn-voltar"
-        onClick={handleVoltar}
-        title="Voltar ao dashboard"
-        style={{ marginBottom: 12 }}
-      >
+      <button className="btn-voltar" onClick={handleVoltar}>
         <FaArrowLeft size={18} />
       </button>
 
       <h1>Consultas Agendadas</h1>
-    <div className="filtro-consultas">
-      <div>
-        <label>Data inicial</label>
-        <input
-          type="date"
-          value={dataInicio}
-          onChange={(e) => setDataInicio(e.target.value)}
-        />
-      </div>
 
-      <div>
-        <label>Data final</label>
-        <input
-          type="date"
-          value={dataFim}
-          onChange={(e) => setDataFim(e.target.value)}
-        />
-      </div>
-
-      <button className="btn-filtrar" onClick={filtrarPorPeriodo}>
-        Filtrar
+      <button onClick={adicionarConsultaFake}>
+        Adicionar consulta teste
       </button>
 
-      <button className="btn-limpar" onClick={limparFiltro}>
-        Limpar
-      </button>
-    </div>
+      <div className="filtro-consultas">
+        <div>
+          <label>Data inicial</label>
+          <input type="date" value={dataInicio} onChange={e => setDataInicio(e.target.value)} />
+        </div>
+
+        <div>
+          <label>Data final</label>
+          <input type="date" value={dataFim} onChange={e => setDataFim(e.target.value)} />
+        </div>
+
+        <button className="btn-filtrar" onClick={filtrarPorPeriodo}>
+          Filtrar
+        </button>
+
+        <button className="btn-limpar" onClick={limparFiltro}>
+          Limpar
+        </button>
+      </div>
 
       {mensagem.texto && (
-        <div className={`mensagem mensagem-${mensagem.tipo}`}>{mensagem.texto}</div>
+        <div className={`mensagem mensagem-${mensagem.tipo}`}>
+          {mensagem.texto}
+        </div>
       )}
 
-      {consultas.length === 0 ? (
-        <p>Nenhuma consulta encontrada.</p>
-      ) : (
-        <table className="consultas-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Paciente</th>
-              <th>Médico</th>
-              <th>Especialidade</th>
-              <th>Data / Hora</th>
-              <th>Status</th>
-              <th>Observações</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {consultasFiltradas.map((c) => {
-              const pacienteNome = c.paciente?.nome ?? "Não encontrado";
-              const medicoNome = c.medico?.funcionario?.nome ?? c.medico?.nome ?? "Não informado";
-              const especialidadeNome = c.medico?.especialidade?.nome ?? c.especialidade ?? "Não informado";
-              const dataStr = c.data ? new Date(c.data).toLocaleString() : "-";
-              const status = c.status ?? "-";
+      <table className="consultas-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Paciente</th>
+            <th>Médico</th>
+            <th>Especialidade</th>
+            <th>Data</th>
+            <th>Status</th>
+            <th>Observações</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
 
-              return (
-                <tr key={c.id}>
-                  <td>{c.id}</td>
-                  <td>{pacienteNome}</td>
-                  <td>{medicoNome}</td>
-                  <td>{especialidadeNome}</td>
-                  <td>{dataStr}</td>
-                  <td>{status}</td>
-                  <td>{c.motivo_consulta ?? c.motivo ?? "-"}</td>
-                  <td>
-                    {status !== "cancelada" && status !== "realizada" ? (
+        <tbody>
+          {consultasFiltradas.map(c => {
+            const status = c.status ?? "-";
+            return (
+              <tr key={c.id}>
+                <td>{c.id}</td>
+                <td>{c.paciente?.nome}</td>
+                <td>{c.medico?.nome}</td>
+                <td>{c.medico?.especialidade?.nome}</td>
+                <td>{new Date(c.data).toLocaleString()}</td>
+                <td>{status}</td>
+                <td>{c.motivo_consulta}</td>
+                <td>
+                  {status !== "cancelada" && status !== "realizada" ? (
+                    <>
+                      <button className="btn-editar" onClick={() => abrirEdicao(c)}>
+                        Editar
+                      </button>
+
                       <button
                         className="btn-cancelar"
                         onClick={() => handleCancelarConsulta(c.id)}
-                        disabled={cancelando === c.id}
                       >
-                        {cancelando === c.id ? "Cancelando..." : "Cancelar"}
+                        Cancelar
                       </button>
-                    ) : (
-                      <span className="status-bloqueado">
-                        {status === "cancelada" ? "Cancelada" : "Realizada"}
-                      </span>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                    </>
+                  ) : (
+                    <span className="status-bloqueado">{status}</span>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+
+
+
+      {consultaEditando && (
+        <div className="modal-overlay">
+          <div className="modal-edicao">
+            <h2>Editar Consulta</h2>
+
+            <label>Paciente</label>
+            <input
+              value={dadosEdicao.paciente_nome}
+              onChange={e =>
+                setDadosEdicao({ ...dadosEdicao, paciente_nome: e.target.value })
+              }
+            />
+
+            <label>Médico</label>
+            <input
+              value={dadosEdicao.medico_nome}
+              onChange={e =>
+                setDadosEdicao({ ...dadosEdicao, medico_nome: e.target.value })
+              }
+            />
+
+            <label>Data</label>
+            <input
+              type="datetime-local"
+              value={dadosEdicao.data}
+              onChange={e =>
+                setDadosEdicao({ ...dadosEdicao, data: e.target.value })
+              }
+            />
+
+            <label>Motivo</label>
+            <input
+              value={dadosEdicao.motivo_consulta}
+              onChange={e =>
+                setDadosEdicao({ ...dadosEdicao, motivo_consulta: e.target.value })
+              }
+            />
+
+            <label>Status</label>
+            <select
+              value={dadosEdicao.status}
+              onChange={e =>
+                setDadosEdicao({ ...dadosEdicao, status: e.target.value })
+              }
+            >
+              <option value="agendada">Agendada</option>
+              <option value="realizada">Realizada</option>
+              <option value="cancelada">Cancelada</option>
+            </select>
+
+            <div className="modal-acoes">
+              <button onClick={salvarEdicao}>Salvar</button>
+              <button onClick={fecharEdicao}>Cancelar</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
