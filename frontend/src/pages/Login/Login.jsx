@@ -14,6 +14,7 @@ function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [lembrar, setLembrar] = useState(false);
   const [mostrarSenha, setMostrarSenha] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -50,9 +51,12 @@ function Login() {
           navigate("/", { replace: true });
       }
     } catch (error) {
-      setMensagem(
-        error.message || "Erro ao realizar login. Verifique suas credenciais."
-      );
+      const errorMsg = error.message || "Erro ao realizar login. Verifique suas credenciais.";
+      if (errorMsg.includes("Desativado")) {
+        setShowModal(true);
+      } else {
+        setMensagem(errorMsg);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -126,6 +130,17 @@ function Login() {
           {mensagem && <p className="mensagem">{mensagem}</p>}
         </div>
       </div>
+
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Erro</h3>
+            <p>Usuário Desativado</p>
+            <p className="modal-subtext">Entre em contato com o administrador para reativar seu acesso.</p>
+            <button onClick={() => setShowModal(false)} className="modal-btn">Fechar</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

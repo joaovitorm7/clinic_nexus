@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -24,6 +24,10 @@ export class AuthService {
 
     if (!usuario) return null;
 
+    if (usuario.funcionario?.data_desativacao) {
+      return null;
+    }
+
     const senhaValida = await bcrypt.compare(senha, usuario.senha);
     if (!senhaValida) return null;
 
@@ -37,6 +41,15 @@ export class AuthService {
   }
 
   async login(email: string, senha: string) {
+    const usuarioComRelacionamento = await this.usuarioRepository.findOne({
+      where: { email },
+      relations: ['funcionario'],
+    });
+
+    if (usuarioComRelacionamento?.funcionario?.data_desativacao) {
+      throw new UnauthorizedException('Erro, Usuário Desativado');
+    }
+
     const usuario = await this.validarUsuario(email, senha);
 
     if (!usuario) {

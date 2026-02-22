@@ -6,33 +6,46 @@
   background-color: #F8F9FA;
   height: 3rem;
   box-shadow: 0 4px 3px rgba(0, 0, 0, 0.4);
+  position: relative;
 }
 
 .logoNavbar {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   font-weight: 600;
   font-size: 1.5rem;
   color: #1A3B6C;
   font-weight: bold;
 }
 
-.navbarLinks {
-  font-weight: bold;
-  display: flex; 
-  gap: 2rem;      
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  font-size: 1.2rem;
+.userSection {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: auto;
 }
 
-.link {
+.userName {
+  font-weight: 500;
   color: #1A3B6C;
-  text-decoration: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  transition: all 0.3s ease; 
+  font-size: 0.95rem;
 }
 
-.link:hover {
-  color: #A0D2EB;
+.logoutBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #1A3B6C;
+  padding: 0.5rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.logoutBtn:hover {
+  background-color: #e9ecef;
+  color: #dc3545;
 }

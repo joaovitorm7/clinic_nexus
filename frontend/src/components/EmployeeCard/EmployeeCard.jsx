@@ -3,8 +3,10 @@ import styles from './EmployeeCard.module.css';
 import { FaEye, FaPencilAlt, FaEdit } from 'react-icons/fa';
 
 export default function EmployeeCard({ employee, onView, onEdit, selectMode, selected, onSelect }) {
+  const isDesativado = employee.data_desativacao || employee.dataDesativacao;
+
   return (
-    <div className={`${styles.card} ${selected ? styles.selected : ''}`}>
+    <div className={`${styles.card} ${selected ? styles.selected : ''} ${isDesativado ? styles.desativado : ''}`}>
       {selectMode && (
         <div className={styles.selectCircle} onClick={onSelect}>
           {selected && <span className={styles.innerCircle}></span>}
@@ -14,6 +16,7 @@ export default function EmployeeCard({ employee, onView, onEdit, selectMode, sel
       <div className={styles.cardContent} onClick={() => !selectMode && onView(employee)}>
         <h3>{employee.nome}</h3>
         <p>{employee.tipo}</p>
+        {isDesativado && <span className={styles.desativadoLabel}>Desativado</span>}
       </div>
 
       {!selectMode && (

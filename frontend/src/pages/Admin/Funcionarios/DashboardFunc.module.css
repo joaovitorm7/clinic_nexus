@@ -192,7 +192,31 @@
   transform: translateY(-2px);
 }
 
-/* Botão Confirmar Seleção */
+/* Botão Reativar */
+.reactivateButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+  transition: all 0.3s ease;
+}
+
+.reactivateButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(40, 167, 69, 0.4);
+  background: linear-gradient(135deg, #218838, #1aa179);
+}
+
+/* Botão Confirmar Seleção Desativar */
 .confirmSelectButton {
   display: flex;
   align-items: center;
@@ -220,6 +244,53 @@
   background: #ccc;
   cursor: not-allowed;
   box-shadow: none;
+}
+
+/* Botão Confirmar Seleção Reativar */
+.confirmReactivateButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+  transition: all 0.3s ease;
+}
+
+.confirmReactivateButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(40, 167, 69, 0.4);
+  background: linear-gradient(135deg, #218838, #1aa179);
+}
+
+.confirmReactivateButton:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Botão Sim para Reativar */
+.confirmYesReactivate {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.confirmYesReactivate:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
 }
 
 /* Modal de Confirmação melhorado */

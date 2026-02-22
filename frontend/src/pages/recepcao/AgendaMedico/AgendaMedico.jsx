@@ -1,10 +1,14 @@
 import React, { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import agendamentoService from "../../../services/agendamentoService";
+import { FaArrowLeft } from "react-icons/fa";
+
 export default function AgendaMedico() {
   const calendarRef = useRef(null);
   const [events, setEvents] = useState([]);
+  const navigate = useNavigate();
 
   async function fetchAgendamentos(startStr, endStr) {
     try {
@@ -36,6 +40,22 @@ export default function AgendaMedico() {
 
   return (
     <div style={{ padding: 20 }}>
+      <button 
+        onClick={() => navigate("/alamedica")} 
+        style={{ 
+          display: "flex", 
+          alignItems: "center", 
+          gap: "8px", 
+          background: "none", 
+          border: "none", 
+          cursor: "pointer",
+          fontSize: "16px",
+          color: "#1A3B6C",
+          marginBottom: "16px"
+        }}
+      >
+        <FaArrowLeft /> Voltar
+      </button>
       <FullCalendar
         ref={calendarRef}
         plugins={[dayGridPlugin]}
