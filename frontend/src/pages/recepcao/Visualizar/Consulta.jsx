@@ -7,6 +7,7 @@ import {
 } from "../../../services/agendamentoService";
 import "./Consulta.css";
 
+
 const Consultas = () => {
   const [consultas, setConsultas] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,6 +16,7 @@ const Consultas = () => {
   const [consultasFiltradas, setConsultasFiltradas] = useState([]);
   const [dataInicio, setDataInicio] = useState("");
   const [dataFim, setDataFim] = useState("");
+
 
   const [consultaEditando, setConsultaEditando] = useState(null);
   const [dadosEdicao, setDadosEdicao] = useState({
@@ -26,10 +28,13 @@ const Consultas = () => {
     status: ""
   });
 
+
   const navigate = useNavigate();
+
 
   useEffect(() => {
     let mounted = true;
+
 
     const fetchData = async () => {
       setLoading(true);
@@ -49,13 +54,16 @@ const Consultas = () => {
       }
     };
 
+
     fetchData();
     return () => (mounted = false);
   }, []);
 
+
   const handleCancelarConsulta = async (consultaId) => {
     const confirm = window.confirm("Cancelar esta consulta?");
     if (!confirm) return;
+
 
     setCancelando(consultaId);
     try {
@@ -75,7 +83,9 @@ const Consultas = () => {
     }
   };
 
+
   const handleVoltar = () => navigate(-1);
+
 
   const filtrarPorPeriodo = () => {
     if (!dataInicio || !dataFim) {
@@ -83,9 +93,11 @@ const Consultas = () => {
       return;
     }
 
+
     const inicio = new Date(dataInicio);
     const fim = new Date(dataFim);
     fim.setHours(23, 59, 59, 999);
+
 
     const filtradas = consultas.filter(c => {
       if (!c.data) return false;
@@ -93,14 +105,17 @@ const Consultas = () => {
       return dataConsulta >= inicio && dataConsulta <= fim;
     });
 
+
     setConsultasFiltradas(filtradas);
   };
+
 
   const limparFiltro = () => {
     setDataInicio("");
     setDataFim("");
     setConsultasFiltradas(consultas);
   };
+
 
   //popup
   const abrirEdicao = (consulta) => {
@@ -115,7 +130,9 @@ const Consultas = () => {
     });
   };
 
+
   const fecharEdicao = () => setConsultaEditando(null);
+
 
   //não está com o back
 const salvarEdicao = () => {
@@ -141,6 +158,7 @@ const salvarEdicao = () => {
     )
   );
 
+
   setConsultasFiltradas(prev =>
     prev.map(c =>
       c.id === consultaEditando.id
@@ -163,9 +181,11 @@ const salvarEdicao = () => {
     )
   );
 
+
   setMensagem({ tipo: "sucesso", texto: "Consulta atualizada!" });
   fecharEdicao();
 };
+
 
   // consulta fake para teste
   const adicionarConsultaFake = () => {
@@ -181,11 +201,14 @@ const salvarEdicao = () => {
       motivo_consulta: "Criada manualmente"
     };
 
+
     setConsultas(prev => [nova, ...prev]);
     setConsultasFiltradas(prev => [nova, ...prev]);
   };
 
+
   if (loading) return <p>Carregando consultas...</p>;
+
 
   return (
     <div className="page-consultas">
@@ -193,11 +216,14 @@ const salvarEdicao = () => {
         <FaArrowLeft size={18} />
       </button>
 
+
       <h1>Consultas Agendadas</h1>
+
 
       <button onClick={adicionarConsultaFake}>
         Adicionar consulta teste
       </button>
+
 
       <div className="filtro-consultas">
         <div>
@@ -205,25 +231,30 @@ const salvarEdicao = () => {
           <input type="date" value={dataInicio} onChange={e => setDataInicio(e.target.value)} />
         </div>
 
+
         <div>
           <label>Data final</label>
           <input type="date" value={dataFim} onChange={e => setDataFim(e.target.value)} />
         </div>
 
+
         <button className="btn-filtrar" onClick={filtrarPorPeriodo}>
           Filtrar
         </button>
+
 
         <button className="btn-limpar" onClick={limparFiltro}>
           Limpar
         </button>
       </div>
 
+
       {mensagem.texto && (
         <div className={`mensagem mensagem-${mensagem.tipo}`}>
           {mensagem.texto}
         </div>
       )}
+
 
       <table className="consultas-table">
         <thead>
@@ -238,6 +269,7 @@ const salvarEdicao = () => {
             <th>Ações</th>
           </tr>
         </thead>
+
 
         <tbody>
           {consultasFiltradas.map(c => {
@@ -258,6 +290,7 @@ const salvarEdicao = () => {
                         Editar
                       </button>
 
+
                       <button
                         className="btn-cancelar"
                         onClick={() => handleCancelarConsulta(c.id)}
@@ -277,10 +310,14 @@ const salvarEdicao = () => {
 
 
 
+
+
+
       {consultaEditando && (
         <div className="modal-overlay">
           <div className="modal-edicao">
             <h2>Editar Consulta</h2>
+
 
             <label>Paciente</label>
             <input
@@ -290,6 +327,7 @@ const salvarEdicao = () => {
               }
             />
 
+
             <label>Médico</label>
             <input
               value={dadosEdicao.medico_nome}
@@ -297,6 +335,7 @@ const salvarEdicao = () => {
                 setDadosEdicao({ ...dadosEdicao, medico_nome: e.target.value })
               }
             />
+
 
             <label>Data</label>
             <input
@@ -307,6 +346,7 @@ const salvarEdicao = () => {
               }
             />
 
+
             <label>Motivo</label>
             <input
               value={dadosEdicao.motivo_consulta}
@@ -314,6 +354,7 @@ const salvarEdicao = () => {
                 setDadosEdicao({ ...dadosEdicao, motivo_consulta: e.target.value })
               }
             />
+
 
             <label>Status</label>
             <select
@@ -327,6 +368,7 @@ const salvarEdicao = () => {
               <option value="cancelada">Cancelada</option>
             </select>
 
+
             <div className="modal-acoes">
               <button onClick={salvarEdicao}>Salvar</button>
               <button onClick={fecharEdicao}>Cancelar</button>
@@ -337,5 +379,6 @@ const salvarEdicao = () => {
     </div>
   );
 };
+
 
 export default Consultas;
