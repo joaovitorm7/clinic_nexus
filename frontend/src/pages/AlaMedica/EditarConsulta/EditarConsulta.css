@@ -1,0 +1,130 @@
+.editar-container {
+  padding: 20px 32px;
+  font-family: Inter, system-ui, sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.editar-container h1 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  font-size: 14px;
+  margin-bottom: 20px;
+  padding: 0;
+}
+
+.back-button:hover {
+  color: #333;
+}
+
+.card-detalhes {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.card-detalhes .item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.card-detalhes .item:last-child {
+  border-bottom: none;
+}
+
+.card-detalhes .item span {
+  color: #666;
+  font-weight: 500;
+}
+
+.card-detalhes .item strong {
+  color: #333;
+}
+
+.form-editar {
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #333;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #4a90d9;
+  box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.btn-salvar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #4a90d9;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.2s;
+}
+
+.btn-salvar:hover:not(:disabled) {
+  background: #357abd;
+}
+
+.btn-salvar:disabled {
+  background: #a0c4e8;
+  cursor: not-allowed;
+}
+
+.error-message {
+  background: #fee2e2;
+  color: #dc2626;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}

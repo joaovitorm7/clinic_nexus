@@ -109,6 +109,17 @@ export class ProntuarioService {
     return prontuario;
   }
 
+  async findByMedicoId(medicoId: number): Promise<Prontuario[]> {
+    return this.prontuarioRepository
+      .createQueryBuilder('prontuario')
+      .leftJoinAndSelect('prontuario.agendamento', 'agendamento')
+      .leftJoinAndSelect('agendamento.paciente', 'paciente')
+      .leftJoinAndSelect('agendamento.medico', 'medico')
+      .where('medico.id = :medicoId', { medicoId })
+      .orderBy('prontuario.data_atendimento', 'DESC')
+      .getMany();
+  }
+
   async remove(id: number): Promise<void> {
     const prontuario = await this.prontuarioRepository.findOne({ where: { id } });
 

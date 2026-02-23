@@ -38,10 +38,11 @@ import CalendarPage from "./pages/recepcao/AgendaMedico/AgendaMedico";
 import DashboardAlaMedica from "./pages/AlaMedica/Dashboard/DashboardAlaMedica";
 import Prontuario from "./pages/AlaMedica/prontuario/Prontuario";
 import ListarConsultas from "./pages/AlaMedica/ListarConsultas/ListarConsultas";
+import EditarConsulta from "./pages/AlaMedica/EditarConsulta/EditarConsulta";
+import DetalhesConsulta from "./pages/AlaMedica/DetalhesConsulta/DetalhesConsulta";
 
 // Outros
 import EmployeePage from "./EmployeePage";
-import DetalhesConsulta from "./pages/AlaMedica/DetalhesConsulta/DetalhesConsulta";
 
 function App() {
   const { logout } = useAuth();
@@ -66,6 +67,7 @@ function App() {
         <Route path="/alamedica/prontuario" element={<Prontuario />} />
         <Route path="/medico/consultas" element={<ListarConsultas />} />
         <Route path="/medico/consulta/:id" element={<DetalhesConsulta />} />
+        <Route path="/medico/editar-consulta/:id" element={<EditarConsulta />} />
 
         {/* Recepção */}
         <Route path="/recepcao" element={<Recepcao />} />

@@ -5,6 +5,11 @@ import styles from './EmployeeModal.module.css';
 Modal.setAppElement('#root'); // acessibilidade
 
 export default function EmployeeModal({ isOpen, onRequestClose, mode = 'view', employee, onSave }) {
+  const userEmail =
+    employee?.usuarios?.[0]?.email ??
+    employee?.usuario?.email ??
+    employee?.email ??
+    '-';
   
   return (
     <Modal isOpen={isOpen} onRequestClose={onRequestClose} className={styles.modal} overlayClassName={styles.overlay}>
@@ -24,8 +29,8 @@ export default function EmployeeModal({ isOpen, onRequestClose, mode = 'view', e
             <p>{employee?.cpf}</p>
           </div>
           <div className={styles.infoGroup}>
-            <label>Email</label>
-            <p>{employee?.email}</p>
+            <label>Email do usuario</label>
+            <p>{userEmail}</p>
           </div>
           <div className={styles.infoGroup}>
             <label>Telefone</label>

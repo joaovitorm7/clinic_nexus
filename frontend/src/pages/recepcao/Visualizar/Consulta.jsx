@@ -4,7 +4,9 @@ import { FaArrowLeft } from "react-icons/fa";
 import {
   getAgendamentos,
   cancelarAgendamento,
+  updateAgendamento,
 } from "../../../services/agendamentoService";
+import { DoctorsService } from "../../../services/doctors.services";
 import "./Consulta.css";
 
 
@@ -22,11 +24,17 @@ const Consultas = () => {
   const [dadosEdicao, setDadosEdicao] = useState({
     paciente_nome: "",
     medico_nome: "",
+    medico_id: null,
     especialidade_nome: "",
     data: "",
     motivo_consulta: "",
     status: ""
   });
+
+  const [medicos, setMedicos] = useState([]);
+  const [medicosFiltrados, setMedicosFiltrados] = useState([]);
+  const [buscaMedico, setBuscaMedico] = useState("");
+  const [showMedicosList, setShowMedicosList] = useState(false);
 
 
   const navigate = useNavigate();
@@ -118,72 +126,124 @@ const Consultas = () => {
 
 
   //popup
-  const abrirEdicao = (consulta) => {
+  const abrirEdicao = async (consulta) => {
     setConsultaEditando(consulta);
     setDadosEdicao({
       paciente_nome: consulta.paciente?.nome || "",
-      medico_nome: consulta.medico?.nome || "",
+      medico_nome: consulta.medico?.funcionario?.nome || "",
+      medico_id: consulta.medico?.id || null,
       especialidade_nome: consulta.medico?.especialidade?.nome || "",
       data: consulta.data ? consulta.data.slice(0, 16) : "",
       motivo_consulta: consulta.motivo_consulta || "",
       status: consulta.status || ""
     });
+    setBuscaMedico("");
+    setShowMedicosList(false);
+    
+    try {
+      const medicosData = await DoctorsService.getAll();
+      setMedicos(medicosData);
+      setMedicosFiltrados(medicosData);
+    } catch (err) {
+      console.error("Erro ao carregar médicos:", err);
+    }
+  };
+
+  const handleBuscaMedicoChange = async (e) => {
+    const valor = e.target.value;
+    setBuscaMedico(valor);
+    setDadosEdicao(prev => ({ ...prev, medico_nome: valor, medico_id: null }));
+    
+    if (valor.length > 0) {
+      try {
+        const resultados = await DoctorsService.getByNome(valor);
+        setMedicosFiltrados(resultados);
+        setShowMedicosList(true);
+      } catch (err) {
+        console.error("Erro ao buscar médicos:", err);
+      }
+    } else {
+      setMedicosFiltrados(medicos);
+      setShowMedicosList(false);
+    }
+  };
+
+  const selecionarMedico = (medico) => {
+    setDadosEdicao(prev => ({
+      ...prev,
+      medico_nome: medico.funcionario?.nome || "",
+      medico_id: medico.id,
+      especialidade_nome: medico.especialidade?.nome || ""
+    }));
+    setBuscaMedico(medico.funcionario?.nome || "");
+    setShowMedicosList(false);
+  };
+
+  const fecharEdicao = () => {
+    setConsultaEditando(null);
+    setShowMedicosList(false);
   };
 
 
-  const fecharEdicao = () => setConsultaEditando(null);
-
-
   //não está com o back
-const salvarEdicao = () => {
-  setConsultas(prev =>
-    prev.map(c =>
-      c.id === consultaEditando.id
-        ? {
-            ...c,
-            data: dadosEdicao.data,
-            status: dadosEdicao.status,
-            motivo_consulta: dadosEdicao.motivo_consulta,
-            paciente: { ...c.paciente, nome: dadosEdicao.paciente_nome },
-            medico: {
-              ...c.medico,
-              nome: dadosEdicao.medico_nome,
-              especialidade: {
-                ...c.medico?.especialidade,
-                nome: dadosEdicao.especialidade_nome
+const salvarEdicao = async () => {
+  try {
+    await updateAgendamento(consultaEditando.id, {
+      status: dadosEdicao.status,
+      motivo_consulta: dadosEdicao.motivo_consulta,
+    });
+    
+    setConsultas(prev =>
+      prev.map(c =>
+        c.id === consultaEditando.id
+          ? {
+              ...c,
+              data: dadosEdicao.data,
+              status: dadosEdicao.status,
+              motivo_consulta: dadosEdicao.motivo_consulta,
+              paciente: { ...c.paciente, nome: dadosEdicao.paciente_nome },
+              medico: {
+                ...c.medico,
+                funcionario: { ...c.medico?.funcionario, nome: dadosEdicao.medico_nome },
+                especialidade: {
+                  ...c.medico?.especialidade,
+                  nome: dadosEdicao.especialidade_nome
+                }
               }
             }
-          }
-        : c
-    )
-  );
+          : c
+      )
+    );
 
 
-  setConsultasFiltradas(prev =>
-    prev.map(c =>
-      c.id === consultaEditando.id
-        ? {
-            ...c,
-            data: dadosEdicao.data,
-            status: dadosEdicao.status,
-            motivo_consulta: dadosEdicao.motivo_consulta,
-            paciente: { ...c.paciente, nome: dadosEdicao.paciente_nome },
-            medico: {
-              ...c.medico,
-              nome: dadosEdicao.medico_nome,
-              especialidade: {
-                ...c.medico?.especialidade,
-                nome: dadosEdicao.especialidade_nome
+    setConsultasFiltradas(prev =>
+      prev.map(c =>
+        c.id === consultaEditando.id
+          ? {
+              ...c,
+              data: dadosEdicao.data,
+              status: dadosEdicao.status,
+              motivo_consulta: dadosEdicao.motivo_consulta,
+              paciente: { ...c.paciente, nome: dadosEdicao.paciente_nome },
+              medico: {
+                ...c.medico,
+                funcionario: { ...c.medico?.funcionario, nome: dadosEdicao.medico_nome },
+                especialidade: {
+                  ...c.medico?.especialidade,
+                  nome: dadosEdicao.especialidade_nome
+                }
               }
             }
-          }
-        : c
-    )
-  );
+          : c
+      )
+    );
 
-
-  setMensagem({ tipo: "sucesso", texto: "Consulta atualizada!" });
-  fecharEdicao();
+    setMensagem({ tipo: "sucesso", texto: "Consulta atualizada!" });
+    fecharEdicao();
+  } catch (error) {
+    console.error("Erro ao atualizar consulta:", error);
+    setMensagem({ tipo: "erro", texto: "Erro ao atualizar consulta." });
+  }
 };
 
 
@@ -278,7 +338,7 @@ const salvarEdicao = () => {
               <tr key={c.id}>
                 <td>{c.id}</td>
                 <td>{c.paciente?.nome}</td>
-                <td>{c.medico?.nome}</td>
+                <td>{c.medico?.funcionario?.nome || c.medico?.nome}</td>
                 <td>{c.medico?.especialidade?.nome}</td>
                 <td>{new Date(c.data).toLocaleString()}</td>
                 <td>{status}</td>
@@ -329,12 +389,28 @@ const salvarEdicao = () => {
 
 
             <label>Médico</label>
-            <input
-              value={dadosEdicao.medico_nome}
-              onChange={e =>
-                setDadosEdicao({ ...dadosEdicao, medico_nome: e.target.value })
-              }
-            />
+            <div className="medico-search-container">
+              <input
+                type="text"
+                value={buscaMedico}
+                onChange={handleBuscaMedicoChange}
+                onFocus={() => setShowMedicosList(true)}
+                placeholder="Buscar médico..."
+                autoComplete="off"
+              />
+              {showMedicosList && medicosFiltrados.length > 0 && (
+                <ul className="medicos-suggestions">
+                  {medicosFiltrados.map(medico => (
+                    <li 
+                      key={medico.id} 
+                      onClick={() => selecionarMedico(medico)}
+                    >
+                      {medico.funcionario?.nome} - {medico.especialidade?.nome}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
 
 
             <label>Data</label>

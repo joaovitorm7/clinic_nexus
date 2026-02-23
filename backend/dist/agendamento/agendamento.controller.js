@@ -63,6 +63,7 @@ __decorate([
 ], AgendamentoController.prototype, "findMinhasConsultas", null);
 __decorate([
     (0, common_1.Post)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_agendamento_dto_1.CreateAgendamentoDto]),
@@ -70,12 +71,14 @@ __decorate([
 ], AgendamentoController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)('all'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], AgendamentoController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)('data/:data'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)('data')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -83,12 +86,14 @@ __decorate([
 ], AgendamentoController.prototype, "findByDate", null);
 __decorate([
     (0, common_1.Get)(':id'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
 ], AgendamentoController.prototype, "findOne", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Patch)(':id'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, common_1.UsePipes)(new common_1.ValidationPipe({
@@ -103,6 +108,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AgendamentoController.prototype, "patch", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
@@ -110,6 +116,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], AgendamentoController.prototype, "remove", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Patch)(':id/cancelar'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),

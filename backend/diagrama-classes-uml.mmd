@@ -1,0 +1,104 @@
+
+classDiagram
+    class Funcionario {
+        +number id
+        +string cpf
+        +string nome
+        +string telefone
+        +string cargo
+        +Date data_desativacao
+        +Medico medico
+        +Usuario[] usuarios
+    }
+
+    class Usuario {
+        +number id
+        +string email
+        +string senha
+        +Funcionario funcionario
+    }
+
+    class Medico {
+        +number id
+        +string crm
+        +Funcionario funcionario
+        +Especialidade especialidade
+        +Agenda[] agendas
+    }
+
+    class Especialidade {
+        +number id
+        +string nome
+    }
+
+    class Paciente {
+        +number id
+        +string nome
+        +string cpf
+        +Date data_nascimento
+        +string contato
+        +string endereco
+        +Agendamento[] agendamentos
+    }
+
+    class Agenda {
+        +number id
+        +string data
+        +string hora_inicio
+        +string hora_fim
+        +StatusAgenda status
+        +Medico medico
+        +Agendamento consulta
+    }
+
+    class Agendamento {
+        +number id
+        +Paciente paciente
+        +Medico medico
+        +Agenda agenda
+        +Date data
+        +string hora
+        +string status
+        +string motivo_consulta
+        +Prontuario prontuario
+    }
+
+    class Prontuario {
+        +number id
+        +Agendamento agendamento
+        +Date data_atendimento
+        +string queixa_principal
+        +string anamnese
+        +string exames_vitais
+        +string diagnostico
+        +string evolucao_clinica
+        +string conduta
+        +string encaminhamento
+        +string medicacoes_prescritas
+        +string observacoes
+    }
+
+    class StatusAgenda {
+        <<enumeration>>
+        DISPONIVEL
+        AGENDADA
+        CANCELADA
+        CONCLUIDA
+    }
+
+    Funcionario "1" --> "0..1" Medico : has
+    Funcionario "1" --> "0..*" Usuario : has
+    Medico "0..1" --> "1" Funcionario : belongs to
+    Medico "0..*" --> "0..1" Especialidade : has
+    Especialidade "1" --> "0..*" Medico : specializes
+    Medico "1" --> "0..*" Agenda : schedules
+    Agenda "0..*" --> "1" Medico : belongs to
+    Agenda "0..1" --> "0..1" Agendamento : books
+    Agendamento "1" --> "0..1" Agenda : occupies
+    Paciente "1" --> "0..*" Agendamento : books
+    Agendamento "0..*" --> "1" Paciente : belongs to
+    Medico "1" --> "0..*" Agendamento : attends
+    Agendamento "0..*" --> "1" Medico : belongs to
+    Agendamento "1" --> "0..1" Prontuario : has
+    Prontuario "0..1" --> "1" Agendamento : documents
+

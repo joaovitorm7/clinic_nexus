@@ -41,6 +41,11 @@ export const deleteAgendamento = async (id) => {
   return true;
 };
 
+export const updateAgendamento = async (id, data) => {
+  const response = await api.patch(`/agendamentos/${id}`, data, { headers: getAuthHeader() });
+  return response.data;
+};
+
 export const cancelarAgendamento = async (id) => {
   const response = await api.patch(`/agendamentos/${id}/cancelar`, {}, { headers: getAuthHeader() });
   return response.data;
@@ -56,6 +61,7 @@ export default {
   getAgendamentos,
   getAgendamentoById,
   deleteAgendamento,
+  updateAgendamento,
   cancelarAgendamento,
   getEspecialidades,
   getMinhasConsultas,

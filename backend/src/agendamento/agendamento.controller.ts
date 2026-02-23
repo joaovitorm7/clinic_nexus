@@ -40,27 +40,32 @@ export class AgendamentoController {
 
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   create(@Body() dto: CreateAgendamentoDto) {
     return this.agendamentoService.create(dto);
 
   }
 
   @Get('all')
+  @UseGuards(JwtAuthGuard)
   findAll() {
     return this.agendamentoService.findAll();
   }
 
   @Get('data/:data')
+  @UseGuards(JwtAuthGuard)
   findByDate(@Param('data') data: string) {
     const date = new Date(data);
     return this.agendamentoService.findByDate(date);
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.agendamentoService.findById(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
   @UsePipes(
@@ -79,11 +84,13 @@ export class AgendamentoController {
 
 
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.agendamentoService.remove(id);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Patch(':id/cancelar')
   @HttpCode(HttpStatus.OK)
   async cancelar(@Param('id', ParseIntPipe) id: number): Promise<Agendamento> {

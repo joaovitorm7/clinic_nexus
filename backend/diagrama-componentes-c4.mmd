@@ -1,0 +1,63 @@
+%%{init: {"theme": "base", "graph":{"rankdir":"LR", "ranksep":"1.8", "nodesep":"1.0"}, "themeVariables": {"containersBackgroundColor": "#e3f2fd", "containersBorder": "#1565c0", "componentBorder": "#64b5f6", "componentBackgroundColor": "#f5f5f5"}}}%%
+C4Component
+    title Component Diagram - Clinic Nexus Backend (NestJS)
+
+    Container_Boundary(auth, "Auth Module") {
+        Component(auth_controller, "AuthController", "Controller", "POST /auth/login")
+        Component(auth_service, "AuthService", "Service", "JWT validate")
+    }
+
+    Container_Boundary(funcionarios, "Funcionarios Module") {
+        Component(funcionarios_controller, "FuncionariosController", "Controller", "CRUD")
+        Component(funcionarios_service, "FuncionariosService", "Service", "Business Logic")
+    }
+
+    Container_Boundary(medico, "Medico Module") {
+        Component(medico_controller, "MedicoController", "Controller", "CRUD Medico")
+        Component(especialidade_controller, "EspecialidadeController", "Controller", "CRUD Especialidade")
+        Component(medico_service, "MedicoService", "Service", "Business Logic")
+    }
+
+    Container_Boundary(paciente, "Paciente Module") {
+        Component(paciente_controller, "PacienteController", "Controller", "CRUD Paciente")
+        Component(paciente_service, "PacienteService", "Service", "Business Logic")
+    }
+
+    Container_Boundary(agenda, "Agenda Module") {
+        Component(agenda_controller, "AgendaController", "Controller", "CRUD Agenda")
+        Component(agenda_service, "AgendaService", "Service", "Business Logic")
+    }
+
+    Container_Boundary(agendamento, "Agendamento Module") {
+        Component(agendamento_controller, "AgendamentoController", "Controller", "CRUD Agendamento")
+        Component(prontuario_controller, "ProntuarioController", "Controller", "CRUD Prontuario")
+        Component(agendamento_service, "AgendamentoService", "Service", "Business Logic")
+        Component(prontuario_service, "ProntuarioService", "Service", "Business Logic")
+    }
+
+    ContainerDb(db, "MySQL Database", "MySQL", "Persistence")
+
+    Rel(auth_controller, auth_service, "uses")
+    Rel(auth_service, db, "SQL")
+
+    Rel(funcionarios_controller, funcionarios_service, "uses")
+    Rel(funcionarios_service, db, "SQL")
+
+    Rel(medico_controller, medico_service, "uses")
+    Rel(especialidade_controller, medico_service, "uses")
+    Rel(medico_service, db, "SQL")
+
+    Rel(paciente_controller, paciente_service, "uses")
+    Rel(paciente_service, db, "SQL")
+
+    Rel(agenda_controller, agenda_service, "uses")
+    Rel(agenda_service, db, "SQL")
+
+    Rel(agendamento_controller, agendamento_service, "uses")
+    Rel(prontuario_controller, prontuario_service, "uses")
+    Rel(agendamento_service, db, "SQL")
+    Rel(prontuario_service, db, "SQL")
+
+    Rel(agendamento_service, agenda_service, "checks")
+    Rel(agendamento_service, medico_service, "validates")
+    Rel(agendamento_service, paciente_service, "validates")

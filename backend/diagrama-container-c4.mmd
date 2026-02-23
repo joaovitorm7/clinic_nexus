@@ -1,0 +1,48 @@
+C4Container
+    title Container Diagram - Clinic Nexus System
+
+    Person(paciente, "Paciente", "Usuario que agenda consultas")
+    Person(administrador, "Administrador", "Gerencia sistema e usuarios")
+    Person(recepcionista, "Recepcionista", "Atende e gerencia agendamentos")
+    Person(medico, "Medico", "Medico atende pacientes")
+
+    System_Boundary(clinic_nexus, "Clinic Nexus System") {
+        Container(web_app, "Web Application", "React", "Interface web")
+        
+        Container(api_gateway, "API Gateway", "NestJS", "Entrada da aplicacao")
+        
+        ContainerDb(db, "MySQL Database", "MySQL", "Base de dados")
+
+        Container(agenda_service, "Agenda Service", "NestJS", "Gerencia disponibilidade")
+        Container(agendamento_service, "Agendamento Service", "NestJS", "Gerencia agendamentos")
+        Container(paciente_service, "Paciente Service", "NestJS", "Gerencia pacientes")
+        Container(medico_service, "Medico Service", "NestJS", "Gerencia medicos")
+        Container(funcionario_service, "Funcionario Service", "NestJS", "Gerencia funcionarios")
+        Container(auth_service, "Auth Service", "NestJS", "Autenticacao JWT")
+    }
+
+    Rel(paciente, web_app, "Usa")
+    Rel(administrador, web_app, "Usa")
+    Rel(recepcionista, web_app, "Usa")
+    Rel(medico, web_app, "Usa")
+
+    Rel(web_app, api_gateway, "Requisições")
+
+    Rel(api_gateway, auth_service, "Valida")
+    Rel(api_gateway, agenda_service, "Roteia")
+    Rel(api_gateway, agendamento_service, "Roteia")
+    Rel(api_gateway, paciente_service, "Roteia")
+    Rel(api_gateway, medico_service, "Roteia")
+    Rel(api_gateway, funcionario_service, "Roteia")
+
+    Rel(agenda_service, db, "Lê/Escreve")
+    Rel(agendamento_service, db, "Lê/Escreve")
+    Rel(paciente_service, db, "Lê/Escreve")
+    Rel(medico_service, db, "Lê/Escreve")
+    Rel(funcionario_service, db, "Lê/Escreve")
+    Rel(auth_service, db, "Lê/Escreve")
+
+    Rel(agendamento_service, agenda_service, "Consulta")
+    Rel(agendamento_service, paciente_service, "Valida")
+    Rel(agendamento_service, medico_service, "Valida")
+

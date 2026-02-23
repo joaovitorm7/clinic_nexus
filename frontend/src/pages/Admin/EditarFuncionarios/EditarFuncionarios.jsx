@@ -30,18 +30,22 @@ export default function EditarFuncionarios() {
     let mounted = true;
     (async () => {
       try {
+        setLoading(true);
         const emp = await employeeService.getEmployeeById(id);
         if (!mounted) return;
+        setFuncionario(emp);
         setForm({
           nome: emp.nome || '',
           cpf: emp.cpf || '',
-          cargo: '',
-          email: '',
-          telefone: '',
-          endereco: '',
+          cargo: emp.cargo || '',
+          email: emp.usuarios?.[0]?.email || '',
+          telefone: emp.telefone || '',
+          endereco: emp.endereco || '',
         });
       } catch (err) {
         console.error(err);
+      } finally {
+        if (mounted) setLoading(false);
       }
     })();
     return () => { mounted = false; };
@@ -117,6 +121,7 @@ const handleSalvar = async (e) => {
 
       <h1>Editar Funcionário</h1>
 
+      {!id && (
       <div className="search-section">
         <div className="search-type">
           <label>
@@ -164,6 +169,7 @@ const handleSalvar = async (e) => {
           </button>
         </div>
       </div>
+      )}
 
       {funcionario && (
         <form className="edit-form" onSubmit={handleSalvar}>

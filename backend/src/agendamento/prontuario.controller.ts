@@ -12,15 +12,29 @@ import {
   UsePipes,
   ValidationPipe,
   HttpStatus,
+  UseGuards,
+  Req,
+  BadRequestException,
 } from '@nestjs/common';
 import { ProntuarioService } from './prontuario.service';
 import { CreateProntuarioDto } from './dto/create-prontuario.dto';
 import { UpdateProntuarioDto } from './dto/update-prontuario.dto';
 import { Prontuario } from './entities/prontuario.entity';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('prontuario')
+@UseGuards(JwtAuthGuard)
 export class ProntuarioController {
   constructor(private readonly prontuarioService: ProntuarioService) {}
+
+  @Get('minhas-consultas')
+  async findMinhasConsultas(@Req() req) {
+    const funcionarioId = Number(req.user.funcionarioId);
+    if (isNaN(funcionarioId)) {
+      throw new BadRequestException('funcionarioId inválido no token');
+    }
+    return this.prontuarioService.findByMedicoId(funcionarioId);
+  }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
