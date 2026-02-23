@@ -1,6 +1,5 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '../../../components/Navbar/Navbar';
 import Card from '../../../components/EmployeeCard/EmployeeCard';
 import './DashboardAlaMedica.css';
 import { FaCalendarAlt, FaUserInjured, FaNotesMedical, FaPrescriptionBottleAlt } from 'react-icons/fa';
@@ -17,29 +16,26 @@ export default function DashboardAlaMedica() {
   ];
 
   return (
-    <>
-      <Navbar />
-      <main className="med-dashboard">
-        <section className="hero">
-          <div className="hero-left">
-            <h1>Área do Médico</h1>
-            <p>Seu painel rápido para acessar agenda, pacientes e prontuários.</p>
+    <main className="med-dashboard">
+      <section className="hero">
+        <div className="hero-left">
+          <h1>Área do Médico</h1>
+          <p>Seu painel rápido para acessar agenda, pacientes e prontuários.</p>
+        </div>
+        <div className="hero-image" aria-hidden />
+      </section>
+
+      <section className="cards-grid">
+        {cards.map(c => (
+          <div key={c.id} className="card" onClick={() => navigate(c.path)} role="button" tabIndex={0} onKeyDown={() => navigate(c.path)}>
+            <div className="card-icon" aria-hidden="true">{c.icon}</div>
+            <h3>{c.title}</h3>
+            <p>{c.subtitle}</p>
+            <button className="card-btn card-link" onClick={(e) => { e.stopPropagation(); navigate(c.path); }}>Abrir</button>
           </div>
-          <div className="hero-image" aria-hidden />
-        </section>
+        ))}
+      </section>
 
-        <section className="cards-grid">
-          {cards.map(c => (
-            <div key={c.id} className="card" onClick={() => navigate(c.path)} role="button" tabIndex={0} onKeyDown={() => navigate(c.path)}>
-              <div className="card-icon" aria-hidden="true">{c.icon}</div>
-              <h3>{c.title}</h3>
-              <p>{c.subtitle}</p>
-              <button className="card-btn card-link" onClick={(e) => { e.stopPropagation(); navigate(c.path); }}>Abrir</button>
-            </div>
-          ))}
-        </section>
-
-      </main>
-    </>
+    </main>
   );
 }

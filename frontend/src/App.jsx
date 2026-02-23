@@ -1,7 +1,17 @@
-import { Navigate, Routes, Route } from "react-router-dom";
+import { Navigate, Routes, Route, Outlet } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 
 import VisualizarAgenda from "./pages/recepcao/VisualizarAgenda/VisualizarAgenda";
+import Navbar from "./components/Navbar/Navbar";
+
+function Layout() {
+  return (
+    <>
+      <Navbar />
+      <Outlet />
+    </>
+  );
+}
 
 // Admin
 import Dashboard from "./pages/Admin/Dashboard/DashboardAdmin";
@@ -42,35 +52,34 @@ function App() {
       <Route path="/" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-      {/* Administração */}
-      <Route path="/administracao" element={<Dashboard />} />
-      <Route path="/funcionarios" element={<DashboardFunc />} />
-      <Route path="/admin/funcionarios/addFunc" element={<AddFunc />} />
-      <Route path="/admin/medicos" element={<DashboardMed />} />
-      <Route path="/admin/editar-funcionarios" element={<EditarFuncionarios />} />
+      <Route element={<Layout />}>
+        {/* Administração */}
+        <Route path="/administracao" element={<Dashboard />} />
+        <Route path="/funcionarios" element={<DashboardFunc />} />
+        <Route path="/admin/funcionarios/addFunc" element={<AddFunc />} />
+        <Route path="/admin/medicos" element={<DashboardMed />} />
+        <Route path="/admin/editar-funcionarios" element={<EditarFuncionarios />} />
 
-      {/* Ala Médica */}
-      <Route path="/alamedica" element={<DashboardAlaMedica />} />
-      <Route path="/alamedica/prontuario" element={<Prontuario />} />
-      <Route path="/medico/consultas" element={<ListarConsultas />} />
-      <Route path="/medico/consulta/:id" element={<DetalhesConsulta />} />
+        {/* Ala Médica */}
+        <Route path="/alamedica" element={<DashboardAlaMedica />} />
+        <Route path="/medico/agenda" element={<CalendarPage />} />
+        <Route path="/alamedica/prontuario" element={<Prontuario />} />
+        <Route path="/medico/consultas" element={<ListarConsultas />} />
+        <Route path="/medico/consulta/:id" element={<DetalhesConsulta />} />
 
-      {/* Recepção */}
-      <Route path="/recepcao" element={<Recepcao />} />
-      <Route path="/recepcao/agendar" element={<AgendarConsulta />} />
-      <Route path="/recepcao/editaragenda" element={<EditarAgenda />} />
-      <Route path="/consultas" element={<Consultas />} />
-      <Route path="/recepcao/cadastrar-paciente" element={<CadastrarPaciente />} />
-      <Route path="/recepcao/pacientes" element={<VisualizarPacientes />} />
-      <Route path="/recepcao/editar-paciente" element={<EditarPaciente />} />
+        {/* Recepção */}
+        <Route path="/recepcao" element={<Recepcao />} />
+        <Route path="/recepcao/agendar" element={<AgendarConsulta />} />
+        <Route path="/recepcao/editaragenda" element={<EditarAgenda />} />
+        <Route path="/consultas" element={<Consultas />} />
+        <Route path="/recepcao/cadastrar-paciente" element={<CadastrarPaciente />} />
+        <Route path="/recepcao/pacientes" element={<VisualizarPacientes />} />
+        <Route path="/recepcao/editar-paciente" element={<EditarPaciente />} />
+        <Route path="/recepcao/VisualizarAgenda" element={<VisualizarAgenda />} />
 
-      {/* Teste */}
-      <Route path="/test" element={<EmployeePage />} />
-
-<Route
-  path="/recepcao/VisualizarAgenda"
-  element={<VisualizarAgenda />}
-/>
+        {/* Teste */}
+        <Route path="/test" element={<EmployeePage />} />
+      </Route>
     </Routes>
   );
 }

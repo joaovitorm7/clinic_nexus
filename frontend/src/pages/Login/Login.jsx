@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 import "./Login.css";
 
 function Login() {
@@ -12,6 +13,8 @@ function Login() {
   const [mensagem, setMensagem] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [lembrar, setLembrar] = useState(false);
+  const [mostrarSenha, setMostrarSenha] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,9 +51,12 @@ function Login() {
           navigate("/", { replace: true });
       }
     } catch (error) {
-      setMensagem(
-        error.message || "Erro ao realizar login. Verifique suas credenciais."
-      );
+      const errorMsg = error.message || "Erro ao realizar login. Verifique suas credenciais.";
+      if (errorMsg.includes("Desativado")) {
+        setShowModal(true);
+      } else {
+        setMensagem(errorMsg);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -89,13 +95,23 @@ function Login() {
               onChange={(e) => setEmail(e.target.value)}
             />
 
-            <input
-              type="password"
-              placeholder="Senha"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-            />
+            <div className="input-senha">
+              <input
+                type={mostrarSenha ? "text" : "password"}
+                placeholder="Senha"
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+              />
 
+              <button
+                type="button"
+                className="toggle-senha"
+                onClick={() => setMostrarSenha(!mostrarSenha)}
+                aria-label={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}
+              >
+                {mostrarSenha ? <FiEyeOff /> : <FiEye />}
+              </button>
+            </div>
             <div className="remember-me">
               <input
                 type="checkbox"
@@ -114,6 +130,17 @@ function Login() {
           {mensagem && <p className="mensagem">{mensagem}</p>}
         </div>
       </div>
+
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Erro</h3>
+            <p>Usuário Desativado</p>
+            <p className="modal-subtext">Entre em contato com o administrador para reativar seu acesso.</p>
+            <button onClick={() => setShowModal(false)} className="modal-btn">Fechar</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

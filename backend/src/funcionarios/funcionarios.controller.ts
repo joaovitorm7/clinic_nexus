@@ -57,4 +57,14 @@ export class FuncionariosController {
   async findByName(@Param('name') name:string){
     return this.funcionarioService.FindFuncionarioByName(name);
   }
+
+  @Patch(':id/desativar')
+  async desativar(@Param('id', ParseIntPipe) id: number) {
+    return this.funcionarioService.desativar(id);
+  }
+
+  @Patch(':id/ativar')
+  async ativar(@Param('id', ParseIntPipe) id: number) {
+    return this.funcionarioService.ativar(id);
+  }
 }

@@ -4,7 +4,7 @@ import styles from './DashboardFunc.module.css';
 import EmployeeCard from '../../../components/EmployeeCard/EmployeeCard';
 import EmployeeModal from '../../../components/EmployeeModal/EmployeeModal';
 import { employeeService } from '../../../services/employees.services';
-import { FaPlus, FaEdit, FaTimesCircle, FaArrowLeft  } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTimesCircle, FaArrowLeft, FaCheckCircle } from 'react-icons/fa';
 
 export default function DashboardFunc() {
   const navigate = useNavigate();
@@ -21,6 +21,7 @@ export default function DashboardFunc() {
   const [roleFilter, setRoleFilter] = useState('');
   const [search, setSearch] = useState('');
   const [selectMode, setSelectMode] = useState(false);
+  const [reactivateMode, setReactivateMode] = useState(false);
   const [selectedEmployees, setSelectedEmployees] = useState([]);
   const [confirmOpen, setConfirmOpen] = useState(false);
 
@@ -43,8 +44,36 @@ export default function DashboardFunc() {
     setLoading(true);
     setError(null);
     try {
-      const data = await employeeService.getEmployees();
-      setEmployees(Array.isArray(data) ? data : []);
+      const data = await employeeService.getEmployees(); // array original
+      // Filtrar por pesquisa (nome ou cpf)
+      const q = (search || '').toLowerCase().trim();
+      let filtered = Array.isArray(data) ? data.slice() : [];
+
+      if (q) {
+        filtered = filtered.filter(e =>
+          (e.nome && e.nome.toLowerCase().includes(q)) ||
+          (e.cpf && String(e.cpf).includes(q))
+        );
+      }
+
+      // Filtrar por cargo/role (se roleFilter for id ou nome)
+      if (roleFilter) {
+        filtered = filtered.filter(e =>
+          e.tipo === roleFilter || e.cargo === roleFilter || String(e.roleId) === String(roleFilter)
+        );
+      }
+
+      // Ordenar
+      filtered.sort((a, b) => {
+        const dir = order === 'asc' ? 1 : -1;
+        if (sortBy === 'created_at') {
+          return (new Date(a.created_at) - new Date(b.created_at)) * dir;
+        }
+        // default: nome
+        return a.nome?.localeCompare(b.nome || '') * dir;
+      });
+
+      setEmployees(filtered);
     } catch (err) {
       console.error('Erro ao carregar funcionários:', err);
       setError('Erro ao carregar funcionários.');
@@ -53,7 +82,6 @@ export default function DashboardFunc() {
       setLoading(false);
     }
   }
-
   useEffect(() => {
     loadRoles();
   }, []);
@@ -94,9 +122,40 @@ export default function DashboardFunc() {
     }
   }
 
-  function confirmDeactivation() {
-    console.log('Funcionários desativados:', selectedEmployees);
-    setConfirmOpen(false);
+  async function confirmDeactivation() {
+    try {
+      for (const id of selectedEmployees) {
+        await employeeService.desativarFuncionario(id);
+      }
+      setConfirmOpen(false);
+      setSelectMode(false);
+      setReactivateMode(false);
+      setSelectedEmployees([]);
+      loadEmployees();
+    } catch (err) {
+      console.error('Erro ao desativar funcionários:', err);
+      alert('Erro ao desativar funcionários.');
+    }
+  }
+
+  async function confirmReactivation() {
+    try {
+      for (const id of selectedEmployees) {
+        await employeeService.ativarFuncionario(id);
+      }
+      setConfirmOpen(false);
+      setSelectMode(false);
+      setReactivateMode(false);
+      setSelectedEmployees([]);
+      loadEmployees();
+    } catch (err) {
+      console.error('Erro ao reativar funcionários:', err);
+      alert('Erro ao reativar funcionários.');
+    }
+  }
+
+  function toggleReactivateMode() {
+    setReactivateMode(!reactivateMode);
     setSelectMode(false);
     setSelectedEmployees([]);
   }
@@ -150,7 +209,7 @@ export default function DashboardFunc() {
             employee={emp}
             onView={() => handleView(emp)}
             onEdit={() => handleEdit(emp)}
-            selectMode={selectMode}
+            selectMode={selectMode || reactivateMode}
             selected={selectedEmployees.includes(emp.id)}
             onSelect={() => handleSelectEmployee(emp.id)}
           />
@@ -166,17 +225,25 @@ export default function DashboardFunc() {
       </button>
 
       <div className={styles.bottomActions}>
-        {!selectMode ? (
-          <button
-            className={styles.deactivateButton}
-            onClick={toggleSelectMode}
-            disabled={employees.length === 0}
-          >
-            <FaTimesCircle style={{ marginRight: 8 }} /> Desativar Funcionários
-          </button>
-        ) : (
+        {!selectMode && !reactivateMode ? (
           <>
-            <button className={styles.cancelButton} onClick={toggleSelectMode}>
+            <button
+              className={styles.deactivateButton}
+              onClick={toggleSelectMode}
+              disabled={employees.length === 0}
+            >
+              <FaTimesCircle style={{ marginRight: 8 }} /> Desativar Funcionários
+            </button>
+            <button
+              className={styles.reactivateButton}
+              onClick={toggleReactivateMode}
+            >
+              <FaCheckCircle style={{ marginRight: 8 }} /> Reativar Funcionários
+            </button>
+          </>
+        ) : selectMode ? (
+          <>
+            <button className={styles.cancelButton} onClick={() => { setSelectMode(false); setSelectedEmployees([]); }}>
               Cancelar
             </button>
             <button
@@ -187,15 +254,38 @@ export default function DashboardFunc() {
               <FaTimesCircle style={{ marginRight: 8 }} /> Confirmar Seleção ({selectedEmployees.length})
             </button>
           </>
+        ) : (
+          <>
+            <button className={styles.cancelButton} onClick={toggleReactivateMode}>
+              Cancelar
+            </button>
+            <button
+              className={styles.confirmReactivateButton}
+              onClick={() => setConfirmOpen(true)}
+              disabled={selectedEmployees.length === 0}
+            >
+              <FaCheckCircle style={{ marginRight: 8 }} /> Confirmar Seleção ({selectedEmployees.length})
+            </button>
+          </>
         )}
       </div>
 
       {confirmOpen && (
         <div className={styles.confirmOverlay}>
           <div className={styles.confirmBox}>
-            <p>Tem certeza que deseja desativar {selectedEmployees.length} funcionário(s)?</p>
+            <p>
+              {reactivateMode 
+                ? `Tem certeza que deseja reativar ${selectedEmployees.length} funcionário(s)?`
+                : `Tem certeza que deseja desativar ${selectedEmployees.length} funcionário(s)?`
+              }
+            </p>
             <div className={styles.confirmButtons}>
-              <button onClick={confirmDeactivation} className={styles.confirmYes}>Sim</button>
+              <button 
+                onClick={reactivateMode ? confirmReactivation : confirmDeactivation} 
+                className={reactivateMode ? styles.confirmYesReactivate : styles.confirmYes}
+              >
+                Sim
+              </button>
               <button onClick={() => setConfirmOpen(false)} className={styles.confirmNo}>Não</button>
             </div>
           </div>

@@ -45,6 +45,7 @@
     "@fullcalendar/timegrid": "^6.1.19",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-icons": "^5.5.0",
     "typeorm-extension": "^3.7.2"
   }
 }

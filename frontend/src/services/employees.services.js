@@ -10,8 +10,20 @@ export const employeeService = {
   updateEmployee,
   getRoles,
   FindByName,
-  FindByCpf
+  FindByCpf,
+  desativarFuncionario,
+  ativarFuncionario
 };
+
+async function desativarFuncionario(id) {
+  const response = await api.patch(`${ENDPOINT}/${id}/desativar`);
+  return response.data;
+}
+
+async function ativarFuncionario(id) {
+  const response = await api.patch(`${ENDPOINT}/${id}/ativar`);
+  return response.data;
+}
 async function FindByName(name){
   const response = await api.get(`${ENDPOINT}/nome/${encodeURIComponent(name)}`);
   return response.data;
