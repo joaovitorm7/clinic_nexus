@@ -18,6 +18,7 @@ import { Funcionario } from 'src/funcionarios/entities/funcionario.entity';
 import { AgendaService } from 'src/agenda/services/agenda.service';
 import { StatusAgenda } from 'src/agenda/enums/status-agenda.enum';
 import { Agenda } from 'src/agenda/entities/agenda.entity';
+import ExcelJS from 'exceljs';
 import PDFDocument from 'pdfkit';
 
 @Injectable()
@@ -294,6 +295,35 @@ export class AgendamentoService {
     }
 
     return consultas;
+  }
+
+  async exportarExcel(dataInicial: Date, dataFinal: Date): Promise<Buffer> {
+    const consultas = await this.findByPeriodo(dataInicial, dataFinal);
+
+    const workbook: ExcelJS.Workbook = new ExcelJS.Workbook();
+    const worksheet: ExcelJS.Worksheet = workbook.addWorksheet('Consultas');
+
+    worksheet.columns = [
+      { header: 'Paciente', key: 'paciente', width: 30 },
+      { header: 'Médico', key: 'medico', width: 30 },
+      { header: 'Especialidade', key: 'especialidade', width: 25 },
+      { header: 'Data', key: 'data', width: 15 },
+      { header: 'Status', key: 'status', width: 15 },
+    ];
+
+    consultas.forEach((c) => {
+      worksheet.addRow({
+        paciente: c.paciente?.nome ?? '',
+        medico: c.medico?.funcionario?.nome ?? '',
+        especialidade: c.medico?.especialidade?.nome ?? '',
+        data: c.data?.toISOString().split('T')[0] ?? '',
+        status: c.status ?? '',
+      });
+    });
+
+    const buffer = await workbook.xlsx.writeBuffer();
+
+    return Buffer.from(buffer as ArrayBuffer);
   }
   async exportarPDF(dataInicial: Date, dataFinal: Date): Promise<Buffer> {
     const consultas = await this.findByPeriodo(dataInicial, dataFinal);

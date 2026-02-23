@@ -27,5 +27,6 @@ export declare class AgendamentoService {
     findByDate(date: Date): Promise<Agendamento[]>;
     remove(id: number): Promise<void>;
     findByPeriodo(dataInicial: Date, dataFinal: Date): Promise<Agendamento[]>;
+    exportarExcel(dataInicial: Date, dataFinal: Date): Promise<Buffer>;
     exportarPDF(dataInicial: Date, dataFinal: Date): Promise<Buffer>;
 }

@@ -26,6 +26,7 @@ const funcionario_entity_1 = require("../funcionarios/entities/funcionario.entit
 const agenda_service_1 = require("../agenda/services/agenda.service");
 const status_agenda_enum_1 = require("../agenda/enums/status-agenda.enum");
 const agenda_entity_1 = require("../agenda/entities/agenda.entity");
+const exceljs_1 = __importDefault(require("exceljs"));
 const pdfkit_1 = __importDefault(require("pdfkit"));
 let AgendamentoService = class AgendamentoService {
     constructor(agendaRepository, agendamentoRepository, pacienteRepository, medicoRepository, funcionarioRepository, agendaService) {
@@ -237,6 +238,29 @@ let AgendamentoService = class AgendamentoService {
             throw new common_1.NotFoundException('Não existem consultas no período informado');
         }
         return consultas;
+    }
+    async exportarExcel(dataInicial, dataFinal) {
+        const consultas = await this.findByPeriodo(dataInicial, dataFinal);
+        const workbook = new exceljs_1.default.Workbook();
+        const worksheet = workbook.addWorksheet('Consultas');
+        worksheet.columns = [
+            { header: 'Paciente', key: 'paciente', width: 30 },
+            { header: 'Médico', key: 'medico', width: 30 },
+            { header: 'Especialidade', key: 'especialidade', width: 25 },
+            { header: 'Data', key: 'data', width: 15 },
+            { header: 'Status', key: 'status', width: 15 },
+        ];
+        consultas.forEach((c) => {
+            worksheet.addRow({
+                paciente: c.paciente?.nome ?? '',
+                medico: c.medico?.funcionario?.nome ?? '',
+                especialidade: c.medico?.especialidade?.nome ?? '',
+                data: c.data?.toISOString().split('T')[0] ?? '',
+                status: c.status ?? '',
+            });
+        });
+        const buffer = await workbook.xlsx.writeBuffer();
+        return Buffer.from(buffer);
     }
     async exportarPDF(dataInicial, dataFinal) {
         const consultas = await this.findByPeriodo(dataInicial, dataFinal);
