@@ -9,8 +9,17 @@ import { Funcionario } from 'src/funcionarios/entities/funcionario.entity';
 import { AgendaModule } from 'src/agenda/agenda.module';
 import { Agenda } from 'src/agenda/entities/agenda.entity';
 @Module({
-    imports: [TypeOrmModule.forFeature([Agendamento,Paciente,Medico,Funcionario,Agenda]), AgendaModule],
-    controllers: [AgendamentoController],
-    providers: [AgendamentoService],
+  imports: [
+    TypeOrmModule.forFeature([
+      Agendamento,
+      Paciente,
+      Medico,
+      Funcionario,
+      Agenda,
+    ]),
+    AgendaModule,
+  ],
+  controllers: [AgendamentoController],
+  providers: [AgendamentoService],
 })
-export class AgendamentoModule { }
+export class AgendamentoModule {}

@@ -22,7 +22,16 @@ let AgendamentoModule = class AgendamentoModule {
 exports.AgendamentoModule = AgendamentoModule;
 exports.AgendamentoModule = AgendamentoModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([agendamento_entity_1.Agendamento, paciente_entity_1.Paciente, medico_entity_1.Medico, funcionario_entity_1.Funcionario, agenda_entity_1.Agenda]), agenda_module_1.AgendaModule],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([
+                agendamento_entity_1.Agendamento,
+                paciente_entity_1.Paciente,
+                medico_entity_1.Medico,
+                funcionario_entity_1.Funcionario,
+                agenda_entity_1.Agenda,
+            ]),
+            agenda_module_1.AgendaModule,
+        ],
         controllers: [agendamento_controller_1.AgendamentoController],
         providers: [agendamento_service_1.AgendamentoService],
     })

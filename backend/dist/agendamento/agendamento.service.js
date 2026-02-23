@@ -86,37 +86,52 @@ let AgendamentoService = class AgendamentoService {
     async update(id, dto) {
         const agendamento = await this.agendamentoRepository.findOne({
             where: { id },
-            relations: ['paciente', 'medico', 'medico.especialidade'],
+            relations: ['paciente', 'medico', 'agenda'],
         });
         if (!agendamento) {
             throw new common_1.NotFoundException('Agendamento não encontrado');
         }
-        const { id_paciente, id_medico, ...rest } = dto;
-        if (dto.hasOwnProperty('id_paciente')) {
-            if (id_paciente === null) {
-                agendamento.paciente = null;
-            }
-            else {
-                const paciente = await this.pacienteRepository.findOne({
-                    where: { id: id_paciente },
-                });
-                if (!paciente)
-                    throw new common_1.NotFoundException('Paciente não encontrado');
-                agendamento.paciente = paciente;
-            }
+        if (agendamento.status === 'realizada') {
+            throw new common_1.BadRequestException('Não é possível alterar uma consulta já realizada');
         }
-        if (dto.hasOwnProperty('id_medico')) {
-            if (id_medico === null) {
-                agendamento.medico = null;
+        const { id_paciente, id_medico, id_agenda, ...rest } = dto;
+        if (Object.prototype.hasOwnProperty.call(dto, 'id_paciente')) {
+            const paciente = await this.pacienteRepository.findOne({
+                where: { id: id_paciente },
+            });
+            if (!paciente)
+                throw new common_1.NotFoundException('Paciente não encontrado');
+            agendamento.paciente = paciente;
+        }
+        if (Object.prototype.hasOwnProperty.call(dto, 'id_medico')) {
+            const medico = await this.medicoRepository.findOne({
+                where: { id: id_medico },
+            });
+            if (!medico)
+                throw new common_1.NotFoundException('Médico não encontrado');
+            agendamento.medico = medico;
+        }
+        if (Object.prototype.hasOwnProperty.call(dto, 'id_agenda')) {
+            const novaAgenda = await this.agendaRepository.findOne({
+                where: { id: id_agenda },
+                relations: ['medico'],
+            });
+            if (!novaAgenda) {
+                throw new common_1.NotFoundException('Agenda não encontrada');
             }
-            else {
-                const medico = await this.medicoRepository.findOne({
-                    where: { id: id_medico },
-                });
-                if (!medico)
-                    throw new common_1.NotFoundException('Médico não encontrado');
-                agendamento.medico = medico;
+            if (novaAgenda.status === status_agenda_enum_1.StatusAgenda.OCUPADO) {
+                throw new common_1.BadRequestException('Este horário já está ocupado');
             }
+            if (agendamento.agenda) {
+                agendamento.agenda.status = status_agenda_enum_1.StatusAgenda.DISPONIVEL;
+                agendamento.agenda.consulta = null;
+                await this.agendaRepository.save(agendamento.agenda);
+            }
+            novaAgenda.status = status_agenda_enum_1.StatusAgenda.OCUPADO;
+            await this.agendaRepository.save(novaAgenda);
+            agendamento.agenda = novaAgenda;
+            agendamento.data = new Date(novaAgenda.data);
+            agendamento.hora = novaAgenda.hora_inicio;
         }
         Object.assign(agendamento, rest);
         return await this.agendamentoRepository.save(agendamento);
@@ -194,7 +209,9 @@ let AgendamentoService = class AgendamentoService {
         });
     }
     async remove(id) {
-        const agendamento = await this.agendamentoRepository.findOne({ where: { id } });
+        const agendamento = await this.agendamentoRepository.findOne({
+            where: { id },
+        });
         if (agendamento.agenda) {
             agendamento.agenda.status = status_agenda_enum_1.StatusAgenda.DISPONIVEL;
         }

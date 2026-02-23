@@ -19,6 +19,8 @@ describe('AgendamentoService - Cancelar Consulta', () => {
     motivo_consulta: 'Consulta de rotina',
     paciente: { id: 1 } as Paciente,
     medico: { id: 1 } as Medico,
+    agenda: null,
+    hora: '09:00:00',
   };
 
   beforeEach(async () => {
@@ -71,11 +73,15 @@ describe('AgendamentoService - Cancelar Consulta', () => {
       const resultado = await service.cancelAgendamento(1);
 
       expect(resultado.status).toBe('cancelada');
-      expect(agendamentoRepository.findOne as jest.Mock).toHaveBeenCalledWith({
+      expect(
+        agendamentoRepository.findOne.bind(agendamentoRepository),
+      ).toHaveBeenCalledWith({
         where: { id: 1 },
         relations: ['paciente', 'medico'],
       });
-      expect(agendamentoRepository.save as jest.Mock).toHaveBeenCalled();
+      expect(
+        agendamentoRepository.save.bind(agendamentoRepository),
+      ).toHaveBeenCalled();
     });
 
     it('deve lançar NotFoundException quando agendamento não existe', async () => {
