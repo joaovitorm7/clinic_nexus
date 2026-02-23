@@ -24,7 +24,13 @@ export class ProntuarioController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true }))
+  @UsePipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  )
   async create(@Body() createDto: CreateProntuarioDto): Promise<Prontuario> {
     return this.prontuarioService.create(createDto);
   }
@@ -51,13 +57,21 @@ export class ProntuarioController {
 
   @Get('paciente/:id')
   @HttpCode(HttpStatus.OK)
-  async findByPaciente(@Param('id', ParseIntPipe) id: number): Promise<Prontuario[]> {
+  async findByPaciente(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<Prontuario[]> {
     return this.prontuarioService.findByPacienteId(id);
   }
 
   @Put(':id')
   @HttpCode(HttpStatus.OK)
-  @UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true }))
+  @UsePipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  )
   async replace(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateDto: UpdateProntuarioDto,
@@ -67,7 +81,13 @@ export class ProntuarioController {
 
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
-  @UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true }))
+  @UsePipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  )
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateDto: UpdateProntuarioDto,

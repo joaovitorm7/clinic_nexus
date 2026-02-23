@@ -8,6 +8,7 @@ import { Paciente } from 'src/paciente/entities/paciente.entity';
 import { Funcionario } from 'src/funcionarios/entities/funcionario.entity';
 import { AgendaModule } from 'src/agenda/agenda.module';
 import { Agenda } from 'src/agenda/entities/agenda.entity';
+import { ProntuarioModule } from './prontuario.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -16,6 +17,7 @@ import { Agenda } from 'src/agenda/entities/agenda.entity';
       Medico,
       Funcionario,
       Agenda,
+      ProntuarioModule,
     ]),
     AgendaModule,
   ],

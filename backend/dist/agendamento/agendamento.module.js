@@ -17,6 +17,7 @@ const paciente_entity_1 = require("../paciente/entities/paciente.entity");
 const funcionario_entity_1 = require("../funcionarios/entities/funcionario.entity");
 const agenda_module_1 = require("../agenda/agenda.module");
 const agenda_entity_1 = require("../agenda/entities/agenda.entity");
+const prontuario_module_1 = require("./prontuario.module");
 let AgendamentoModule = class AgendamentoModule {
 };
 exports.AgendamentoModule = AgendamentoModule;
@@ -29,6 +30,7 @@ exports.AgendamentoModule = AgendamentoModule = __decorate([
                 medico_entity_1.Medico,
                 funcionario_entity_1.Funcionario,
                 agenda_entity_1.Agenda,
+                prontuario_module_1.ProntuarioModule,
             ]),
             agenda_module_1.AgendaModule,
         ],

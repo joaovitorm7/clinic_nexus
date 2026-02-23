@@ -11,6 +11,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AgendamentoService = void 0;
 const common_1 = require("@nestjs/common");
@@ -23,6 +26,7 @@ const funcionario_entity_1 = require("../funcionarios/entities/funcionario.entit
 const agenda_service_1 = require("../agenda/services/agenda.service");
 const status_agenda_enum_1 = require("../agenda/enums/status-agenda.enum");
 const agenda_entity_1 = require("../agenda/entities/agenda.entity");
+const pdfkit_1 = __importDefault(require("pdfkit"));
 let AgendamentoService = class AgendamentoService {
     constructor(agendaRepository, agendamentoRepository, pacienteRepository, medicoRepository, funcionarioRepository, agendaService) {
         this.agendaRepository = agendaRepository;
@@ -216,6 +220,49 @@ let AgendamentoService = class AgendamentoService {
             agendamento.agenda.status = status_agenda_enum_1.StatusAgenda.DISPONIVEL;
         }
         await this.agendamentoRepository.delete(id);
+    }
+    async findByPeriodo(dataInicial, dataFinal) {
+        const inicio = new Date(dataInicial);
+        inicio.setHours(0, 0, 0, 0);
+        const fim = new Date(dataFinal);
+        fim.setHours(23, 59, 59, 999);
+        const consultas = await this.agendamentoRepository.find({
+            where: {
+                data: (0, typeorm_2.Between)(inicio, fim),
+                status: 'agendada',
+            },
+            relations: ['paciente', 'medico', 'medico.especialidade'],
+        });
+        if (consultas.length === 0) {
+            throw new common_1.NotFoundException('Não existem consultas no período informado');
+        }
+        return consultas;
+    }
+    async exportarPDF(dataInicial, dataFinal) {
+        const consultas = await this.findByPeriodo(dataInicial, dataFinal);
+        const doc = new pdfkit_1.default();
+        const buffers = [];
+        doc.on('data', (chunk) => {
+            buffers.push(chunk);
+        });
+        doc.fontSize(16).text('Relatório de Consultas', {
+            align: 'center',
+        });
+        doc.moveDown();
+        consultas.forEach((c) => {
+            doc.fontSize(12).text(`Paciente: ${c.paciente?.nome ?? ''}`);
+            doc.text(`Médico: ${c.medico?.funcionario?.nome ?? ''}`);
+            doc.text(`Especialidade: ${c.medico?.especialidade?.nome ?? ''}`);
+            doc.text(`Data: ${c.data?.toISOString().split('T')[0] ?? ''}`);
+            doc.text(`Status: ${c.status ?? ''}`);
+            doc.moveDown();
+        });
+        doc.end();
+        return new Promise((resolve) => {
+            doc.on('end', () => {
+                resolve(Buffer.concat(buffers));
+            });
+        });
     }
 };
 exports.AgendamentoService = AgendamentoService;

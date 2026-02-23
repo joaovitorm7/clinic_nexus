@@ -14,35 +14,33 @@ import {
   UseGuards,
   Req,
   BadRequestException,
-  ValidationPipeOptions,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { AgendamentoService } from './agendamento.service';
 import { CreateAgendamentoDto } from './dto/create-agendamento.dto';
 import { UpdateAgendamentoDto } from './dto/update-agendamento.dto';
 import { Agendamento } from './entities/agendamento.entity';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
-
 @Controller('agendamentos')
 export class AgendamentoController {
-  constructor(private readonly agendamentoService: AgendamentoService) { }
-  
+  constructor(private readonly agendamentoService: AgendamentoService) {}
+
   @UseGuards(JwtAuthGuard)
   @Get('minhas-consultas')
-  findMinhasConsultas(@Req() req) {
-      const funcionarioId = Number(req.user.funcionarioId);
-        if (isNaN(funcionarioId)) {
-              throw new BadRequestException('funcionarioId inválido no token');
-                }
-                  return this.agendamentoService.findByMedico(funcionarioId);
+  findMinhasConsultas(
+    @Req() req: Request & { user: { funcionarioId: string } },
+  ) {
+    const funcionarioId = Number(req.user.funcionarioId);
+    if (isNaN(funcionarioId)) {
+      throw new BadRequestException('funcionarioId inválido no token');
+    }
+    return this.agendamentoService.findByMedico(funcionarioId);
   }
-
-
 
   @Post()
   create(@Body() dto: CreateAgendamentoDto) {
     return this.agendamentoService.create(dto);
-
   }
 
   @Get('all')
@@ -76,8 +74,6 @@ export class AgendamentoController {
   ): Promise<Agendamento> {
     return await this.agendamentoService.update(id, dto);
   }
-
-
 
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {

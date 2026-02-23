@@ -20,7 +20,8 @@
     "noFallthroughCasesInSwitch": false,
     "lib": ["ES2021"],
     "rootDir": "src",
-    "types": ["node", "jest"]
+    "types": ["node", "jest"],
+    "esModuleInterop": true,
   },
   "include": [
     "src/**/*",

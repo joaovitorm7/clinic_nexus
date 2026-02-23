@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+
 import {
   BadRequestException,
   Injectable,
@@ -14,6 +18,7 @@ import { Funcionario } from 'src/funcionarios/entities/funcionario.entity';
 import { AgendaService } from 'src/agenda/services/agenda.service';
 import { StatusAgenda } from 'src/agenda/enums/status-agenda.enum';
 import { Agenda } from 'src/agenda/entities/agenda.entity';
+import PDFDocument from 'pdfkit';
 
 @Injectable()
 export class AgendamentoService {
@@ -268,5 +273,59 @@ export class AgendamentoService {
       agendamento.agenda.status = StatusAgenda.DISPONIVEL;
     }
     await this.agendamentoRepository.delete(id);
+  }
+  async findByPeriodo(dataInicial: Date, dataFinal: Date) {
+    const inicio = new Date(dataInicial);
+    inicio.setHours(0, 0, 0, 0);
+
+    const fim = new Date(dataFinal);
+    fim.setHours(23, 59, 59, 999);
+
+    const consultas = await this.agendamentoRepository.find({
+      where: {
+        data: Between(inicio, fim),
+        status: 'agendada',
+      },
+      relations: ['paciente', 'medico', 'medico.especialidade'],
+    });
+
+    if (consultas.length === 0) {
+      throw new NotFoundException('Não existem consultas no período informado');
+    }
+
+    return consultas;
+  }
+  async exportarPDF(dataInicial: Date, dataFinal: Date): Promise<Buffer> {
+    const consultas = await this.findByPeriodo(dataInicial, dataFinal);
+
+    const doc = new PDFDocument();
+    const buffers: Buffer[] = [];
+
+    doc.on('data', (chunk: Buffer) => {
+      buffers.push(chunk);
+    });
+
+    doc.fontSize(16).text('Relatório de Consultas', {
+      align: 'center',
+    });
+
+    doc.moveDown();
+
+    consultas.forEach((c) => {
+      doc.fontSize(12).text(`Paciente: ${c.paciente?.nome ?? ''}`);
+      doc.text(`Médico: ${c.medico?.funcionario?.nome ?? ''}`);
+      doc.text(`Especialidade: ${c.medico?.especialidade?.nome ?? ''}`);
+      doc.text(`Data: ${c.data?.toISOString().split('T')[0] ?? ''}`);
+      doc.text(`Status: ${c.status ?? ''}`);
+      doc.moveDown();
+    });
+
+    doc.end();
+
+    return new Promise((resolve) => {
+      doc.on('end', () => {
+        resolve(Buffer.concat(buffers));
+      });
+    });
   }
 }
