@@ -240,3 +240,40 @@ h1 {
     transform: translateY(0) scale(1);
   }
 }
+
+.filtro-consultas {
+  display: flex;
+  align-items: end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-exportar {
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: white;
+}
+
+/* excel */
+.btn-excel {
+  background-color: #37ac6c;
+}
+.btn-excel:hover {
+  background-color: #185c37;
+  transform: translateY(-1px);
+}
+
+/*pdf */
+.btn-pdf {
+  background-color: #ec6060;
+}
+.btn-pdf:hover {
+  background-color: #a61e1e;
+  transform: translateY(-1px);
+}
+

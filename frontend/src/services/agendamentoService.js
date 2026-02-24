@@ -51,6 +51,38 @@ export const getEspecialidades = async () => {
   return response.data;
 };
 
+export const exportarExcel = async (dataInicio, dataFim) => {
+  const response = await api.get("/agendamentos/exportar/excel", {
+    headers: getAuthHeader(),
+    params: { dataInicial: dataInicio, dataFinal: dataFim },
+    responseType: "blob",
+  });
+
+  const url = window.URL.createObjectURL(new Blob([response.data]));
+  const link = document.createElement("a");
+  link.href = url;
+  link.setAttribute("download", "consultas.xlsx");
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+};
+
+export const exportarPDF = async (dataInicio, dataFim) => {
+  const response = await api.get("/agendamentos/exportar/pdf", {
+    headers: getAuthHeader(),
+    params: { dataInicial: dataInicio, dataFinal: dataFim },
+    responseType: "blob",
+  });
+
+  const url = window.URL.createObjectURL(new Blob([response.data]));
+  const link = document.createElement("a");
+  link.href = url;
+  link.setAttribute("download", "consultas.pdf");
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+};
+
 export default {
   createAgendamento,
   getAgendamentos,
@@ -59,4 +91,6 @@ export default {
   cancelarAgendamento,
   getEspecialidades,
   getMinhasConsultas,
+  exportarExcel,
+  exportarPDF,
 };
