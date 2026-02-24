@@ -1,3 +1,4 @@
+import { Request } from 'express';
 import { AgendamentoService } from './agendamento.service';
 import { CreateAgendamentoDto } from './dto/create-agendamento.dto';
 import { UpdateAgendamentoDto } from './dto/update-agendamento.dto';
@@ -5,7 +6,11 @@ import { Agendamento } from './entities/agendamento.entity';
 export declare class AgendamentoController {
     private readonly agendamentoService;
     constructor(agendamentoService: AgendamentoService);
-    findMinhasConsultas(req: any): Promise<Agendamento[]>;
+    findMinhasConsultas(req: Request & {
+        user: {
+            funcionarioId: string;
+        };
+    }): Promise<Agendamento[]>;
     create(dto: CreateAgendamentoDto): Promise<Agendamento>;
     findAll(): Promise<Agendamento[]>;
     findByDate(data: string): Promise<Agendamento[]>;

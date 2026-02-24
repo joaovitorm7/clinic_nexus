@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  OneToOne,
+} from 'typeorm';
 import { Paciente } from '../../paciente/entities/paciente.entity';
 import { Medico } from '../../medico/entities/medico.entity';
 import { Agenda } from 'src/agenda/entities/agenda.entity';
@@ -19,7 +26,6 @@ export class Agendamento {
   @OneToOne(() => Agenda, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'agenda_id' })
   agenda: Agenda;
-
 
   @Column({ type: 'datetime', nullable: false })
   data: Date;

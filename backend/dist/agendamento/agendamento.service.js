@@ -11,6 +11,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AgendamentoService = void 0;
 const common_1 = require("@nestjs/common");
@@ -23,6 +26,8 @@ const funcionario_entity_1 = require("../funcionarios/entities/funcionario.entit
 const agenda_service_1 = require("../agenda/services/agenda.service");
 const status_agenda_enum_1 = require("../agenda/enums/status-agenda.enum");
 const agenda_entity_1 = require("../agenda/entities/agenda.entity");
+const exceljs_1 = __importDefault(require("exceljs"));
+const pdfkit_1 = __importDefault(require("pdfkit"));
 let AgendamentoService = class AgendamentoService {
     constructor(agendaRepository, agendamentoRepository, pacienteRepository, medicoRepository, funcionarioRepository, agendaService) {
         this.agendaRepository = agendaRepository;
@@ -86,37 +91,52 @@ let AgendamentoService = class AgendamentoService {
     async update(id, dto) {
         const agendamento = await this.agendamentoRepository.findOne({
             where: { id },
-            relations: ['paciente', 'medico', 'medico.especialidade'],
+            relations: ['paciente', 'medico', 'agenda'],
         });
         if (!agendamento) {
             throw new common_1.NotFoundException('Agendamento não encontrado');
         }
-        const { id_paciente, id_medico, ...rest } = dto;
-        if (dto.hasOwnProperty('id_paciente')) {
-            if (id_paciente === null) {
-                agendamento.paciente = null;
-            }
-            else {
-                const paciente = await this.pacienteRepository.findOne({
-                    where: { id: id_paciente },
-                });
-                if (!paciente)
-                    throw new common_1.NotFoundException('Paciente não encontrado');
-                agendamento.paciente = paciente;
-            }
+        if (agendamento.status === 'realizada') {
+            throw new common_1.BadRequestException('Não é possível alterar uma consulta já realizada');
         }
-        if (dto.hasOwnProperty('id_medico')) {
-            if (id_medico === null) {
-                agendamento.medico = null;
+        const { id_paciente, id_medico, id_agenda, ...rest } = dto;
+        if (Object.prototype.hasOwnProperty.call(dto, 'id_paciente')) {
+            const paciente = await this.pacienteRepository.findOne({
+                where: { id: id_paciente },
+            });
+            if (!paciente)
+                throw new common_1.NotFoundException('Paciente não encontrado');
+            agendamento.paciente = paciente;
+        }
+        if (Object.prototype.hasOwnProperty.call(dto, 'id_medico')) {
+            const medico = await this.medicoRepository.findOne({
+                where: { id: id_medico },
+            });
+            if (!medico)
+                throw new common_1.NotFoundException('Médico não encontrado');
+            agendamento.medico = medico;
+        }
+        if (Object.prototype.hasOwnProperty.call(dto, 'id_agenda')) {
+            const novaAgenda = await this.agendaRepository.findOne({
+                where: { id: id_agenda },
+                relations: ['medico'],
+            });
+            if (!novaAgenda) {
+                throw new common_1.NotFoundException('Agenda não encontrada');
             }
-            else {
-                const medico = await this.medicoRepository.findOne({
-                    where: { id: id_medico },
-                });
-                if (!medico)
-                    throw new common_1.NotFoundException('Médico não encontrado');
-                agendamento.medico = medico;
+            if (novaAgenda.status === status_agenda_enum_1.StatusAgenda.OCUPADO) {
+                throw new common_1.BadRequestException('Este horário já está ocupado');
             }
+            if (agendamento.agenda) {
+                agendamento.agenda.status = status_agenda_enum_1.StatusAgenda.DISPONIVEL;
+                agendamento.agenda.consulta = null;
+                await this.agendaRepository.save(agendamento.agenda);
+            }
+            novaAgenda.status = status_agenda_enum_1.StatusAgenda.OCUPADO;
+            await this.agendaRepository.save(novaAgenda);
+            agendamento.agenda = novaAgenda;
+            agendamento.data = new Date(novaAgenda.data);
+            agendamento.hora = novaAgenda.hora_inicio;
         }
         Object.assign(agendamento, rest);
         return await this.agendamentoRepository.save(agendamento);
@@ -194,11 +214,79 @@ let AgendamentoService = class AgendamentoService {
         });
     }
     async remove(id) {
-        const agendamento = await this.agendamentoRepository.findOne({ where: { id } });
+        const agendamento = await this.agendamentoRepository.findOne({
+            where: { id },
+        });
         if (agendamento.agenda) {
             agendamento.agenda.status = status_agenda_enum_1.StatusAgenda.DISPONIVEL;
         }
         await this.agendamentoRepository.delete(id);
+    }
+    async findByPeriodo(dataInicial, dataFinal) {
+        const inicio = new Date(dataInicial);
+        inicio.setHours(0, 0, 0, 0);
+        const fim = new Date(dataFinal);
+        fim.setHours(23, 59, 59, 999);
+        const consultas = await this.agendamentoRepository.find({
+            where: {
+                data: (0, typeorm_2.Between)(inicio, fim),
+                status: 'agendada',
+            },
+            relations: ['paciente', 'medico', 'medico.especialidade'],
+        });
+        if (consultas.length === 0) {
+            throw new common_1.NotFoundException('Não existem consultas no período informado');
+        }
+        return consultas;
+    }
+    async exportarExcel(dataInicial, dataFinal) {
+        const consultas = await this.findByPeriodo(dataInicial, dataFinal);
+        const workbook = new exceljs_1.default.Workbook();
+        const worksheet = workbook.addWorksheet('Consultas');
+        worksheet.columns = [
+            { header: 'Paciente', key: 'paciente', width: 30 },
+            { header: 'Médico', key: 'medico', width: 30 },
+            { header: 'Especialidade', key: 'especialidade', width: 25 },
+            { header: 'Data', key: 'data', width: 15 },
+            { header: 'Status', key: 'status', width: 15 },
+        ];
+        consultas.forEach((c) => {
+            worksheet.addRow({
+                paciente: c.paciente?.nome ?? '',
+                medico: c.medico?.funcionario?.nome ?? '',
+                especialidade: c.medico?.especialidade?.nome ?? '',
+                data: c.data?.toISOString().split('T')[0] ?? '',
+                status: c.status ?? '',
+            });
+        });
+        const buffer = await workbook.xlsx.writeBuffer();
+        return Buffer.from(buffer);
+    }
+    async exportarPDF(dataInicial, dataFinal) {
+        const consultas = await this.findByPeriodo(dataInicial, dataFinal);
+        const doc = new pdfkit_1.default();
+        const buffers = [];
+        doc.on('data', (chunk) => {
+            buffers.push(chunk);
+        });
+        doc.fontSize(16).text('Relatório de Consultas', {
+            align: 'center',
+        });
+        doc.moveDown();
+        consultas.forEach((c) => {
+            doc.fontSize(12).text(`Paciente: ${c.paciente?.nome ?? ''}`);
+            doc.text(`Médico: ${c.medico?.funcionario?.nome ?? ''}`);
+            doc.text(`Especialidade: ${c.medico?.especialidade?.nome ?? ''}`);
+            doc.text(`Data: ${c.data?.toISOString().split('T')[0] ?? ''}`);
+            doc.text(`Status: ${c.status ?? ''}`);
+            doc.moveDown();
+        });
+        doc.end();
+        return new Promise((resolve) => {
+            doc.on('end', () => {
+                resolve(Buffer.concat(buffers));
+            });
+        });
     }
 };
 exports.AgendamentoService = AgendamentoService;
