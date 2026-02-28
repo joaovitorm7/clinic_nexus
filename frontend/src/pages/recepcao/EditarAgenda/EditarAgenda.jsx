@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./EditarAgenda.css";
 import { AgendaService } from "../../../services/agenda.service.js";
 import { DoctorsService } from "../../../services/doctors.services.js";
+import { FaArrowLeft } from "react-icons/fa";
 
 export default function AgendaMensalMedicos() {
+  const navigate = useNavigate();
   const [agendaAtual, setAgendaAtual] = useState(null);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedKey, setSelectedKey] = useState(null);
@@ -161,6 +164,14 @@ export default function AgendaMensalMedicos() {
 
   return (
     <div className="agenda-root">
+    <button
+              type="button"
+              className="back-button"
+              onClick={() => navigate('/recepcao')}
+            >
+              <FaArrowLeft size={16} style={{ marginRight: 8 }} />
+              Voltar
+            </button>
       <h1 className="agenda-title">Agenda Mensal dos Médicos</h1>
 
       {/* ===== FILTROS GLOBAIS ===== */}
@@ -244,6 +255,7 @@ export default function AgendaMensalMedicos() {
             <h2>Dia {selectedKey}</h2>
 
             <div className="existing-list">
+            
               <h3>Agendas do dia</h3>
 
 

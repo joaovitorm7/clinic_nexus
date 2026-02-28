@@ -33,7 +33,7 @@ export class ProntuarioController {
     if (isNaN(funcionarioId)) {
       throw new BadRequestException('funcionarioId inválido no token');
     }
-    return this.prontuarioService.findByMedicoId(funcionarioId);
+    return this.prontuarioService.findByFuncionarioId(funcionarioId);
   }
 
   @Post()

@@ -70,7 +70,7 @@ export default function EditarConsulta() {
   if (loading) {
     return (
       <>
-        
+        <Navbar />
         <div className="editar-container">
           <p>Carregando consulta...</p>
         </div>
@@ -81,7 +81,7 @@ export default function EditarConsulta() {
   if (!consulta) {
     return (
       <>
-        
+        <Navbar />
         <div className="editar-container">
           <p>Consulta não encontrada.</p>
           <button onClick={() => navigate('/medico/consultas')}>
@@ -107,7 +107,7 @@ export default function EditarConsulta() {
 
   return (
     <>
-      
+      <Navbar />
       <div className="editar-container">
         <button className="back-button" onClick={() => navigate(-1)}>
           <FaArrowLeft /> Voltar

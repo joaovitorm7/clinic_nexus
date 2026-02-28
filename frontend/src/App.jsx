@@ -6,8 +6,8 @@ import Navbar from "./components/Navbar/Navbar";
 
 function Layout() {
   return (
-    <>
-      
+    <> 
+      <Navbar />
       <Outlet />
     </>
   );
@@ -41,6 +41,18 @@ import ListarConsultas from "./pages/AlaMedica/ListarConsultas/ListarConsultas";
 import EditarConsulta from "./pages/AlaMedica/EditarConsulta/EditarConsulta";
 import DetalhesConsulta from "./pages/AlaMedica/DetalhesConsulta/DetalhesConsulta";
 
+// Lista de Pacientes
+import ListaPacientes from "./pages/AlaMedica/ListaPacientes/ListaPacientes";
+
+// Lista de Prontuários
+import ListaProntuarios from "./pages/AlaMedica/ListaProntuarios/ListaProntuarios";
+
+// Todos os Prontuários
+import TodosProntuarios from "./pages/AlaMedica/TodosProntuarios/TodosProntuarios";
+
+// Prontuário do Paciente
+import ProntuarioPaciente from "./pages/AlaMedica/ProntuarioPaciente/ProntuarioPaciente";
+
 // Outros
 import EmployeePage from "./EmployeePage";
 
@@ -53,33 +65,36 @@ function App() {
       <Route path="/" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-      <Route element={<Layout />}>
-        {/* Administração */}
+      <Route element={<Layout />}> 
+        {/* Administração */} 
         <Route path="/administracao" element={<Dashboard />} />
         <Route path="/funcionarios" element={<DashboardFunc />} />
         <Route path="/admin/funcionarios/addFunc" element={<AddFunc />} />
         <Route path="/admin/medicos" element={<DashboardMed />} />
         <Route path="/admin/editar-funcionarios" element={<EditarFuncionarios />} />
 
-        {/* Ala Médica */}
+        {/* Ala Médica */} 
         <Route path="/alamedica" element={<DashboardAlaMedica />} />
         <Route path="/medico/agenda" element={<CalendarPage />} />
         <Route path="/alamedica/prontuario" element={<Prontuario />} />
+        <Route path="/medico/prontuarios" element={<TodosProntuarios />} />
         <Route path="/medico/consultas" element={<ListarConsultas />} />
         <Route path="/medico/consulta/:id" element={<DetalhesConsulta />} />
         <Route path="/medico/editar-consulta/:id" element={<EditarConsulta />} />
 
-        {/* Recepção */}
+        {/* Recepção */} 
         <Route path="/recepcao" element={<Recepcao />} />
         <Route path="/recepcao/agendar" element={<AgendarConsulta />} />
         <Route path="/recepcao/editaragenda" element={<EditarAgenda />} />
         <Route path="/consultas" element={<Consultas />} />
         <Route path="/recepcao/cadastrar-paciente" element={<CadastrarPaciente />} />
         <Route path="/recepcao/pacientes" element={<VisualizarPacientes />} />
+        <Route path="/medico/pacientes" element={<ListaPacientes />} />
+        <Route path="/medico/pacientes/:id" element={<ProntuarioPaciente />} />
         <Route path="/recepcao/editar-paciente" element={<EditarPaciente />} />
         <Route path="/recepcao/VisualizarAgenda" element={<VisualizarAgenda />} />
 
-        {/* Teste */}
+        {/* Teste */} 
         <Route path="/test" element={<EmployeePage />} />
       </Route>
     </Routes>

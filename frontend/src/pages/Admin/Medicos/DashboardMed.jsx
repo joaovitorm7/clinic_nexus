@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './DashboardMed.module.css';
 import { DoctorsService } from '../../../services/doctors.services.js';
 import { getAllEspecialidades } from '../../../services/especialidadeService.js';
 import DoctorCard from '../../../components/DoctorCard/DoctorCard';
+import { FaArrowLeft } from 'react-icons/fa';
 
 export default function DashboardMed() {
+  const navigate = useNavigate();
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -39,7 +42,7 @@ export default function DashboardMed() {
         if (specialtyFilter) {
           response = await DoctorsService.getByEspecialidade(parseInt(specialtyFilter, 10));
         } else {
-          response = await DoctorsService.getDoctors();
+          response = await DoctorsService.getAll();
         }
 
         const payload = response?.data ?? response;
@@ -68,6 +71,14 @@ export default function DashboardMed() {
 
   return (
     <div className={styles.page}>
+      <button
+        className={styles.backButton}
+        onClick={() => navigate('/administracao')}
+        aria-label="Voltar ao dashboard"
+      >
+        <FaArrowLeft />
+      </button>
+
       <h2 className={styles.title}>Médicos</h2>
 
       <div className={styles.filters}>

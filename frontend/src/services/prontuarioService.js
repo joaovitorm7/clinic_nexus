@@ -1,15 +1,18 @@
 import api from './api';
 
-const getAuthHeader = () => {
-  const token = localStorage.getItem('token');
-  return { Authorization: `Bearer ${token}` };
+export const getProntuariosDoMedico = async () => {
+  try {
+    const response = await api.get('/prontuario/minhas-consultas');
+    return response.data;
+  } catch (error) {
+    console.error(error.response?.data || error.message || error);
+    throw error;
+  }
 };
 
 export const getMinhasConsultas = async () => {
   try {
-    const response = await api.get('/prontuario/minhas-consultas', {
-      headers: getAuthHeader(),
-    });
+    const response = await api.get('/prontuario/minhas-consultas');
     return response.data;
   } catch (error) {
     console.error(error.response?.data || error.message || error);

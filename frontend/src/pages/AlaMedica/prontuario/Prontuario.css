@@ -1,83 +1,13 @@
-/* Cabeçalho fixo com dados do paciente */
-/* Painel de busca */
-.prontuario-search {
-  background: linear-gradient(135deg, #f5f5f5 0%, #fff 100%);
-  padding: 24px 32px;
-  border-bottom: 2px solid #a0d2eb;
-}
-
-.search-container {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.search-container h3 {
-  margin: 0 0 16px 0;
-  color: #073b6b;
-  font-size: 1.1rem;
-}
-
-.search-row {
-  display: flex;
-  gap: 12px;
-}
-
-.search-row input {
-  flex: 1;
-  padding: 12px 16px;
-  border: 2px solid #ccc;
-  border-radius: 6px;
-  font-size: 1rem;
-  transition: border-color 0.2s;
-}
-
-.search-row input:focus {
-  outline: none;
-  border-color: #1a3b6c;
-}
-
-.search-row button {
-  padding: 12px 24px;
-  background: #1a3b6c;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-  white-space: nowrap;
-}
-
-.search-row button:hover:not(:disabled) {
-  background: #073b6b;
-}
-
-.search-row button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Mensagem vazia */
-.mensagem-vazia {
-  text-align: center;
-  padding: 60px 20px;
-  color: #999;
-  font-size: 1.2rem;
-}
-
-/* Cabeçalho permanece fixo no topo */
+/* Cabeçalho estático no topo */
 .prontuario-header {
-  position: sticky;
-  top: 60px; /* altura da navbar */
+  position: static;
   background: linear-gradient(135deg, #073b6b 0%, #1a3b6c 100%);
   color: white;
   padding: 20px 32px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 10;
 }
 
-.paciente-info {
+.prontuario-header .paciente-info {
   max-width: 1200px;
   margin: 0 auto;
   display: grid;
@@ -85,19 +15,19 @@
   gap: 20px;
 }
 
-.info-group {
+.prontuario-header .info-group {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.info-group label {
+.prontuario-header .info-group label {
   font-weight: 600;
   font-size: 0.85rem;
   opacity: 0.9;
 }
 
-.info-group span {
+.prontuario-header .info-group span {
   font-size: 1rem;
   word-break: break-word;
 }
@@ -154,6 +84,12 @@
   font-weight: 600;
   color: #073b6b;
   font-size: 0.95rem;
+}
+
+.historico-header .paciente {
+  color: #28a745;
+  font-weight: 600;
+  font-size: 0.9rem;
 }
 
 .historico-header .medico {
@@ -296,4 +232,219 @@
 
 .btn-limpar:hover {
   background: #e0e0e0;
+}
+
+/* Mensagem vazia / Botão voltar */
+.mensagem-vazia {
+  text-align: center;
+  padding: 60px 20px;
+  background: #f9f9f9;
+  border-radius: 12px;
+  margin: 40px auto;
+  max-width: 600px;
+}
+
+.mensagem-vazia p {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 24px;
+}
+
+.btn-voltar {
+  padding: 12px 24px;
+  background: #1a3b6c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-voltar:hover {
+  background: #073b6b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(26, 59, 108, 0.3);
+}
+
+/* Page for listing prontuarios */
+.page-prontuarios-lista {
+  padding: 20px 32px;
+  font-family: Inter, system-ui, sans-serif;
+  min-height: calc(100vh - 60px);
+  background: linear-gradient(80deg, rgba(0,123,255,0.12), rgba(0,180,216,0.06));
+}
+
+.page-prontuarios-lista .page-header {
+  max-width: 1200px;
+  margin: 0 auto 30px;
+}
+
+.page-prontuarios-lista h1 {
+  font-size: 2rem;
+  color: #073b6b;
+  margin: 20px 0 20px 0;
+}
+
+.page-prontuarios-lista .info-text {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 16px;
+  max-width: 1200px;
+}
+
+.footer-actions {
+  max-width: 1200px;
+  margin: 30px auto 0;
+  text-align: center;
+  padding: 24px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.footer-actions .info-text {
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+}
+
+.footer-actions .btn-consultas-grande {
+  display: inline-block;
+  padding: 16px 40px;
+  background: #1a3b6c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.footer-actions .btn-consultas-grande:hover {
+  background: #073b6b;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(26, 59, 108, 0.3);
+}
+
+.page-prontuarios-lista .btn-voltar {
+  display: inline-block;
+  padding: 12px 24px;
+  background: #1a3b6c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.page-prontuarios-lista .btn-voltar:hover {
+  background: #073b6b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(26, 59, 108, 0.3);
+}
+
+.sem-prontuarios {
+  text-align: center;
+  color: #999;
+  font-size: 1.1rem;
+  padding: 40px 20px;
+  background: white;
+  border-radius: 12px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.prontuarios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.prontuario-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.prontuario-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.prontuario-card.expanded {
+  background: #f8f9fa;
+}
+
+.prontuario-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.prontuario-card-header .expand-icon {
+  font-size: 1.5rem;
+  color: #1a3b6c;
+  font-weight: bold;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e8f0f8;
+  border-radius: 50%;
+}
+
+.prontuario-card-body .info-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.prontuario-card-body .info-row strong {
+  font-size: 0.85rem;
+  color: #073b6b;
+}
+
+.prontuario-card-body .info-row span {
+  font-size: 0.95rem;
+  color: #333;
+  word-break: break-word;
+}
+
+.prontuario-expanded {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.prontuario-expanded .info-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.prontuario-expanded .info-row strong {
+  font-size: 0.9rem;
+  color: #073b6b;
+}
+
+.prontuario-expanded .info-row span {
+  font-size: 0.95rem;
+  color: #444;
+  line-height: 1.5;
 }

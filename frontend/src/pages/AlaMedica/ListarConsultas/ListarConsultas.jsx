@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaArrowLeft, FaEye, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaArrowLeft, FaEye, FaEdit, FaTrash, FaFileMedical } from 'react-icons/fa';
 import Navbar from '../../../components/Navbar/Navbar';
 import agendamentoService from '../../../services/agendamentoService';
 import './ListarConsultas.css';
@@ -28,7 +28,7 @@ export default function ListarConsultas() {
       }
       setMedico(usuarioLogado);
 
-      let lista = await agendamentoService.getMinhasConsultas();
+      let lista = await agendamentoService.getMinhasConsultas(usuarioLogado.id);
 
       lista = Array.isArray(lista) ? lista : [];
 
@@ -71,7 +71,7 @@ export default function ListarConsultas() {
 
   return (
     <>
-      <Navbar />
+      
       <div className="page-listar-consultas">
         <button
           type="button"
@@ -130,6 +130,14 @@ export default function ListarConsultas() {
                     </td>
                     <td>{consulta.motivo_consulta || '-'}</td>
                     <td className="acoes">
+                      <button
+                        title="Fazer Prontuário"
+                        onClick={() =>
+                          navigate('/alamedica/prontuario', { state: { consulta } })
+                        }
+                      >
+                        <FaFileMedical />
+                      </button>
                       <button
                         title="Visualizar"
                         onClick={() =>

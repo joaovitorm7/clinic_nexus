@@ -10,7 +10,7 @@ export default function DashboardAlaMedica() {
   const cards = [
     { id: 'agenda', title: 'Minha Agenda', subtitle: 'Ver/gerenciar horários', icon: <FaCalendarAlt />, path: '/medico/agenda' },
     { id: 'pacientes', title: 'Pacientes', subtitle: 'Buscar e abrir prontuário', icon: <FaUserInjured />, path: '/medico/pacientes' },
-    { id: 'prontuario', title: 'Prontuários', subtitle: 'Registrar atendimentos', icon: <FaNotesMedical />, path: '/alamedica/prontuario' },
+    { id: 'prontuario', title: 'Prontuários', subtitle: 'Ver todos os prontuários', icon: <FaNotesMedical />, path: '/medico/prontuarios' },
     { id: 'consultas', title: 'Minhas Consultas', subtitle: 'Ver todas as consultas agendadas', icon: <FaCalendarAlt />, path: '/medico/consultas' },
   ];
 

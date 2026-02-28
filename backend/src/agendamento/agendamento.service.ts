@@ -251,6 +251,23 @@ export class AgendamentoService {
       relations: ['paciente', 'medico'],
     });
   }
+
+  async findByFuncionarioId(funcionarioId: number): Promise<Agendamento[]> {
+    const medico = await this.medicoRepository.findOne({
+      where: { funcionario: { id: funcionarioId } },
+    });
+
+    if (!medico) {
+      return [];
+    }
+
+    return this.agendamentoRepository.find({
+      where: { medico: { id: medico.id } },
+      relations: ['paciente', 'medico', 'medico.funcionario', 'medico.especialidade'],
+      order: { data: 'DESC', hora: 'ASC' },
+    });
+  }
+
   async findByDate(date: Date): Promise<Agendamento[]> {
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);

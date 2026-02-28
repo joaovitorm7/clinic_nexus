@@ -19,9 +19,9 @@ export const getAgendamentos = async () => {
 };
 
 // Consultas do médico logado
-export const getMinhasConsultas = async () => {
+export const getMinhasConsultas = async (medicoId) => {
   try {
-    const response = await api.get('/agendamentos/minhas-consultas', {
+    const response = await api.get(`/agendamentos/minhas-consultas?medicoId=${medicoId}`, {
       headers: getAuthHeader(),
     });
     return Array.isArray(response.data) ? response.data : [];

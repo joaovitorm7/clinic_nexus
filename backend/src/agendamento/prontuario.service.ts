@@ -88,18 +88,24 @@ export class ProntuarioService {
       .createQueryBuilder('prontuario')
       .leftJoinAndSelect('prontuario.agendamento', 'agendamento')
       .leftJoinAndSelect('agendamento.paciente', 'paciente')
+      .leftJoinAndSelect('agendamento.medico', 'medico')
+      .leftJoinAndSelect('medico.funcionario', 'funcionario')
+      .leftJoinAndSelect('medico.especialidade', 'especialidade')
       .where('paciente.id = :pacienteId', { pacienteId })
+      .orderBy('prontuario.data_atendimento', 'DESC')
       .getMany();
   }
 
   async findAll(): Promise<Prontuario[]> {
-    return this.prontuarioRepository.find({ relations: ['agendamento'] });
+    return this.prontuarioRepository.find({
+      relations: ['agendamento', 'agendamento.paciente', 'agendamento.medico', 'agendamento.medico.funcionario', 'agendamento.medico.especialidade'],
+    });
   }
 
   async findOne(id: number): Promise<Prontuario> {
     const prontuario = await this.prontuarioRepository.findOne({
       where: { id },
-      relations: ['agendamento'],
+      relations: ['agendamento', 'agendamento.paciente', 'agendamento.medico', 'agendamento.medico.funcionario', 'agendamento.medico.especialidade'],
     });
 
     if (!prontuario) {
@@ -115,7 +121,22 @@ export class ProntuarioService {
       .leftJoinAndSelect('prontuario.agendamento', 'agendamento')
       .leftJoinAndSelect('agendamento.paciente', 'paciente')
       .leftJoinAndSelect('agendamento.medico', 'medico')
+      .leftJoinAndSelect('medico.funcionario', 'funcionario')
+      .leftJoinAndSelect('medico.especialidade', 'especialidade')
       .where('medico.id = :medicoId', { medicoId })
+      .orderBy('prontuario.data_atendimento', 'DESC')
+      .getMany();
+  }
+
+  async findByFuncionarioId(funcionarioId: number): Promise<Prontuario[]> {
+    return this.prontuarioRepository
+      .createQueryBuilder('prontuario')
+      .leftJoinAndSelect('prontuario.agendamento', 'agendamento')
+      .leftJoinAndSelect('agendamento.paciente', 'paciente')
+      .leftJoinAndSelect('agendamento.medico', 'medico')
+      .leftJoinAndSelect('medico.funcionario', 'funcionario')
+      .leftJoinAndSelect('medico.especialidade', 'especialidade')
+      .where('funcionario.id = :funcionarioId', { funcionarioId })
       .orderBy('prontuario.data_atendimento', 'DESC')
       .getMany();
   }

@@ -23,6 +23,10 @@ export class UpdateFuncionarioDto {
 
   @IsOptional()
   @IsString()
+  endereco?: string;
+
+  @IsOptional()
+  @IsString()
   crm?: string;
 
   @IsOptional()

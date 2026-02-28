@@ -35,7 +35,7 @@ export class AgendamentoController {
     if (isNaN(funcionarioId)) {
       throw new BadRequestException('funcionarioId inválido no token');
     }
-    return this.agendamentoService.findByMedico(funcionarioId);
+    return this.agendamentoService.findByFuncionarioId(funcionarioId);
   }
 
   @Post()
