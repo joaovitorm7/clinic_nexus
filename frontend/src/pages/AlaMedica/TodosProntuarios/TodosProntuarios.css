@@ -1,0 +1,150 @@
+.page-todos-prontuarios {
+  padding: 20px 32px;
+  font-family: Inter, system-ui, sans-serif;
+  min-height: calc(100vh - 60px);
+  background: linear-gradient(80deg, rgba(0,123,255,0.12), rgba(0,180,216,0.06));
+}
+
+.page-todos-prontuarios .page-header {
+  max-width: 1200px;
+  margin: 0 auto 30px;
+}
+
+.page-todos-prontuarios h1 {
+  font-size: 2rem;
+  color: #073b6b;
+  margin: 20px 0 20px 0;
+}
+
+.page-todos-prontuarios .footer-actions {
+  max-width: 1200px;
+  margin: 30px auto 0;
+  text-align: center;
+  padding: 20px;
+}
+
+.page-todos-prontuarios .btn-novo-prontuario {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 48px;
+  background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+}
+
+.page-todos-prontuarios .btn-novo-prontuario:hover {
+  background: linear-gradient(135deg, #1e7e34 0%, #155724 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(40, 167, 69, 0.35);
+}
+
+.page-todos-prontuarios .sem-prontuarios {
+  text-align: center;
+  color: #999;
+  font-size: 1.1rem;
+  padding: 40px 20px;
+  background: white;
+  border-radius: 12px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.page-todos-prontuarios .prontuarios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-todos-prontuarios .prontuario-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.page-todos-prontuarios .prontuario-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.page-todos-prontuarios .prontuario-card.expanded {
+  background: #f8f9fa;
+}
+
+.page-todos-prontuarios .card-clickable {
+  cursor: pointer;
+}
+
+.page-todos-prontuarios .prontuario-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.page-todos-prontuarios .prontuario-card-header .data {
+  font-weight: 600;
+  color: #073b6b;
+  font-size: 1rem;
+}
+
+.page-todos-prontuarios .prontuario-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.page-todos-prontuarios .info-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.page-todos-prontuarios .info-row strong {
+  font-size: 0.85rem;
+  color: #073b6b;
+}
+
+.page-todos-prontuarios .info-row span {
+  font-size: 0.95rem;
+  color: #333;
+  word-break: break-word;
+}
+
+.page-todos-prontuarios .prontuario-expanded {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #ddd;
+}
+
+.page-todos-prontuarios .expanded-section {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.page-todos-prontuarios .expanded-section:last-child {
+  margin-bottom: 0;
+}
+
+.page-todos-prontuarios .expanded-section h4 {
+  font-size: 0.95rem;
+  color: #073b6b;
+  margin: 0 0 10px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+}

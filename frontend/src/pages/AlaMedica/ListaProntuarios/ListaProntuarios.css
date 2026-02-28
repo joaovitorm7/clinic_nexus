@@ -1,0 +1,157 @@
+.page-lista-prontuarios {
+    padding: 20px 32px;
+    font-family: Inter, system-ui, sans-serif;
+    min-height: calc(100vh - 60px);
+    background: linear-gradient(80deg, rgba(0,123,255,0.12), rgba(0,180,216,0.06));
+}
+
+.page-lista-prontuarios h1 {
+    font-size: 2rem;
+    color: #073b6b;
+    margin: 20px 0;
+}
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: none;
+    color: #073b6b;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 1rem;
+    margin-bottom: 16px;
+    transition: all 0.2s ease;
+}
+
+.back-button:hover {
+    background: rgba(7, 59, 107, 0.06);
+    transform: translateX(-2px);
+}
+
+.prontuarios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.prontuario-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+}
+
+.prontuario-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.prontuario-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.prontuario-header .icon {
+    color: #1a3b6c;
+    font-size: 1.5rem;
+}
+
+.prontuario-header .data {
+    font-weight: 600;
+    color: #073b6b;
+    font-size: 1rem;
+}
+
+.prontuario-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.info-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.info-row strong {
+    font-size: 0.85rem;
+    color: #073b6b;
+}
+
+.info-row span {
+    font-size: 0.95rem;
+    color: #333;
+    word-break: break-word;
+}
+
+.loading {
+    text-align: center;
+    color: #666;
+    font-size: 1.1rem;
+    padding: 40px;
+}
+
+.error {
+    text-align: center;
+    color: #dc3545;
+    font-size: 1.1rem;
+    padding: 40px;
+}
+
+.sem-dados {
+    text-align: center;
+    color: #999;
+    font-size: 1.1rem;
+    padding: 40px;
+}
+
+.card-clickable {
+    cursor: pointer;
+}
+
+.prontuario-card.expanded {
+    background: #f8f9fa;
+}
+
+.prontuario-card .card-clickable {
+    display: block;
+}
+
+.prontuario-expanded {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #ddd;
+}
+
+.expanded-section {
+    margin-bottom: 16px;
+    padding: 12px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+
+.expanded-section:last-child {
+    margin-bottom: 0;
+}
+
+.expanded-section h4 {
+    font-size: 0.95rem;
+    color: #073b6b;
+    margin: 0 0 10px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eee;
+}

@@ -241,47 +241,39 @@ h1 {
   }
 }
 
-.medico-search-container {
-  position: relative;
+.filtro-consultas {
+  display: flex;
+  align-items: end;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-.medico-search-container input {
-  width: 100%;
-  padding: 9px 10px;
-  border-radius: 6px;
-  border: 1px solid #d0d7e2;
+.btn-exportar {
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
   font-size: 14px;
-  box-sizing: border-box;
-}
-
-.medicos-suggestions {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: white;
-  border: 1px solid #d0d7e2;
-  border-radius: 6px;
-  list-style: none;
-  margin: 4px 0 0 0;
-  padding: 0;
-  max-height: 150px;
-  overflow-y: auto;
-  z-index: 1000;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-.medicos-suggestions li {
-  padding: 10px 12px;
+  font-weight: 600;
   cursor: pointer;
-  font-size: 14px;
-  border-bottom: 1px solid #f0f0f0;
+  transition: all 0.2s ease;
+  color: white;
 }
 
-.medicos-suggestions li:last-child {
-  border-bottom: none;
+/* excel */
+.btn-excel {
+  background-color: #37ac6c;
+}
+.btn-excel:hover {
+  background-color: #185c37;
+  transform: translateY(-1px);
 }
 
-.medicos-suggestions li:hover {
-  background-color: #f8f9fa;
+/*pdf */
+.btn-pdf {
+  background-color: #ec6060;
 }
+.btn-pdf:hover {
+  background-color: #a61e1e;
+  transform: translateY(-1px);
+}
+

@@ -1,0 +1,188 @@
+.page-prontuario-paciente {
+  padding: 20px 32px;
+  font-family: Inter, system-ui, sans-serif;
+  min-height: calc(100vh - 60px);
+  background: linear-gradient(80deg, rgba(0,123,255,0.12), rgba(0,180,216,0.06));
+}
+
+.page-prontuario-paciente .page-header {
+  max-width: 1200px;
+  margin: 0 auto 30px;
+}
+
+.page-prontuario-paciente h1 {
+  font-size: 2rem;
+  color: #073b6b;
+  margin: 20px 0 20px 0;
+}
+
+.page-prontuario-paciente .footer-actions {
+  max-width: 1200px;
+  margin: 30px auto 0;
+  text-align: center;
+  padding: 20px;
+}
+
+.page-prontuario-paciente .btn-voltar-grande {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 48px;
+  background: linear-gradient(135deg, #1a3b6c 0%, #073b6b 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(26, 59, 108, 0.2);
+}
+
+.page-prontuario-paciente .btn-voltar-grande:hover {
+  background: linear-gradient(135deg, #073b6b 0%, #052a4a 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(26, 59, 108, 0.35);
+}
+
+.page-prontuario-paciente .sem-prontuarios {
+  text-align: center;
+  color: #999;
+  font-size: 1.1rem;
+  padding: 40px 20px;
+  background: white;
+  border-radius: 12px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.page-prontuario-paciente .prontuarios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-prontuario-paciente .prontuario-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.page-prontuario-paciente .prontuario-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.page-prontuario-paciente .prontuario-card.expanded {
+  background: #f8f9fa;
+}
+
+.page-prontuario-paciente .prontuario-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.page-prontuario-paciente .prontuario-card-header .data {
+  font-weight: 600;
+  color: #073b6b;
+  font-size: 1rem;
+}
+
+.page-prontuario-paciente .prontuario-card-header .expand-icon {
+  font-size: 1.5rem;
+  color: #1a3b6c;
+  font-weight: bold;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e8f0f8;
+  border-radius: 50%;
+}
+
+.page-prontuario-paciente .prontuario-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.page-prontuario-paciente .prontuario-card-body .info-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.page-prontuario-paciente .prontuario-card-body .info-row strong {
+  font-size: 0.85rem;
+  color: #073b6b;
+}
+
+.page-prontuario-paciente .prontuario-card-body .info-row span {
+  font-size: 0.95rem;
+  color: #333;
+  word-break: break-word;
+}
+
+.page-prontuario-paciente .prontuario-expanded {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.page-prontuario-paciente .prontuario-expanded .info-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.page-prontuario-paciente .prontuario-expanded .info-row strong {
+  font-size: 0.9rem;
+  color: #073b6b;
+}
+
+.page-prontuario-paciente .prontuario-expanded .info-row span {
+  font-size: 0.95rem;
+  color: #444;
+  line-height: 1.5;
+}
+
+.page-prontuario-paciente .card-clickable {
+  cursor: pointer;
+}
+
+.page-prontuario-paciente .prontuario-card.expanded {
+  background: #f8f9fa;
+}
+
+.page-prontuario-paciente .expanded-section {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.page-prontuario-paciente .expanded-section:last-child {
+  margin-bottom: 0;
+}
+
+.page-prontuario-paciente .expanded-section h4 {
+  font-size: 0.95rem;
+  color: #073b6b;
+  margin: 0 0 10px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+}
